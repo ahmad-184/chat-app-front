@@ -48,6 +48,10 @@ const LangMenu = () => {
         display: "flex",
         alignItems: "center",
         gap: 1,
+        px: 1,
+        border: "1px solid",
+        borderColor: themeMode === "dark" ? "grey.700" : "grey.300",
+        borderRadius: 2,
       }}
     >
       <Tooltip title="Change Language" placement="bottom">
@@ -97,13 +101,13 @@ const LangMenu = () => {
             <Stack direction="row" alignItems="center" spacing={1}>
               <Box>
                 <img
-                  style={{ maxWidth: 25 }}
+                  style={{ maxWidth: 22 }}
                   src={item.icon}
                   alt={item.label}
                   loading="lazy"
                 />
               </Box>
-              <Typography variant="body2">{item.label}</Typography>
+              <Typography variant="caption">{item.label}</Typography>
             </Stack>
           </MenuItem>
         ))}

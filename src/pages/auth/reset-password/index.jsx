@@ -1,18 +1,24 @@
 import { Stack, Typography, Link, useTheme, Box } from "@mui/material";
 import { Link as RRDLink } from "react-router-dom";
-import { CaretLeft } from "phosphor-react";
+import { CaretLeft, CaretRight } from "phosphor-react";
 
 import ResetPassword from "../../../sections/auth/reset-password";
+
+import useLocales from "../../../hooks/useLocales";
+import useSettings from "../../../hooks/useSettings";
 
 const ResetPasswordPage = () => {
   const theme = useTheme();
   const mode = theme.palette.mode;
 
+  const { translate } = useLocales();
+  const { themeDirection } = useSettings();
+
   return (
     <Stack spacing={3}>
       <Stack spacing={2}>
         <Typography variant="h3" pb={1}>
-          Reset Password
+          {translate("Reset Password")}
         </Typography>
         <Typography
           variant="body1"
@@ -20,7 +26,7 @@ const ResetPasswordPage = () => {
             color: mode === "light" ? "grey.700" : "grey.300",
           }}
         >
-          Please set your new password
+          {translate("Please set your new password")}
         </Typography>
       </Stack>
       <ResetPassword />
@@ -31,7 +37,11 @@ const ResetPasswordPage = () => {
             color: mode === "dark" ? "grey.400" : "grey.700",
           }}
         >
-          <CaretLeft size={14} weight="bold" />
+          {themeDirection === "ltr" ? (
+            <CaretLeft size={14} weight="bold" />
+          ) : (
+            <CaretRight size={14} weight="bold" />
+          )}
         </Box>
         <Link
           sx={{
@@ -45,7 +55,7 @@ const ResetPasswordPage = () => {
           component={RRDLink}
           to="/auth/login"
         >
-          Return to sign in
+          {translate("Return to sign in")}
         </Link>
       </Stack>
     </Stack>

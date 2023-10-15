@@ -6,6 +6,8 @@ import {
   TextField,
 } from "@mui/material";
 
+import ErrorMessage from "./ErrorMessage";
+
 const Autocomplete = ({ name, helperText, options, label, ...other }) => {
   const { control, setValue } = useFormContext();
 
@@ -37,7 +39,9 @@ const Autocomplete = ({ name, helperText, options, label, ...other }) => {
                 sx={{ width: "100%" }}
                 color="info"
                 error={!!error}
-                helperText={error ? error.message : helperText}
+                helperText={
+                  error ? <ErrorMessage message={error.message} /> : helperText
+                }
               />
             );
           }}

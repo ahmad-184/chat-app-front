@@ -1,6 +1,8 @@
 import { Stack, Divider, IconButton, useTheme } from "@mui/material";
 import { GoogleLogo, GithubLogo, TwitterLogo } from "phosphor-react";
 
+import useLocales from "../../hooks/useLocales";
+
 const list = [
   {
     icon: <GoogleLogo size={26} />,
@@ -28,6 +30,8 @@ const list = [
 const SocialButtons = () => {
   const mode = useTheme().palette.mode;
 
+  const { translate } = useLocales();
+
   return (
     <Stack spacing={2.5} pb={2}>
       <Divider
@@ -42,7 +46,7 @@ const SocialButtons = () => {
           },
         }}
       >
-        OR
+        {translate("OR")}
       </Divider>
       <Stack direction="row" spacing={2} justifyContent="center">
         {list.map(({ icon, color: { dark, light } }, index) => (

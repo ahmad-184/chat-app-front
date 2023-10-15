@@ -1,6 +1,8 @@
 import propTypes from "prop-types";
 import { useFormContext, Controller } from "react-hook-form";
-import { TextField as MUITextField } from "@mui/material";
+import { TextField as MUITextField, Stack, Typography } from "@mui/material";
+
+import ErrorMessage from "./ErrorMessage";
 
 const TextField = ({ name, helperText, ...other }) => {
   const { control } = useFormContext();
@@ -14,7 +16,9 @@ const TextField = ({ name, helperText, ...other }) => {
           {...field}
           error={!!error}
           fullWidth
-          helperText={error ? error.message : helperText}
+          helperText={
+            error ? <ErrorMessage message={error.message} /> : helperText
+          }
           {...other}
           value={
             typeof field.value === "number" && field.value === 0

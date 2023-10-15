@@ -34,7 +34,8 @@ export const allLangs = [
     label: "Persian",
     value: "fa",
     systemValue: faIR,
-    icon: "https://flagcdn.com/h40/ir.png",
+    // icon: "https://flagcdn.com/h40/ir.png",
+    icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f5/State_flag_of_Iran_1964-1980.svg/800px-State_flag_of_Iran_1964-1980.svg.png"
   },
 ];
 

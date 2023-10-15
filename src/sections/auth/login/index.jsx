@@ -18,17 +18,21 @@ import FormButton from "../FormButton";
 
 import { loginValidation } from "../../../validations";
 
+import useLocales from "../../../hooks/useLocales";
+
 const Login = () => {
   const theme = useTheme();
   const mode = theme.palette.mode;
 
+  const { translate } = useLocales();
+
   const defaultValues = {
-    email: "demo@tawk.com",
-    password: "demo@taw",
+    email: "",
+    password: "",
   };
 
   const methods = useForm({
-    resolver: zodResolver(loginValidation),
+    resolver: zodResolver(loginValidation(translate)),
     defaultValues,
   });
 
@@ -65,12 +69,12 @@ const Login = () => {
         <TextField
           type="text"
           name="email"
-          label="Email address"
+          label={translate("Email address")}
           helperText={null}
         />
         <TextField
           name="password"
-          label="Password"
+          label={translate("Password")}
           helperText={null}
           sx={{
             "& .MuiInputBase-root": {
@@ -107,11 +111,11 @@ const Login = () => {
             underline="always"
             to="/auth/forgot-password"
           >
-            Forgot password?
+            {translate("Forgot your password?")}
           </Link>
         </Stack>
         <FormButton variant="contained" size="large">
-          Login
+          {translate("Login")}
         </FormButton>
       </Stack>
     </FormProvider>

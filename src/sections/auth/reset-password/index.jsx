@@ -17,9 +17,13 @@ import FormButton from "../FormButton";
 
 import { resetPasswordValidation } from "../../../validations";
 
+import useLocales from "../../../hooks/useLocales";
+
 const ResetPassword = () => {
   const theme = useTheme();
   const mode = theme.palette.mode;
+
+  const { translate } = useLocales();
 
   const [showPass, setShowPass] = useState(false);
   const [showConfirmPass, setShowConfirmPass] = useState(false);
@@ -30,7 +34,7 @@ const ResetPassword = () => {
   };
 
   const methods = useForm({
-    resolver: zodResolver(resetPasswordValidation),
+    resolver: zodResolver(resetPasswordValidation(translate)),
     defaultValues,
   });
 
@@ -39,6 +43,7 @@ const ResetPassword = () => {
     formState: { isSubmitting, isSubmitSuccessful, errors },
     setError,
     reset,
+    watch,
   } = methods;
 
   const onSubmit = async (data) => {
@@ -64,8 +69,11 @@ const ResetPassword = () => {
         )}
         <TextField
           name="password"
-          label="Password"
-          helperText={"password must be at least 6 character"}
+          label={translate("Password")}
+          helperText={
+            watch("password").length < 6 &&
+            translate("Password must be at least 6 character")
+          }
           sx={{
             "& .MuiInputBase-root": {
               pr: "0px",
@@ -89,7 +97,7 @@ const ResetPassword = () => {
         />
         <TextField
           name="confirmPassword"
-          label="Confirm Password"
+          label={translate("Confirm password")}
           helperText={null}
           sx={{
             "& .MuiInputBase-root": {
@@ -114,7 +122,7 @@ const ResetPassword = () => {
           }}
         />
         <FormButton variant="contained" size="large">
-          Send Request
+          {translate("Send")}
         </FormButton>
       </Stack>
     </FormProvider>

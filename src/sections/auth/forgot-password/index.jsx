@@ -8,13 +8,17 @@ import FormButton from "../FormButton";
 
 import { forgotPasswordValidation } from "../../../validations";
 
+import useLocales from "../../../hooks/useLocales";
+
 const ForgotPassword = () => {
   const defaultValues = {
     email: "",
   };
 
+  const { translate } = useLocales();
+
   const methods = useForm({
-    resolver: zodResolver(forgotPasswordValidation),
+    resolver: zodResolver(forgotPasswordValidation(translate)),
     defaultValues,
   });
 
@@ -49,11 +53,11 @@ const ForgotPassword = () => {
         <TextField
           type="text"
           name="email"
-          label="Email address"
+          label={translate("Email address")}
           helperText={null}
         />
         <FormButton variant="contained" size="large">
-          Send Request
+          {translate("Send")}
         </FormButton>
       </Stack>
     </FormProvider>

@@ -10,7 +10,7 @@ const RegisterPage = () => {
   const theme = useTheme();
   const mode = theme.palette.mode;
 
-  const { translate } = useLocales();
+  const { translate, currentLang } = useLocales();
 
   return (
     <Stack spacing={3}>
@@ -73,7 +73,7 @@ const RegisterPage = () => {
         >
           {translate("Privacy policy")}
         </Link>{" "}
-        {translate("i agree")}
+        {currentLang.value === "fa" && translate("i agree")}
       </Typography>
       <SocialButtons />
     </Stack>

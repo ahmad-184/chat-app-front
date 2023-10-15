@@ -4,43 +4,47 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Stack,
   useTheme,
-  Link,
   InputAdornment,
   IconButton,
   Alert,
 } from "@mui/material";
 import { Eye, EyeSlash } from "phosphor-react";
-import { Link as RRDLink } from "react-router-dom";
 
 import TextField from "../../../components/hook-form/TextField";
 import FormProvider from "../../../components/hook-form/FormProvider";
 import FormButton from "../FormButton";
 
 import { registerValidation } from "../../../validations";
+import useLocales from "../../../hooks/useLocales";
 
 const Register = () => {
   const theme = useTheme();
   const mode = theme.palette.mode;
+
+  const { translate } = useLocales();
 
   const defaultValues = {
     firstname: "",
     lastname: "",
     email: "",
     password: "",
+    confirmPassword: "",
   };
 
   const methods = useForm({
-    resolver: zodResolver(registerValidation),
+    resolver: zodResolver(registerValidation(translate)),
     defaultValues,
   });
 
   const [showPass, setShowPass] = useState(false);
+  const [showConfirmPass, setShowConfirmPass] = useState(false);
 
   const {
     handleSubmit,
     formState: { isSubmitting, isSubmitSuccessful, errors },
     setError,
     reset,
+    watch,
   } = methods;
 
   const onSubmit = async (data) => {
@@ -55,6 +59,8 @@ const Register = () => {
       });
     }
   };
+
+  console.log(watch("password"));
 
   return (
     <FormProvider onSubmit={handleSubmit(onSubmit)} methods={methods}>
@@ -75,49 +81,83 @@ const Register = () => {
           <TextField
             type="text"
             name="firstname"
-            label="Firstname"
+            label={translate("Firstname")}
             helperText={null}
           />
           <TextField
             type="text"
             name="lastname"
-            label="Lastname"
+            label={translate("Lastname")}
             helperText={null}
           />
         </Stack>
         <TextField
           type="text"
           name="email"
-          label="Email address"
+          label={translate("Email address")}
           helperText={null}
         />
-        <TextField
-          name="password"
-          label="Password"
-          helperText={"password must be at least 6 character."}
-          sx={{
-            "& .MuiInputBase-root": {
-              pr: "0px",
-            },
-          }}
-          type={showPass ? "text" : "password"}
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position="start">
-                <IconButton
-                  sx={{
-                    color: mode === "light" && "grey.700",
-                  }}
-                  onClick={() => setShowPass((prev) => !prev)}
-                >
-                  {showPass ? <EyeSlash size={24} /> : <Eye size={24} />}
-                </IconButton>
-              </InputAdornment>
-            ),
-          }}
-        />
+        <Stack direction="row" spacing={2}>
+          <TextField
+            name="password"
+            label={translate("Password")}
+            helperText={
+              watch("password").length < 6 &&
+              translate("Password must be at least 6 character")
+            }
+            sx={{
+              "& .MuiInputBase-root": {
+                pr: "0px",
+              },
+            }}
+            type={showPass ? "text" : "password"}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="start">
+                  <IconButton
+                    sx={{
+                      color: mode === "light" && "grey.700",
+                    }}
+                    onClick={() => setShowPass((prev) => !prev)}
+                  >
+                    {showPass ? <EyeSlash size={24} /> : <Eye size={24} />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+          />
+
+          <TextField
+            name="confirmPassword"
+            label={translate("Confirm password")}
+            sx={{
+              "& .MuiInputBase-root": {
+                pr: "0px",
+              },
+            }}
+            type={showConfirmPass ? "text" : "password"}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="start">
+                  <IconButton
+                    sx={{
+                      color: mode === "light" && "grey.700",
+                    }}
+                    onClick={() => setShowConfirmPass((prev) => !prev)}
+                  >
+                    {showConfirmPass ? (
+                      <EyeSlash size={24} />
+                    ) : (
+                      <Eye size={24} />
+                    )}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+          />
+        </Stack>
         <FormButton variant="contained" size="large">
-          Login
+          {translate("Register")}
         </FormButton>
       </Stack>
     </FormProvider>
