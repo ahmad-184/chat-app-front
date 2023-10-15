@@ -1,8 +1,8 @@
-import PropTypes from 'prop-types';
+import PropTypes from "prop-types";
 // @mui
-import { ThemeProvider, createTheme, useTheme } from '@mui/material/styles';
+import { ThemeProvider, createTheme, useTheme } from "@mui/material/styles";
 // hooks
-import useLocales from '../../hooks/useLocales';
+import useLocales from "../../hooks/useLocales";
 
 // ----------------------------------------------------------------------
 

@@ -1,6 +1,8 @@
 import { Link, Stack, Typography, useTheme } from "@mui/material";
 import { Link as RRDLink } from "react-router-dom";
 
+import useLocales from "../../../hooks/useLocales";
+
 import Register from "../../../sections/auth/register";
 import SocialButtons from "../../../sections/auth/SocialButtons";
 
@@ -8,12 +10,18 @@ const RegisterPage = () => {
   const theme = useTheme();
   const mode = theme.palette.mode;
 
+  const { translate } = useLocales();
+
   return (
     <Stack spacing={3}>
       <Stack spacing={2}>
-        <Typography variant="h4">Get started with Tawk</Typography>
+        <Typography variant="h4">
+          {translate("Get started with Tawk")}
+        </Typography>
         <Stack direction="row" spacing={0.5} alignItems="center">
-          <Typography variant="body2">Already have an Account?</Typography>
+          <Typography variant="body2">
+            {translate("Already have an Account")}
+          </Typography>
           <Link
             sx={{
               typography: "subtitle2",
@@ -22,7 +30,7 @@ const RegisterPage = () => {
             component={RRDLink}
             to="/auth/login"
           >
-            Sign in
+            {translate("Sign in")}
           </Link>
         </Stack>
       </Stack>
@@ -35,7 +43,7 @@ const RegisterPage = () => {
           color: mode === "dark" ? "grey.400" : "grey.600",
         }}
       >
-        {"By signing up, i agree to "}
+        {translate("By signing up, i agree to")}{" "}
         <Link
           underline="always"
           sx={{
@@ -48,9 +56,9 @@ const RegisterPage = () => {
           component={RRDLink}
           to=""
         >
-          Terms of service{" "}
+          {translate("Terms of service")}{" "}
         </Link>
-        {"and "}
+        {translate("and")}{" "}
         <Link
           underline="always"
           sx={{
@@ -63,8 +71,9 @@ const RegisterPage = () => {
           component={RRDLink}
           to=""
         >
-          Privacy policy
-        </Link>
+          {translate("Privacy policy")}
+        </Link>{" "}
+        {translate("i agree")}
       </Typography>
       <SocialButtons />
     </Stack>

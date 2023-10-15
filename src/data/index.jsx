@@ -307,7 +307,7 @@ export const SHARED_docs = [
     name: "Invoice 22 Oct",
     incoming: false,
     outgoing: true,
-    type: "image",
+    file_type: "image",
   },
   {
     type: "msg",
@@ -316,7 +316,7 @@ export const SHARED_docs = [
     name: "Last night party",
     incoming: false,
     outgoing: true,
-    type: "video",
+    file_type: "video",
   },
   {
     type: "msg",
@@ -325,7 +325,7 @@ export const SHARED_docs = [
     name: "Basic math courses",
     incoming: false,
     outgoing: true,
-    type: "word",
+    file_type: "word",
   },
   {
     type: "msg",
@@ -334,7 +334,7 @@ export const SHARED_docs = [
     name: "College thesis",
     incoming: false,
     outgoing: true,
-    type: "pdf",
+    file_type: "pdf",
   },
   {
     type: "msg",
@@ -343,7 +343,7 @@ export const SHARED_docs = [
     name: "Sales Report",
     incoming: false,
     outgoing: true,
-    type: "excel",
+    file_type: "excel",
   },
   {
     type: "msg",
@@ -352,7 +352,7 @@ export const SHARED_docs = [
     name: "Booked Ticket",
     incoming: false,
     outgoing: true,
-    type: "powerpoint",
+    file_type: "powerpoint",
   },
 ];
 

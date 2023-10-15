@@ -29,7 +29,7 @@ const SocialButtons = () => {
   const mode = useTheme().palette.mode;
 
   return (
-    <Stack spacing={2.5}>
+    <Stack spacing={2.5} pb={2}>
       <Divider
         variant="fullWidth"
         sx={{

@@ -1,12 +1,4 @@
-import {
-  Stack,
-  Box,
-  useTheme,
-  Typography,
-  Link,
-  IconButton,
-} from "@mui/material";
-import { Image, DownloadSimple } from "phosphor-react";
+import { Stack, Box, useTheme, Typography, Link } from "@mui/material";
 
 import ShowMsgTime from "./ShowMsgTime";
 import Menu from "./Menu";

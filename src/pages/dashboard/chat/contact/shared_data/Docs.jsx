@@ -45,7 +45,7 @@ const Doc = ({ data }) => {
   const theme = useTheme();
   const mode = theme.palette.mode;
 
-  const fileIcon = getFormatIcon(data.type);
+  const fileIcon = getFormatIcon(data.file_type);
 
   return (
     <Stack
