@@ -32,5 +32,8 @@
   "Return to sign in": "بازگشت به صفحه ورود",
   "Send": "ارسال",
   "Reset Password": "تغییر رمز عبور",
-  "Please set your new password": "لطفا رمز عبور جدیدی انتخاب کنید"
+  "Please set your new password": "لطفا رمز عبور جدیدی انتخاب کنید",
+  "Change Language": "تغییر زبان",
+  "Dark": "تاریک",
+  "Light": "روشن"
 }

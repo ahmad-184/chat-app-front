@@ -27,7 +27,7 @@ const iconButtonStyle = (theme) => ({
 });
 
 const LangMenu = () => {
-  const { allLangs, currentLang, onChangeLang } = useLocales();
+  const { allLangs, currentLang, onChangeLang, translate } = useLocales();
   const { onToggleMode, themeMode } = useSettings();
 
   const [anchorEl, setAnchorEl] = useState(null);
@@ -54,14 +54,14 @@ const LangMenu = () => {
         borderRadius: 2,
       }}
     >
-      <Tooltip title="Change Language" placement="bottom">
+      <Tooltip title={translate("Change Language")} placement="bottom">
         <IconButton onClick={handleClick} sx={iconButtonStyle}>
           <Translate />
         </IconButton>
       </Tooltip>
 
       <Tooltip
-        title={themeMode === "light" ? "Light" : "Dark"}
+        title={themeMode === "light" ? translate("Light") : translate("Dark")}
         placement="bottom"
       >
         <IconButton sx={iconButtonStyle} onClick={onToggleMode}>
@@ -91,9 +91,6 @@ const LangMenu = () => {
             onClick={() => {
               handleClose();
               onChangeLang(item.value);
-              // if(item.value === 'fa') {
-              //   onChangeDirection()
-              // }
             }}
             key={index}
             selected={currentLang.value === item.value}
