@@ -4,6 +4,8 @@ import { enUS, faIR } from "@mui/material/locale";
 // routes
 import { PATH_DASHBOARD } from "./routes/paths";
 
+export const API_BASE_URL = "http://localhost:9000/api";
+
 export const defaultSettings = {
   themeMode: "light",
   themeDirection: "ltr",
@@ -35,7 +37,7 @@ export const allLangs = [
     value: "fa",
     systemValue: faIR,
     // icon: "https://flagcdn.com/h40/ir.png",
-    icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f5/State_flag_of_Iran_1964-1980.svg/800px-State_flag_of_Iran_1964-1980.svg.png"
+    icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f5/State_flag_of_Iran_1964-1980.svg/800px-State_flag_of_Iran_1964-1980.svg.png",
   },
 ];
 

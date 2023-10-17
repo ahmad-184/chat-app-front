@@ -11,6 +11,7 @@ import {
 } from "@mui/material";
 import { Eye, EyeSlash } from "phosphor-react";
 import { Link as RRDLink } from "react-router-dom";
+import { useDispatch } from "react-redux";
 
 import TextField from "../../../components/hook-form/TextField";
 import FormProvider from "../../../components/hook-form/FormProvider";
@@ -20,9 +21,16 @@ import { loginValidation } from "../../../validations";
 
 import useLocales from "../../../hooks/useLocales";
 
+import { loginUserThunk } from "../../../app/slices/auth";
+import ThrowError from "../../../app/ThrowError";
+
 const Login = () => {
   const theme = useTheme();
   const mode = theme.palette.mode;
+
+  const [loading, setLoading] = useState(false);
+
+  const dispatch = useDispatch();
 
   const { translate } = useLocales();
 
@@ -47,14 +55,22 @@ const Login = () => {
 
   const onSubmit = async (data) => {
     try {
-      console.log(data);
-      reset();
+      setLoading(true);
+      await dispatch(
+        loginUserThunk({ email: data.email, password: data.password })
+      ).then((res) => {
+        if (res.payload) {
+          return ThrowError(res);
+        } else {
+          reset();
+        }
+      });
     } catch (err) {
-      console.log(data);
       setError("afterSubmit", {
-        ...err,
         message: err.message,
       });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -114,7 +130,7 @@ const Login = () => {
             {translate("Forgot your password?")}
           </Link>
         </Stack>
-        <FormButton variant="contained" size="large">
+        <FormButton variant="contained" loading={loading} size="large">
           {translate("Login")}
         </FormButton>
       </Stack>
