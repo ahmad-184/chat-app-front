@@ -2,7 +2,7 @@ import { pxToRem, responsiveFontSizes } from "../utils/getFontValue";
 
 // ----------------------------------------------------------------------
 
-const FONT_PRIMARY =
+export const FONT_PRIMARY =
   "Manrope, Public Sans,'Baloo Bhaijaan 2', vazirmatn,'Rubik', sans-serif"; // Google Font
 // const FONT_SECONDARY = "CircularStd, sans-serif"; // Local Font
 

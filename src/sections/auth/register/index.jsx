@@ -9,6 +9,7 @@ import {
   Alert,
 } from "@mui/material";
 import { Eye, EyeSlash } from "phosphor-react";
+import { useDispatch } from "react-redux";
 
 import TextField from "../../../components/hook-form/TextField";
 import FormProvider from "../../../components/hook-form/FormProvider";
@@ -20,6 +21,8 @@ import useLocales from "../../../hooks/useLocales";
 const Register = () => {
   const theme = useTheme();
   const mode = theme.palette.mode;
+
+  const dispatch = useDispatch();
 
   const { translate } = useLocales();
 
@@ -97,65 +100,59 @@ const Register = () => {
           label={translate("Email address")}
           helperText={null}
         />
-        <Stack direction="row" spacing={2}>
-          <TextField
-            name="password"
-            label={translate("Password")}
-            helperText={
-              watch("password").length < 6 &&
-              translate("Password must be at least 6 character")
-            }
-            sx={{
-              "& .MuiInputBase-root": {
-                pr: "0px",
-              },
-            }}
-            type={showPass ? "text" : "password"}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="start">
-                  <IconButton
-                    sx={{
-                      color: mode === "light" && "grey.700",
-                    }}
-                    onClick={() => setShowPass((prev) => !prev)}
-                  >
-                    {showPass ? <EyeSlash size={24} /> : <Eye size={24} />}
-                  </IconButton>
-                </InputAdornment>
-              ),
-            }}
-          />
+        <TextField
+          name="password"
+          label={translate("Password")}
+          helperText={
+            watch("password").length < 6 &&
+            translate("Password must be at least 6 character")
+          }
+          sx={{
+            "& .MuiInputBase-root": {
+              pr: "0px",
+            },
+          }}
+          type={showPass ? "text" : "password"}
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="start">
+                <IconButton
+                  sx={{
+                    color: mode === "light" && "grey.700",
+                  }}
+                  onClick={() => setShowPass((prev) => !prev)}
+                >
+                  {showPass ? <EyeSlash size={24} /> : <Eye size={24} />}
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
+        />
 
-          <TextField
-            name="confirmPassword"
-            label={translate("Confirm password")}
-            sx={{
-              "& .MuiInputBase-root": {
-                pr: "0px",
-              },
-            }}
-            type={showConfirmPass ? "text" : "password"}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="start">
-                  <IconButton
-                    sx={{
-                      color: mode === "light" && "grey.700",
-                    }}
-                    onClick={() => setShowConfirmPass((prev) => !prev)}
-                  >
-                    {showConfirmPass ? (
-                      <EyeSlash size={24} />
-                    ) : (
-                      <Eye size={24} />
-                    )}
-                  </IconButton>
-                </InputAdornment>
-              ),
-            }}
-          />
-        </Stack>
+        <TextField
+          name="confirmPassword"
+          label={translate("Confirm password")}
+          sx={{
+            "& .MuiInputBase-root": {
+              pr: "0px",
+            },
+          }}
+          type={showConfirmPass ? "text" : "password"}
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="start">
+                <IconButton
+                  sx={{
+                    color: mode === "light" && "grey.700",
+                  }}
+                  onClick={() => setShowConfirmPass((prev) => !prev)}
+                >
+                  {showConfirmPass ? <EyeSlash size={24} /> : <Eye size={24} />}
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
+        />
         <FormButton variant="contained" size="large">
           {translate("Register")}
         </FormButton>

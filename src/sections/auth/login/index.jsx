@@ -22,13 +22,11 @@ import { loginValidation } from "../../../validations";
 import useLocales from "../../../hooks/useLocales";
 
 import { loginUserThunk } from "../../../app/slices/auth";
-import ThrowError from "../../../app/ThrowError";
+import ThrowError from "../../../helpers/ThrowError";
 
 const Login = () => {
   const theme = useTheme();
   const mode = theme.palette.mode;
-
-  const [loading, setLoading] = useState(false);
 
   const dispatch = useDispatch();
 
@@ -55,7 +53,6 @@ const Login = () => {
 
   const onSubmit = async (data) => {
     try {
-      setLoading(true);
       await dispatch(
         loginUserThunk({ email: data.email, password: data.password })
       ).then((res) => {
@@ -69,8 +66,6 @@ const Login = () => {
       setError("afterSubmit", {
         message: err.message,
       });
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -130,7 +125,7 @@ const Login = () => {
             {translate("Forgot your password?")}
           </Link>
         </Stack>
-        <FormButton variant="contained" loading={loading} size="large">
+        <FormButton variant="contained" loading={isSubmitting} size="large">
           {translate("Login")}
         </FormButton>
       </Stack>

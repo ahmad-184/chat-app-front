@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { toast } from "react-toastify";
 
-import { loginUserApi } from "../../services";
+import { loginUserApi, registerUserApi } from "../../services";
 
 const initialState = {
   isLoggedIn: false,
@@ -20,6 +21,18 @@ export const loginUserThunk = createAsyncThunk(
   }
 );
 
+export const registerUserThunk = createAsyncThunk(
+  "auth/registerUserThunk",
+  async (data, { rejectWithValue }) => {
+    try {
+      const res = await registerUserApi(data);
+      return res;
+    } catch (err) {
+      return rejectWithValue(err);
+    }
+  }
+);
+
 const authSlice = createSlice({
   name: "auth",
   initialState,
@@ -28,8 +41,16 @@ const authSlice = createSlice({
     [loginUserThunk.fulfilled]: (state, action) => {
       const { status, data } = action.payload;
       if (status === 200) {
-        state.isLoggedIn = true;
-        state.token = data.token;
+        // state.isLoggedIn = true;
+        // state.token = data.token;
+        toast.success("شما با موفقیت وارد شدید");
+      }
+    },
+    [registerUserThunk.fulfilled]: (state, action) => {
+      const { status, data } = action.payload;
+      if (status === 200) {
+        // state.isLoggedIn = true;
+        // state.token = data.token;
       }
     },
   },
