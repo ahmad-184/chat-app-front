@@ -6,6 +6,8 @@ import { PATH_DASHBOARD } from "./routes/paths";
 
 export const API_BASE_URL = "http://localhost:9000/api";
 
+export const SECRET_KEY = "1v%nPCJG%dJtx3E'VQL@W^-85=DV!4";
+
 export const defaultSettings = {
   themeMode: "light",
   themeDirection: "ltr",

@@ -63,8 +63,6 @@ const Register = () => {
     }
   };
 
-  console.log(watch("password"));
-
   return (
     <FormProvider onSubmit={handleSubmit(onSubmit)} methods={methods}>
       <Stack spacing={2.5} width="100%">

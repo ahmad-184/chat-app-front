@@ -1,7 +1,11 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { toast } from "react-toastify";
+import { enqueueSnackbar } from "notistack";
 
-import { loginUserApi, registerUserApi } from "../../services";
+import {
+  forgotPasswordApi,
+  loginUserApi,
+  registerUserApi,
+} from "../../services";
 
 const initialState = {
   isLoggedIn: false,
@@ -33,24 +37,44 @@ export const registerUserThunk = createAsyncThunk(
   }
 );
 
+export const forgotPasswordThunk = createAsyncThunk(
+  "auth/forgotPasswordThunk",
+  async (data, { rejectWithValue }) => {
+    try {
+      const res = await forgotPasswordApi(data);
+      return res;
+    } catch (err) {
+      return rejectWithValue(err);
+    }
+  }
+);
+
 const authSlice = createSlice({
   name: "auth",
   initialState,
-  reducers: {},
+  reducers: {
+    logOut(state, action) {
+      state.isLoggedIn = false;
+      state.token = "";
+    },
+  },
   extraReducers: {
     [loginUserThunk.fulfilled]: (state, action) => {
       const { status, data } = action.payload;
       if (status === 200) {
-        // state.isLoggedIn = true;
-        // state.token = data.token;
-        toast.success("شما با موفقیت وارد شدید");
+        state.isLoggedIn = true;
+        state.token = data.token;
+        enqueueSnackbar(data.message, {
+          variant: "success",
+        });
       }
     },
     [registerUserThunk.fulfilled]: (state, action) => {
       const { status, data } = action.payload;
       if (status === 200) {
-        // state.isLoggedIn = true;
-        // state.token = data.token;
+        enqueueSnackbar(data.message, {
+          variant: "success",
+        });
       }
     },
   },
@@ -58,4 +82,5 @@ const authSlice = createSlice({
 
 export const getIsLoggedIn = (state) => state.auth.isLoggedIn;
 
+export const { logOut } = authSlice.actions;
 export default authSlice.reducer;

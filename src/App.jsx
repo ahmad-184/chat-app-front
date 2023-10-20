@@ -6,20 +6,18 @@ import ThemeProvider from "./theme";
 // components
 import ThemeSettings from "./components/settings";
 // toast
-import ToasterProvider from "./components/ToasterProvider";
+import SnakbarProvider from "./components/SnakbarProvider";
 // import i18next config file
 import "./i18next";
 // simplebar-react styles
 import "simplebar-react/dist/simplebar.min.css";
-// react-toastify stryles
-import "react-toastify/dist/ReactToastify.css";
 
 function App() {
   return (
     <Suspense>
       <ThemeProvider>
         <ThemeSettings>
-          <ToasterProvider />
+          <SnakbarProvider />
           <Routes />
         </ThemeSettings>
       </ThemeProvider>

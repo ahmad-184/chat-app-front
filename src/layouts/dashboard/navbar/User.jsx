@@ -11,9 +11,11 @@ import {
 } from "@mui/material";
 import { faker } from "@faker-js/faker";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
 
 import useSettings from "../../../hooks/useSettings";
 import { Profile_Menu } from "../../../data";
+import { logOut } from "../../../app/slices/auth";
 
 const ThemeSwitch = styled(Switch)(({ theme }) => ({
   width: 60,
@@ -65,6 +67,7 @@ const ThemeSwitch = styled(Switch)(({ theme }) => ({
 const User = () => {
   const theme = useTheme();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
@@ -119,6 +122,9 @@ const User = () => {
                     handleClose();
                     navigate("/settings");
                     break;
+                  case 2:
+                    dispatch(logOut());
+                    handleClose();
                   default:
                     handleClose();
                     break;

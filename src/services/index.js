@@ -11,3 +11,9 @@ export const loginUserApi = async (data) => {
 export const registerUserApi = async (data) => {
   return await axios.post("/auth/register", { ...data });
 };
+
+// @Route http://localhost:9000/api/auth/forgot_password
+// @Desc POST get user email and send a reset password link to user email
+export const forgotPasswordApi = async (data) => {
+  return await axios.post("/auth/forgot_password", { ...data });
+};
