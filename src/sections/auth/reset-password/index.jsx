@@ -1,27 +1,45 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Stack,
   useTheme,
-  Link,
   InputAdornment,
   IconButton,
   Alert,
+  Typography,
 } from "@mui/material";
 import { Eye, EyeSlash } from "phosphor-react";
+import { useDispatch } from "react-redux";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 import TextField from "../../../components/hook-form/TextField";
 import FormProvider from "../../../components/hook-form/FormProvider";
 import FormButton from "../FormButton";
 
 import { resetPasswordValidation } from "../../../validations";
+import { resetPasswordThunk } from "../../../app/slices/auth";
 
 import useLocales from "../../../hooks/useLocales";
 
 const ResetPassword = () => {
   const theme = useTheme();
   const mode = theme.palette.mode;
+
+  const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
+
+  const codeToken = searchParams.get("code");
+
+  useEffect(() => {
+    if (!codeToken) {
+      navigate("/auth/login");
+    }
+  }, [codeToken]);
+
+  const [isLoading, setLoading] = useState(false);
+  const [seccessMsg, setSuccessMsg] = useState("");
+  const dispatch = useDispatch();
 
   const { translate } = useLocales();
 
@@ -40,7 +58,7 @@ const ResetPassword = () => {
 
   const {
     handleSubmit,
-    formState: { isSubmitting, isSubmitSuccessful, errors },
+    formState: { errors },
     setError,
     reset,
     watch,
@@ -48,14 +66,28 @@ const ResetPassword = () => {
 
   const onSubmit = async (data) => {
     try {
-      console.log(data);
+      setLoading(true);
+      await dispatch(
+        resetPasswordThunk({
+          password: data.password,
+          confirmPassword: data.confirmPassword,
+          token: codeToken,
+        })
+      ).then((res) => {
+        if (res.error) {
+          throw res;
+        } else {
+          reset();
+          setSuccessMsg(res.payload.data.message);
+        }
+      });
       reset();
     } catch (err) {
-      console.log(data);
       setError("afterSubmit", {
-        ...err,
-        message: err.message,
+        message: err.payload.message || err.payload,
       });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -66,6 +98,19 @@ const ResetPassword = () => {
           <Alert severity="error" variant="outlined">
             {errors.afterSubmit.message}
           </Alert>
+        )}
+        {seccessMsg && (
+          <Typography
+            variant="body2"
+            sx={(theme) => ({
+              color:
+                theme.palette.mode === "light"
+                  ? "success.dark"
+                  : "success.main",
+            })}
+          >
+            {seccessMsg}
+          </Typography>
         )}
         <TextField
           name="password"
@@ -121,7 +166,7 @@ const ResetPassword = () => {
             ),
           }}
         />
-        <FormButton variant="contained" size="large">
+        <FormButton variant="contained" size="large" loading={isLoading}>
           {translate("Send")}
         </FormButton>
       </Stack>

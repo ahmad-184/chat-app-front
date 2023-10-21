@@ -56,15 +56,15 @@ const Login = () => {
       await dispatch(
         loginUserThunk({ email: data.email, password: data.password })
       ).then((res) => {
-        if (res.payload) {
-          return ThrowError(res);
+        if (res.error) {
+          throw res;
         } else {
           reset();
         }
       });
     } catch (err) {
       setError("afterSubmit", {
-        message: err.message,
+        message: err.payload.message,
       });
     }
   };

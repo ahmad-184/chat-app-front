@@ -1,4 +1,5 @@
 import { Button, useTheme } from "@mui/material";
+import proptypes from "prop-types";
 
 const LoadingSvg = ({ color }) => {
   return (
@@ -49,17 +50,15 @@ const LoadingSvg = ({ color }) => {
   );
 };
 
-const FormButton = ({ children, ...props }) => {
+const FormButton = ({ children, loading, disabled, ...props }) => {
   const theme = useTheme();
   const mode = theme.palette.mode;
-
-  const loading = props.loading || false;
 
   return (
     <Button
       type="submit"
       {...props}
-      disabled={props.disabled ? props.disabled : loading}
+      disabled={disabled ? true : loading ? true : false}
       sx={{
         boxShadow: "none",
         bgcolor: "grey.800",
@@ -67,6 +66,7 @@ const FormButton = ({ children, ...props }) => {
           bgcolor: "grey.700",
         },
       }}
+      disableRipple={false}
     >
       {loading ? (
         <LoadingSvg
@@ -79,6 +79,10 @@ const FormButton = ({ children, ...props }) => {
       )}
     </Button>
   );
+};
+
+FormButton.propTypes = {
+  children: proptypes.node,
 };
 
 export default FormButton;

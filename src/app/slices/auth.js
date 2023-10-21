@@ -5,6 +5,7 @@ import {
   forgotPasswordApi,
   loginUserApi,
   registerUserApi,
+  resetPasswordApi,
 } from "../../services";
 
 const initialState = {
@@ -42,6 +43,18 @@ export const forgotPasswordThunk = createAsyncThunk(
   async (data, { rejectWithValue }) => {
     try {
       const res = await forgotPasswordApi(data);
+      return res;
+    } catch (err) {
+      return rejectWithValue(err);
+    }
+  }
+);
+
+export const resetPasswordThunk = createAsyncThunk(
+  "auth/resetPasswordThunk",
+  async (data, { rejectWithValue }) => {
+    try {
+      const res = await resetPasswordApi(data);
       return res;
     } catch (err) {
       return rejectWithValue(err);

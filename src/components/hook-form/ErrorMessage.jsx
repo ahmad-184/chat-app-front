@@ -1,3 +1,4 @@
+import proptypes from "prop-types";
 import { Stack, Typography } from "@mui/material";
 import { WarningOctagon } from "phosphor-react";
 
@@ -9,3 +10,7 @@ export default function ErrorText({ message }) {
     </Stack>
   );
 }
+
+ErrorText.propTypes = {
+  message: proptypes.string,
+};
