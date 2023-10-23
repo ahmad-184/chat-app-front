@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Stack,
@@ -16,13 +17,20 @@ import FormProvider from "../../../components/hook-form/FormProvider";
 import FormButton from "../FormButton";
 
 import { registerValidation } from "../../../validations";
+import {
+  registerUserThunk,
+  updateRegisterEmail,
+} from "../../../app/slices/auth";
 import useLocales from "../../../hooks/useLocales";
 
 const Register = () => {
   const theme = useTheme();
   const mode = theme.palette.mode;
 
+  const [isLoading, setLoading] = useState(false);
+
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const { translate } = useLocales();
 
@@ -44,7 +52,7 @@ const Register = () => {
 
   const {
     handleSubmit,
-    formState: { isSubmitting, isSubmitSuccessful, errors },
+    formState: { errors },
     setError,
     reset,
     watch,
@@ -52,14 +60,22 @@ const Register = () => {
 
   const onSubmit = async (data) => {
     try {
-      console.log(data);
-      reset();
-    } catch (err) {
-      console.log(data);
-      setError("afterSubmit", {
-        ...err,
-        message: err.message,
+      setLoading(true);
+      await dispatch(registerUserThunk({ ...data })).then(async (res) => {
+        if (res.error) {
+          throw res;
+        } else {
+          await dispatch(updateRegisterEmail({ email: data.email }));
+          reset();
+          navigate("/auth/verify");
+        }
       });
+    } catch (err) {
+      setError("afterSubmit", {
+        message: err.payload.message || err.payload,
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -151,7 +167,7 @@ const Register = () => {
             ),
           }}
         />
-        <FormButton variant="contained" size="large">
+        <FormButton variant="contained" size="large" loading={isLoading}>
           {translate("Register")}
         </FormButton>
       </Stack>

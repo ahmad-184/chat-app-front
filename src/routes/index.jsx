@@ -1,7 +1,7 @@
 import { Suspense, lazy } from "react";
 import {
   Navigate,
-  RouterProvider as ReactRouterdProvider,
+  RouterProvider as ReactRouterProvider,
   createBrowserRouter,
 } from "react-router-dom";
 
@@ -29,6 +29,7 @@ const Calls = Loadable(lazy(() => import("../pages/dashboard/calls")));
 const Settings = Loadable(lazy(() => import("../pages/dashboard/settings")));
 const Profile = Loadable(lazy(() => import("../pages/dashboard/profile")));
 const Page404 = Loadable(lazy(() => import("../pages/Page404")));
+const ErrorPage = Loadable(lazy(() => import("../pages/ErrorPage")));
 const LoginPage = Loadable(lazy(() => import("../pages/auth/login")));
 const RegisterPage = Loadable(lazy(() => import("../pages/auth/register")));
 const ForgotPasswordPage = Loadable(
@@ -37,12 +38,15 @@ const ForgotPasswordPage = Loadable(
 const ResetPasswordPage = Loadable(
   lazy(() => import("../pages/auth/reset-password"))
 );
+const VerifyCodePage = Loadable(
+  lazy(() => import("../pages/auth/verify-code"))
+);
 
 const routes = createBrowserRouter([
   {
     path: "/",
     element: <DashboardLayout />,
-    errorElement: <Navigate to={"/404"} />,
+    errorElement: <ErrorPage />,
     children: [
       { element: <Navigate to={DEFAULT_PATH} replace />, index: true },
       { path: "app", element: <GeneralApp /> },
@@ -56,12 +60,13 @@ const routes = createBrowserRouter([
   {
     path: "/auth",
     element: <AuthLayout />,
-    errorElement: <Navigate to={"/404"} />,
+    errorElement: <ErrorPage />,
     children: [
       { path: "login", element: <LoginPage /> },
       { path: "register", element: <RegisterPage /> },
       { path: "forgot-password", element: <ForgotPasswordPage /> },
       { path: "reset-password", element: <ResetPasswordPage /> },
+      { path: "verify", element: <VerifyCodePage /> },
       { path: "*", element: <Navigate to="/404" replace /> },
     ],
   },
@@ -70,5 +75,5 @@ const routes = createBrowserRouter([
 ]);
 
 export default function RouterProvider() {
-  return <ReactRouterdProvider router={routes} />;
+  return <ReactRouterProvider router={routes} />;
 }

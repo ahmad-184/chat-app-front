@@ -84,3 +84,12 @@ export const profileValidation = z.object({
   about: z.string().max(100, { message: "is too high" }),
   avatarUrl: z.string().optional(),
 });
+
+export const verifyCodeValidation = z.object({
+  code1: z.string().length(1),
+  code2: z.string().length(1),
+  code3: z.string().length(1),
+  code4: z.string().length(1),
+  code5: z.string().length(1),
+  code6: z.string().length(1),
+});

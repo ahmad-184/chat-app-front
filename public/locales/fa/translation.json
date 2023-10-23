@@ -35,5 +35,14 @@
   "Please set your new password": "لطفا رمز عبور جدیدی انتخاب کنید",
   "Change Language": "تغییر زبان",
   "Dark": "تاریک",
-  "Light": "روشن"
+  "Light": "روشن",
+  "Verify account": "تایید حساب کاربری",
+  "Please enter the 6-digit code sent to your email, verification code will expire after 10 minutes.": "لطفا کد ۶ رقمی ارسال شده به ایمیلتان را وارد کنید, کد تایید پس از 10 دقیقه منقضی خواهد شد.",
+  "Back": "بازگشت",
+  "Oooops, Something bad happend": "اوووپس, مثل اینکه مشکلی پیش اومده",
+  "Error message": "متن خطا",
+  "Page that you look for not found": "صفحه ای که به دنبال آن هستید یافت نشد",
+  "Back to Home": "بازگشت به خانه",
+  "English": "انگلیسی",
+  "Persian": "فارسی"
 }

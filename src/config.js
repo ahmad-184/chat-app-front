@@ -27,15 +27,15 @@ export const NAVBAR = {
   DASHBOARD_ITEM_HORIZONTAL_HEIGHT: 32,
 };
 
-export const allLangs = [
+export const allLangs = (translate) => [
   {
-    label: "English",
+    label: translate("English"),
     value: "en",
     systemValue: enUS,
     icon: "https://flagcdn.com/h40/us.png",
   },
   {
-    label: "Persian",
+    label: translate("Persian"),
     value: "fa",
     systemValue: faIR,
     // icon: "https://flagcdn.com/h40/ir.png",

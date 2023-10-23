@@ -22,7 +22,6 @@ import { loginValidation } from "../../../validations";
 import useLocales from "../../../hooks/useLocales";
 
 import { loginUserThunk } from "../../../app/slices/auth";
-import ThrowError from "../../../helpers/ThrowError";
 
 const Login = () => {
   const theme = useTheme();
@@ -64,7 +63,7 @@ const Login = () => {
       });
     } catch (err) {
       setError("afterSubmit", {
-        message: err.payload.message,
+        message: err.payload.message || err.payload,
       });
     }
   };

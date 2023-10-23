@@ -23,3 +23,9 @@ export const forgotPasswordApi = async (data) => {
 export const resetPasswordApi = async (data) => {
   return await axios.post("/auth/reset_password", { ...data });
 };
+
+// @Route http://localhost:9000/api/auth/verify
+// @Desc POST verify user account
+export const verifyUserApi = async (data) => {
+  return await axios.post("/auth/verify_account", { ...data });
+};

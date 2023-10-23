@@ -6,12 +6,14 @@ import {
   loginUserApi,
   registerUserApi,
   resetPasswordApi,
+  verifyUserApi,
 } from "../../services";
 
 const initialState = {
   isLoggedIn: false,
   token: "",
   isLoading: false,
+  email: "",
 };
 
 export const loginUserThunk = createAsyncThunk(
@@ -62,6 +64,18 @@ export const resetPasswordThunk = createAsyncThunk(
   }
 );
 
+export const verifyUserThunk = createAsyncThunk(
+  "auth/verifyUserThunk",
+  async (data, { rejectWithValue }) => {
+    try {
+      const res = await verifyUserApi(data);
+      return res;
+    } catch (err) {
+      return rejectWithValue(err);
+    }
+  }
+);
+
 const authSlice = createSlice({
   name: "auth",
   initialState,
@@ -69,6 +83,11 @@ const authSlice = createSlice({
     logOut(state, action) {
       state.isLoggedIn = false;
       state.token = "";
+    },
+    updateRegisterEmail(state, action) {
+      if (action.payload) {
+        state.email = action.payload.email;
+      }
     },
   },
   extraReducers: {
@@ -90,10 +109,19 @@ const authSlice = createSlice({
         });
       }
     },
+    [verifyUserThunk.fulfilled]: (state, action) => {
+      const { status, data } = action.payload;
+      if (status === 200) {
+        enqueueSnackbar(data.message, {
+          variant: "success",
+        });
+      }
+    },
   },
 });
 
 export const getIsLoggedIn = (state) => state.auth.isLoggedIn;
+export const getRegisterEmail = (state) => state.auth.email;
 
-export const { logOut } = authSlice.actions;
+export const { logOut, updateRegisterEmail } = authSlice.actions;
 export default authSlice.reducer;

@@ -35,5 +35,14 @@
   "Please set your new password": "Please set your new password",
   "Change Language": "Change Language",
   "Dark": "Dark",
-  "Light": "Light"
+  "Light": "Light",
+  "Verify account": "Verify account",
+  "Please enter the 6-digit code sent to your email, verification code will expire after 10 minutes.": "Please enter the 6-digit code sent to your email, verification code will expire after 10 minutes.",
+  "Back": "Back",
+  "Oooops, Something bad happend": "Oooops, Something bad happend",
+  "Error message": "Error message",
+  "Page that you look for not found": "Page that you look for not found",
+  "Back to Home": "Back to Home",
+  "English": "English",
+  "Persian": "Persian"
 }

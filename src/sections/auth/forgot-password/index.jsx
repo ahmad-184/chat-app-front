@@ -12,7 +12,6 @@ import FormButton from "../FormButton";
 import useLocales from "../../../hooks/useLocales";
 import { forgotPasswordValidation } from "../../../validations";
 import { forgotPasswordThunk } from "../../../app/slices/auth";
-import ThrowError from "../../../helpers/ThrowError";
 
 import Timer from "./Timer";
 
@@ -69,7 +68,6 @@ const ForgotPassword = () => {
       });
       reset();
     } catch (err) {
-      console.log(err);
       setError("afterSubmit", {
         message: err.payload.message || err.payload,
       });
