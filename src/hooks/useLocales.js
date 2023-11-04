@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import useSettings from "./useSettings";
 // config
-import { allLangs as Langs, defaultLang } from "../config";
+import { allLangs as Langs } from "../config";
 
 // ----------------------------------------------------------------------
 
@@ -15,7 +15,8 @@ export default function useLocales() {
   const allLangs = Langs(translate);
 
   const currentLang =
-    allLangs.find((_lang) => _lang.value === langStorage) || defaultLang;
+    allLangs.find((_lang) => _lang.value === langStorage) ||
+    Langs(translate)[0];
 
   const handleChangeLanguage = (newlang) => {
     i18n.changeLanguage(newlang);

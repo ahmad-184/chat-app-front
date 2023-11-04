@@ -8,7 +8,7 @@ import {
   Button,
   Divider,
 } from "@mui/material";
-import { CircleDashed, ArchiveBox } from "phosphor-react";
+import { CircleDashed, ArchiveBox, Users } from "phosphor-react";
 import * as _ from "lodash";
 
 import { SimpleBarStyle } from "../../../../components/Scrollbar";
@@ -16,10 +16,14 @@ import UserChatList from "./UserChatList";
 import SearchInput from "../../../../components/SearchInput";
 import SidebarContainer from "../../SidebarContainer";
 import { ChatList } from "../../../../data";
+import UsersDialog from "../../../../sections/dashboard/chat/users_dialog";
 
 const Sidebar = () => {
   const theme = useTheme();
-  const mode = theme.palette.mode;
+
+  const [openUsersDialog, setOpenUsersDialog] = useState(false);
+  const closeUserDialog = () => setOpenUsersDialog(false);
+  const handleOpenUserDialog = () => setOpenUsersDialog(true);
 
   const [filteredData, setFilteredData] = useState([]);
   const [value, setValue] = useState("");
@@ -37,6 +41,9 @@ const Sidebar = () => {
 
   return (
     <SidebarContainer>
+      {openUsersDialog && (
+        <UsersDialog open={openUsersDialog} handleClose={closeUserDialog} />
+      )}
       <Stack direction="column" spacing={3.5} p={3} pb={1}>
         <Stack
           direction="row"
@@ -44,9 +51,14 @@ const Sidebar = () => {
           alignItems="center"
         >
           <Typography variant="h3">Chats</Typography>
-          <IconButton>
-            <CircleDashed />
-          </IconButton>
+          <Stack direction="row" spacing={1}>
+            <IconButton onClick={handleOpenUserDialog}>
+              <Users />
+            </IconButton>
+            <IconButton>
+              <CircleDashed />
+            </IconButton>
+          </Stack>
         </Stack>
         <SearchInput onChange={handleSearch} />
         <Stack direction="row" spacing={1} alignItems="center">

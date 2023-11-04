@@ -29,3 +29,36 @@ export const resetPasswordApi = async (data) => {
 export const verifyUserApi = async (data) => {
   return await axios.post("/auth/verify_account", { ...data });
 };
+
+// @Route http://localhost:9000/api/user/get_users
+// @Desc GET get all users
+export const getAllUsersApi = async ({ token }) => {
+  return await axios.get("/user/get_users", {
+    headers: {
+      Accept: "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+
+// @Route http://localhost:9000/api/user/get_friends
+// @Desc GET get all friends
+export const getAllFriendsApi = async ({ token }) => {
+  return await axios.get("/user/get_friends", {
+    headers: {
+      Accept: "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+
+// @Route http://localhost:9000/api/user/get_friend_requests
+// @Desc GET get friend requests
+export const getFriendRequestsApi = async ({ token }) => {
+  return await axios.get("/user/get_friend_requests", {
+    headers: {
+      Accept: "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};

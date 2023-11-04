@@ -43,7 +43,5 @@ export const allLangs = (translate) => [
   },
 ];
 
-export const defaultLang = allLangs[0]; // English
-
 // DEFAULT ROOT PATH
 export const DEFAULT_PATH = PATH_DASHBOARD.general.app; // as '/app'
