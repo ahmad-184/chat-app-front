@@ -1,12 +1,17 @@
-import { Box, useTheme } from "@mui/material";
+import { Box, Typography, useTheme ,Stack} from "@mui/material";
 import { useSelector } from "react-redux";
 
 import Converstation from "../../../../components/converstation";
-import { getRightSidebar } from "../../../../app/slices/app";
+
+import NoChat from "../../../../assets/Illustration/NoChat";
 
 const ChatView = () => {
   const mode = useTheme().palette.mode;
-  const { open } = useSelector(getRightSidebar);
+  const {
+    right_sidebar: { open },
+    chat_type,
+    room_id,
+  } = useSelector((state) => state.app);
 
   const isSidebarOpen = Boolean(open);
 
@@ -22,7 +27,22 @@ const ChatView = () => {
       }}
       backgroundColor={mode === "light" ? "grey.100" : "grey.900"}
     >
-      <Converstation />
+      {chat_type === "dividual" && room_id ? (
+        <Converstation />
+      ) : (
+        <Stack
+          width="100%"
+          height="100%"
+          justifyContent="center"
+          alignItems="center"
+          spacing={2}
+        >
+          <NoChat />
+          <Typography variant="body1">
+            Select a converstation or start new one
+          </Typography>
+        </Stack>
+      )}
     </Box>
   );
 };

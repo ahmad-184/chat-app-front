@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Dialog, Stack, Tabs, Tab, DialogContent } from "@mui/material";
+import { Dialog, Stack, Tabs, Tab, DialogContent, Box } from "@mui/material";
 
 import UserBox from "./UserBox";
 import FriendBox from "./FriendBox";
@@ -27,11 +27,6 @@ const UsersDialog = ({ open, handleClose }) => {
             value={activeTab}
             centered
             onChange={(e, newValue) => setActiveTab(newValue)}
-            // sx={{
-            //   "& .MuiTabs-flexContainer": {
-            //     justifyContent: "space-between",
-            //   },
-            // }}
           >
             {tabsData.map((item, index) => (
               <Tab
@@ -43,6 +38,7 @@ const UsersDialog = ({ open, handleClose }) => {
               />
             ))}
           </Tabs>
+          <Box width='100%'>
           {(() => {
             switch (activeTab) {
               case 0:
@@ -53,6 +49,7 @@ const UsersDialog = ({ open, handleClose }) => {
                 return <FriendRequestBox />;
             }
           })()}
+          </Box>
         </Stack>
       </DialogContent>
     </Dialog>

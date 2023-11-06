@@ -9,6 +9,7 @@ import { FONT_PRIMARY } from "../theme/typography";
 import { Box, IconButton } from "@mui/material";
 
 const overideSnakbarStyles = styled(MaterialDesignContent)(() => ({
+  fontWeight: "500",
   "&.notistack-MuiContent-success": {
     backgroundColor: "#229A16",
   },

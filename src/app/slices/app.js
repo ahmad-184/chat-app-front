@@ -16,6 +16,8 @@ const initialState = {
   users: [],
   friends: [],
   friend_requests: [],
+  chat_type: "idle",
+  room_id: ""
 };
 
 export const updateUsersThunk = createAsyncThunk(
@@ -64,6 +66,10 @@ const appSlice = createSlice({
     updateSidebarType(state, action) {
       state.right_sidebar.type = action.payload.type;
     },
+    selectConversation(state, action) {
+      state.chat_type = action.payload.chat_type
+      state.room_id = action.payload.room_id
+    }
   },
   extraReducers: {
     [updateUsersThunk.pending]: (state) => {
@@ -121,7 +127,7 @@ const appSlice = createSlice({
   },
 });
 
-export const { toggleSidebar, updateSidebarType } = appSlice.actions;
+export const { toggleSidebar, updateSidebarType, selectConversation } = appSlice.actions;
 
 export const getRightSidebar = (state) => state.app.right_sidebar;
 export const getUsers = (state) => state.app.users;
