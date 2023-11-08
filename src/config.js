@@ -27,6 +27,10 @@ export const NAVBAR = {
   DASHBOARD_ITEM_HORIZONTAL_HEIGHT: 32,
 };
 
+if (!window.localStorage.getItem("lang")) {
+  window.localStorage.setItem("lang", "en");
+}
+
 export const allLangs = (translate) => [
   {
     label: translate("English"),

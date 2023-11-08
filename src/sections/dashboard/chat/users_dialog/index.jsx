@@ -5,12 +5,10 @@ import UserBox from "./UserBox";
 import FriendBox from "./FriendBox";
 import FriendRequestBox from "./FriendRequestBox";
 
-const tabsData = ["Explore", "Friends", "Friend Requests"];
+const tabsData = ["Explore", "Friends", "Requests"];
 
 const UsersDialog = ({ open, handleClose }) => {
   const [activeTab, setActiveTab] = useState(0);
-
-  console.log(activeTab);
 
   return (
     <Dialog
@@ -38,17 +36,17 @@ const UsersDialog = ({ open, handleClose }) => {
               />
             ))}
           </Tabs>
-          <Box width='100%'>
-          {(() => {
-            switch (activeTab) {
-              case 0:
-                return <UserBox />;
-              case 1:
-                return <FriendBox />;
-              case 2:
-                return <FriendRequestBox />;
-            }
-          })()}
+          <Box width="100%">
+            {(() => {
+              switch (activeTab) {
+                case 0:
+                  return <UserBox />;
+                case 1:
+                  return <FriendBox />;
+                case 2:
+                  return <FriendRequestBox />;
+              }
+            })()}
           </Box>
         </Stack>
       </DialogContent>

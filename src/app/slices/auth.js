@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { enqueueSnackbar } from "notistack";
+import { socket } from "../../socket";
 
 import {
   forgotPasswordApi,
@@ -12,6 +13,7 @@ import {
 const initialState = {
   isLoggedIn: false,
   token: "",
+  user: {},
   userId: "",
   isLoading: false,
   email: "",
@@ -85,6 +87,7 @@ const authSlice = createSlice({
       state.isLoggedIn = false;
       state.token = "";
       state.userId = "";
+      state.user = {};
     },
     updateRegisterEmail(state, action) {
       if (action.payload) {
@@ -99,6 +102,7 @@ const authSlice = createSlice({
         state.isLoggedIn = true;
         state.token = data.token;
         state.userId = data.userId;
+        state.user = data.user;
         enqueueSnackbar(data.message, {
           variant: "success",
         });

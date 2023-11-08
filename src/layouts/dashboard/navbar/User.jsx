@@ -16,6 +16,8 @@ import { useDispatch } from "react-redux";
 import useSettings from "../../../hooks/useSettings";
 import { Profile_Menu } from "../../../data";
 import { logOut } from "../../../app/slices/auth";
+import { appLogout } from "../../../app/slices/app";
+import { socket } from "../../../socket";
 
 const ThemeSwitch = styled(Switch)(({ theme }) => ({
   width: 60,
@@ -82,6 +84,13 @@ const User = () => {
 
   const mode = theme.palette.mode;
 
+  const handleLeaveApp = async () => {
+    await dispatch(logOut());
+    await dispatch(appLogout());
+    await socket.disconnect();
+    navigate("/auth/login");
+  };
+
   return (
     <Stack
       direction="column"
@@ -123,7 +132,9 @@ const User = () => {
                     navigate("/settings");
                     break;
                   case 2:
-                    dispatch(logOut());
+                    handleLeaveApp().then(() => {
+                      window.location.reload();
+                    });
                     handleClose();
                   default:
                     handleClose();

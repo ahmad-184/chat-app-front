@@ -7,7 +7,7 @@ import { enqueueSnackbar } from "notistack";
 
 import Navbar from "./navbar";
 
-import { socket, socketConnect } from "../../socket";
+import { socket, socketConnect, disconnectSocket } from "../../socket";
 
 const DashboardLayout = () => {
   const { isLoggedIn, token, userId } = useSelector((state) => state.auth);
@@ -15,20 +15,20 @@ const DashboardLayout = () => {
 
   useEffect(() => {
     if (isLoggedIn) {
-      window.onload = function () {
-        console.log("loaded")
-        if (!window.location.hash) {
-          window.location = window.location + "#loaded";
-          window.location.reload();
-        }
-      }
+      // window.onload = function () {
+      //   console.log("loaded");
+      //   if (!window.location.hash) {
+      //     window.location = window.location + "#loaded";
+      //     window.location.reload();
+      //   }
+      // };
 
-      window.onload()
+      // window.onload();
 
       if (!socket) {
-        console.log("socket started")
         socketConnect(userId, token);
       }
+      socket.connect();
 
       socket.on("new_friend_request", async (data) => {
         enqueueSnackbar(data.message, { variant: "info" });
@@ -46,7 +46,12 @@ const DashboardLayout = () => {
         enqueueSnackbar(data.message, { variant: "success" });
       });
 
+      socket.on("rejected_request", async (data) => {
+        enqueueSnackbar(data.message, { variant: "error" });
+      });
+
       socket.on("error", (data) => {
+        console.group("error recived");
         enqueueSnackbar(data.message, { variant: "error" });
       });
 
@@ -59,8 +64,9 @@ const DashboardLayout = () => {
       socket.off("friend_request_sent");
       socket.off("accepted_friend_request");
       socket.off("rejected_friend_request");
-      socket.off("connect_error")
-      socket.off("error")
+      socket.off("get_test");
+      socket.off("connect_error");
+      socket.off("error");
     };
   }, [socket, isLoggedIn]);
 

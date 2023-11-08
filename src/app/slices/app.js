@@ -12,12 +12,15 @@ const initialState = {
     open: false,
     type: "CONTACT", // "CONTACT" , "SHARED" , "STARRED"
   },
-  loading: true,
+  loading: false,
   users: [],
   friends: [],
-  friend_requests: [],
+  friend_requests: {
+    forMe: [],
+    iSent: [],
+  },
   chat_type: "idle",
-  room_id: ""
+  room_id: "",
 };
 
 export const updateUsersThunk = createAsyncThunk(
@@ -60,6 +63,15 @@ const appSlice = createSlice({
   name: "app",
   initialState,
   reducers: {
+    logOut(state) {
+      state.users = [];
+      state.friends = [];
+      state.loading = false;
+      state.chat_type = "idle";
+      state.room_id = "";
+      state.friend_requests.forMe = [];
+      state.friend_requests.iSent = [];
+    },
     toggleSidebar(state) {
       state.right_sidebar.open = !state.right_sidebar.open;
     },
@@ -67,9 +79,9 @@ const appSlice = createSlice({
       state.right_sidebar.type = action.payload.type;
     },
     selectConversation(state, action) {
-      state.chat_type = action.payload.chat_type
-      state.room_id = action.payload.room_id
-    }
+      state.chat_type = action.payload.chat_type;
+      state.room_id = action.payload.room_id;
+    },
   },
   extraReducers: {
     [updateUsersThunk.pending]: (state) => {
@@ -114,7 +126,7 @@ const appSlice = createSlice({
       const { data, status } = action.payload.data;
       state.loading = false;
       if (status === 200) {
-        state.friend_requests = [...data];
+        state.friend_requests = { ...data };
       }
     },
     [updateFriendRequestsThunk.rejected]: (_, action) => {
@@ -127,11 +139,17 @@ const appSlice = createSlice({
   },
 });
 
-export const { toggleSidebar, updateSidebarType, selectConversation } = appSlice.actions;
+export const {
+  toggleSidebar,
+  updateSidebarType,
+  selectConversation,
+  logOut: appLogout,
+} = appSlice.actions;
 
 export const getRightSidebar = (state) => state.app.right_sidebar;
 export const getUsers = (state) => state.app.users;
 export const getFriends = (state) => state.app.friends;
 export const getFriendRequests = (state) => state.app.friend_requests;
+export const getAppLoading = (state) => state.app.loading;
 
 export default appSlice.reducer;

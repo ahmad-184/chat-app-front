@@ -21,6 +21,8 @@ export default function useLocales() {
   const handleChangeLanguage = (newlang) => {
     i18n.changeLanguage(newlang);
     onChangeDirectionByLang(newlang);
+
+    window.localStorage.setItem("lang", newlang);
   };
 
   return {
