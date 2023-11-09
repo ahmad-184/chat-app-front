@@ -16,8 +16,8 @@ const initialState = {
   users: [],
   friends: [],
   friend_requests: {
-    forMe: [],
-    iSent: [],
+    received: [],
+    sent: [],
   },
   chat_type: "idle",
   room_id: "",
@@ -69,8 +69,8 @@ const appSlice = createSlice({
       state.loading = false;
       state.chat_type = "idle";
       state.room_id = "";
-      state.friend_requests.forMe = [];
-      state.friend_requests.iSent = [];
+      state.friend_requests.received = [];
+      state.friend_requests.sent = [];
     },
     toggleSidebar(state) {
       state.right_sidebar.open = !state.right_sidebar.open;
@@ -81,6 +81,35 @@ const appSlice = createSlice({
     selectConversation(state, action) {
       state.chat_type = action.payload.chat_type;
       state.room_id = action.payload.room_id;
+    },
+    addFriend(state, { payload }) {
+      state.friends.push(payload);
+    },
+    updateRequest(state, { payload }) {
+      const { request, request_id, status } = payload;
+      if (request === "sent") {
+        const updatedRequestIndex = state.friend_requests.sent.findIndex(
+          ({ _id }) => _id === request_id
+        );
+        state.friend_requests.sent[updatedRequestIndex] = {
+          ...state.friend_requests.sent[updatedRequestIndex],
+          status,
+        };
+      }
+    },
+    removeUser(state, { payload }) {
+      console.log(payload);
+      state.users = state.users.filter(({ _id }) => _id !== payload);
+    },
+    removeReceivedRequest(state, { payload }) {
+      state.friend_requests.received = state.friend_requests.received.filter(
+        ({ _id }) => _id !== payload
+      );
+    },
+    removeSentRequest(state, { payload }) {
+      state.friend_requests.sent = state.friend_requests.sent.filter(
+        ({ _id }) => _id !== payload
+      );
     },
   },
   extraReducers: {
@@ -144,6 +173,14 @@ export const {
   updateSidebarType,
   selectConversation,
   logOut: appLogout,
+  addFriend,
+  removeReceivedRequest,
+  removeSentRequest,
+  updateRequest,
+  removeUser,
+  addRecievedFriendRequest,
+  addSentFriendRequest,
+  updateFriendRequests,
 } = appSlice.actions;
 
 export const getRightSidebar = (state) => state.app.right_sidebar;

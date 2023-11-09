@@ -11,11 +11,14 @@ import {
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { PaperPlaneRight } from "phosphor-react";
+import { enqueueSnackbar } from "notistack";
 
 import {
   updateUsersThunk,
   getUsers,
   getAppLoading,
+  updateFriendRequests,
+  updateFriendRequestsThunk,
 } from "../../../../app/slices/app";
 import { getToken, getUserId } from "../../../../app/slices/auth";
 import { socket } from "../../../../socket";
@@ -34,7 +37,15 @@ const UserBox = () => {
   }, []);
 
   const handleSendFriendRequest = (user_id) => {
-    socket.emit("friend_request", { to: user_id, from: userId });
+    socket.emit(
+      "friend_request",
+      { to: user_id, from: userId },
+      async (message) => {
+        await dispatch(updateFriendRequestsThunk({ token })).then(() =>
+          enqueueSnackbar(message, { variant: "success" })
+        );
+      }
+    );
   };
 
   if (!users.length && loading) {
@@ -119,7 +130,7 @@ const UserBox = () => {
               <Box display="flex" flexGrow={1} justifyContent="end">
                 <Button
                   variant="text"
-                  size="medium"
+                  color="info"
                   onClick={() => handleSendFriendRequest(item._id)}
                   endIcon={<PaperPlaneRight size={20} />}
                 >

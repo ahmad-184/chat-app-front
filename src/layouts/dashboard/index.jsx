@@ -1,63 +1,130 @@
 import { useEffect } from "react";
 import { Outlet } from "react-router-dom";
 import { Stack } from "@mui/material";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { enqueueSnackbar } from "notistack";
 
 import Navbar from "./navbar";
 
-import { socket, socketConnect, disconnectSocket } from "../../socket";
+import {
+  addFriend,
+  removeSentRequest,
+  removeReceivedRequest,
+  updateRequest,
+  removeUser,
+  updateFriendRequestsThunk,
+  updateFriendsThunk,
+  updateUsersThunk,
+} from "../../app/slices/app";
+
+import { socket, socketConnect } from "../../socket";
 
 const DashboardLayout = () => {
   const { isLoggedIn, token, userId } = useSelector((state) => state.auth);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    if (isLoggedIn) {
-      // window.onload = function () {
-      //   console.log("loaded");
-      //   if (!window.location.hash) {
-      //     window.location = window.location + "#loaded";
-      //     window.location.reload();
-      //   }
-      // };
+    const UpdateUsersData = async () => {
+      await dispatch(updateUsersThunk({ token }));
+      await dispatch(updateFriendsThunk({ token }));
+      await dispatch(updateFriendRequestsThunk({ token }));
+    };
 
-      // window.onload();
+    if (isLoggedIn) {
+      UpdateUsersData();
 
       if (!socket) {
         socketConnect(userId, token);
       }
       socket.connect();
 
-      socket.on("new_friend_request", async (data) => {
-        enqueueSnackbar(data.message, { variant: "info" });
+      socket.on("new_friend_request", async ({ message }) => {
+        await dispatch(updateFriendRequestsThunk({ token })).then(() =>
+          enqueueSnackbar(message, { variant: "info" })
+        );
       });
 
-      socket.on("friend_request_sent", async (data) => {
-        enqueueSnackbar(data.message, { variant: "info" });
+      socket.on("request_not_exist", async ({ message, request_id }) => {
+        dispatch(removeReceivedRequest(request_id));
+        enqueueSnackbar(message, { variant: "info" });
       });
 
-      socket.on("accepted_friend_request", async (data) => {
-        enqueueSnackbar(data.message, { variant: "success" });
+      socket.on("request_accepted", async ({ message }) => {
+        await dispatch(updateFriendsThunk({ token })).then(() => {
+          enqueueSnackbar(message, { variant: "success" });
+        });
+        await dispatch(updateFriendRequestsThunk({ token }));
       });
 
-      socket.on("rejected_friend_request", async (data) => {
-        enqueueSnackbar(data.message, { variant: "success" });
+      socket.on(
+        "your_friend_request_accepted",
+        async ({ message, request_id, friend }) => {
+          enqueueSnackbar(message, { variant: "success" });
+          dispatch(
+            updateRequest({ request: "sent", request_id, status: "Accepted" })
+          );
+          dispatch(addFriend(friend));
+          dispatch(removeUser(friend._id));
+        }
+      );
+
+      socket.on("your_request_rejected", async ({ message, request_id }) => {
+        enqueueSnackbar(message, { variant: "error" });
+        dispatch(
+          updateRequest({ request: "sent", request_id, status: "Rejected" })
+        );
       });
 
-      socket.on("rejected_request", async (data) => {
-        enqueueSnackbar(data.message, { variant: "error" });
+      socket.on("request_rejected", async ({ message, request_id }) => {
+        enqueueSnackbar(message, { variant: "success" });
+        dispatch(removeReceivedRequest(request_id));
+      });
+
+      socket.on("request_deleted", async ({ message, request_id }) => {
+        dispatch(removeSentRequest(request_id));
+        enqueueSnackbar(message, { variant: "success" });
       });
 
       socket.on("error", (data) => {
-        console.group("error recived");
         enqueueSnackbar(data.message, { variant: "error" });
       });
 
-      socket.on("connect_error", (err) => {
-        enqueueSnackbar(err.message, { variant: "error" });
+      socket.on("connect_error", () => {
+        enqueueSnackbar("Offline", {
+          variant: "error",
+        });
       });
+      socket.on("reconnect", () => {
+        enqueueSnackbar("Online", {
+          variant: "success",
+        });
+      });
+      // socket.on("connected", () => {
+      //   enqueueSnackbar("Online", {
+      //     variant: "success",
+      //   });
+      // });
+
+      // socket.on("reconnect", (attempt) => {
+      //   console, log(attempt);
+      //   enqueueSnackbar("Network connected successfuly", {
+      //     variant: "success",
+      //   });
+      // });
+
+      // socket.on("reconnect_error", (error) => {
+      //   enqueueSnackbar("We can not connect to network", {
+      //     variant: "error",
+      //   });
+      // });
+
+      // socket.on("reconnect_failed", () => {
+      //   enqueueSnackbar("We can not connect to network", {
+      //     variant: "error",
+      //   });
+      // });
     }
     return () => {
       socket.off("new_friend_request");
@@ -67,6 +134,17 @@ const DashboardLayout = () => {
       socket.off("get_test");
       socket.off("connect_error");
       socket.off("error");
+      // socket.off("reconnect_failed");
+      // socket.off("reconnect_error");
+      socket.off("reconnect_attempt");
+      socket.off("reconnect");
+      socket.off("request_deleted");
+      socket.off("request_rejected");
+      socket.off("your_request_rejected");
+      socket.off("your_friend_request_accepted");
+      socket.off("request_accepted");
+      socket.off("request_not_exist");
+      socket.off("request_not_exist");
     };
   }, [socket, isLoggedIn]);
 

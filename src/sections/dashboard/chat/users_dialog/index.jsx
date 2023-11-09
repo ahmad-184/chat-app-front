@@ -3,7 +3,7 @@ import { Dialog, Stack, Tabs, Tab, DialogContent, Box } from "@mui/material";
 
 import UserBox from "./UserBox";
 import FriendBox from "./FriendBox";
-import FriendRequestBox from "./FriendRequestBox";
+import RequestsBox from "./RequestsBox";
 
 const tabsData = ["Explore", "Friends", "Requests"];
 
@@ -44,7 +44,7 @@ const UsersDialog = ({ open, handleClose }) => {
                 case 1:
                   return <FriendBox />;
                 case 2:
-                  return <FriendRequestBox />;
+                  return <RequestsBox />;
               }
             })()}
           </Box>
