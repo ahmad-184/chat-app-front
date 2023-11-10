@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { Dialog, Stack, Tabs, Tab, DialogContent, Box } from "@mui/material";
 
-import UserBox from "./UserBox";
-import FriendBox from "./FriendBox";
-import RequestsBox from "./RequestsBox";
+import UserBox from "./user_box";
+import FriendBox from "./friends_box";
+import RequestsBox from "./requests_box";
 
 const tabsData = ["Explore", "Friends", "Requests"];
 
@@ -36,7 +36,7 @@ const UsersDialog = ({ open, handleClose }) => {
               />
             ))}
           </Tabs>
-          <Box width="100%">
+          <Box width="100%" height={"fit-content"}>
             {(() => {
               switch (activeTab) {
                 case 0:

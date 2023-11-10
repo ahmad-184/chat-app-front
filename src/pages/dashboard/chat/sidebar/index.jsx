@@ -95,17 +95,17 @@ const Sidebar = () => {
                 <Typography variant="subtitle2" sx={{ color: "grey.500" }}>
                   Pinned
                 </Typography>
-                {ChatList.filter((item) => item.pinned).map((item) => (
+                {/* {ChatList.filter((item) => item.pinned).map((item) => (
                   <UserChatList key={item.id} data={item} />
-                ))}
+                ))} */}
               </Stack>
               <Stack direction="column" spacing={2}>
                 <Typography variant="subtitle2" sx={{ color: "grey.500" }}>
                   All chats
                 </Typography>
-                {ChatList.filter((item) => !item.pinned).map((item) => (
+                {/* {ChatList.filter((item) => !item.pinned).map((item) => (
                   <UserChatList key={item.id} data={item} />
-                ))}
+                ))} */}
               </Stack>
             </>
           )}

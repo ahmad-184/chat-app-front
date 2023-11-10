@@ -51,22 +51,15 @@ const DashboardLayout = () => {
         enqueueSnackbar(message, { variant: "info" });
       });
 
-      socket.on("request_accepted", async ({ message }) => {
-        await dispatch(updateFriendsThunk({ token })).then(() => {
-          enqueueSnackbar(message, { variant: "success" });
-        });
-        await dispatch(updateFriendRequestsThunk({ token }));
-      });
-
       socket.on(
         "your_friend_request_accepted",
         async ({ message, request_id, friend }) => {
-          enqueueSnackbar(message, { variant: "success" });
           dispatch(
             updateRequest({ request: "sent", request_id, status: "Accepted" })
           );
           dispatch(addFriend(friend));
           dispatch(removeUser(friend._id));
+          enqueueSnackbar(message, { variant: "success" });
         }
       );
 
@@ -75,16 +68,6 @@ const DashboardLayout = () => {
         dispatch(
           updateRequest({ request: "sent", request_id, status: "Rejected" })
         );
-      });
-
-      socket.on("request_rejected", async ({ message, request_id }) => {
-        enqueueSnackbar(message, { variant: "success" });
-        dispatch(removeReceivedRequest(request_id));
-      });
-
-      socket.on("request_deleted", async ({ message, request_id }) => {
-        dispatch(removeSentRequest(request_id));
-        enqueueSnackbar(message, { variant: "success" });
       });
 
       socket.on("error", (data) => {
@@ -96,35 +79,13 @@ const DashboardLayout = () => {
           variant: "error",
         });
       });
-      socket.on("reconnect", () => {
-        enqueueSnackbar("Online", {
+
+      socket.on("reconnect", (attempt) => {
+        console, log(attempt);
+        enqueueSnackbar("Network connected successfuly", {
           variant: "success",
         });
       });
-      // socket.on("connected", () => {
-      //   enqueueSnackbar("Online", {
-      //     variant: "success",
-      //   });
-      // });
-
-      // socket.on("reconnect", (attempt) => {
-      //   console, log(attempt);
-      //   enqueueSnackbar("Network connected successfuly", {
-      //     variant: "success",
-      //   });
-      // });
-
-      // socket.on("reconnect_error", (error) => {
-      //   enqueueSnackbar("We can not connect to network", {
-      //     variant: "error",
-      //   });
-      // });
-
-      // socket.on("reconnect_failed", () => {
-      //   enqueueSnackbar("We can not connect to network", {
-      //     variant: "error",
-      //   });
-      // });
     }
     return () => {
       socket.off("new_friend_request");
@@ -134,8 +95,6 @@ const DashboardLayout = () => {
       socket.off("get_test");
       socket.off("connect_error");
       socket.off("error");
-      // socket.off("reconnect_failed");
-      // socket.off("reconnect_error");
       socket.off("reconnect_attempt");
       socket.off("reconnect");
       socket.off("request_deleted");

@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   Stack,
   Box,
@@ -7,23 +7,21 @@ import {
   useTheme,
   alpha,
   IconButton,
-  Skeleton,
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { ChatTeardropDots } from "phosphor-react";
 
-import {
-  updateFriendsThunk,
-  getFriends,
-  getAppLoading,
-} from "../../../../app/slices/app";
-import { getToken } from "../../../../app/slices/auth";
+import { updateFriendsThunk, getFriends } from "../../../../../app/slices/app";
+import { getToken } from "../../../../../app/slices/auth";
+
+import { socket } from "../../../../../socket";
 
 const FriendBox = () => {
   const friends = useSelector(getFriends);
   const token = useSelector(getToken);
   const dispatch = useDispatch();
-  const loading = useSelector(getAppLoading);
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const theme = useTheme();
 
@@ -31,56 +29,7 @@ const FriendBox = () => {
     dispatch(updateFriendsThunk({ token }));
   }, []);
 
-  if (!friends.length && loading) {
-    return (
-      <Stack px={1} py={1} spacing={1.5} width="100%">
-        {[...Array(3)].map((_, index) => (
-          <Box
-            sx={{
-              p: 1,
-              borderRadius: 1,
-              cursor: "pointer",
-              backgroundColor: "transparent",
-              border: "1px solid",
-              borderColor:
-                theme.palette.mode === "light" ? "grey.200" : "grey.700",
-            }}
-            key={index}
-          >
-            <Stack direction="row" spacing={1} alignItems="center">
-              <Box p={0.5}>
-                <Skeleton
-                  variant="circular"
-                  animation="wave"
-                  width={45}
-                  height={45}
-                />
-              </Box>
-              <Stack sx={{ maxWidth: "50%" }}>
-                <Skeleton animation="wave" width={"80px"} height={"30px"} />
-                <Skeleton animation="wave" width={"130px"} height={"30px"} />
-              </Stack>
-              <Stack
-                display="flex"
-                flexGrow={1}
-                justifyContent="end"
-                spacing={1}
-                direction="row"
-                alignItems="center"
-              >
-                <Skeleton
-                  variant="circular"
-                  animation="wave"
-                  width={35}
-                  height={35}
-                />
-              </Stack>
-            </Stack>
-          </Box>
-        ))}
-      </Stack>
-    );
-  }
+  const handleStartConversation = async () => {};
 
   return (
     <Stack px={1} py={1} spacing={1.5} width="100%">
@@ -115,7 +64,13 @@ const FriendBox = () => {
                 </Typography>
               </Stack>
               <Box display="flex" flexGrow={1} justifyContent="end">
-                <IconButton>
+                <IconButton
+                  disabled={isLoading}
+                  onClick={() => {
+                    handleStartConversation(item._id);
+                    setIsLoading(true);
+                  }}
+                >
                   <ChatTeardropDots size={33} />
                 </IconButton>
               </Box>
