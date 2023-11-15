@@ -41,7 +41,9 @@ const Sidebar = () => {
           justifyContent="space-between"
           alignItems="center"
         >
-          <Typography variant="h3">Groups</Typography>
+          <Typography variant="h4" fontSize={"26px !important"}>
+            Groups
+          </Typography>
         </Stack>
         <SearchInput onChange={handleSearch} />
         <Stack

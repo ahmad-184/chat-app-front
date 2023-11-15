@@ -1,13 +1,19 @@
-import { Stack, useTheme } from "@mui/material";
-import { useSelector } from "react-redux";
+import { Drawer, useTheme } from "@mui/material";
+import { useSelector, useDispatch } from "react-redux";
 
 import MainContent from "./main-content";
 import SharedData from "./shared_data";
 import StarredMessages from "./starred_messages";
-import { getRightSidebar } from "../../../../app/slices/app";
+import { getRightSidebar, toggleSidebar } from "../../../../app/slices/app";
+
+import useResponsive from "../../../../hooks/useResponsive";
 
 const Contact = () => {
   const { open, type } = useSelector(getRightSidebar);
+  const dispatch = useDispatch();
+
+  const isSizeLg = useResponsive("down", "xl");
+  console.log(isSizeLg);
 
   const theme = useTheme();
   const mode = theme.palette.mode;
@@ -15,39 +21,31 @@ const Contact = () => {
   const isSidebarOpen = Boolean(open);
 
   return (
-    <Stack
-      width={{
-        xs: "100%",
-        sm: "320px",
+    <Drawer
+      anchor="right"
+      open={isSidebarOpen}
+      variant={isSizeLg ? "temporary" : "persistent"}
+      onClose={() => {
+        dispatch(toggleSidebar());
+      }}
+      sx={{
+        "& .MuiBackdrop-root": {
+          backgroundColor: "rgba(0,0,0,0)",
+          backgroundImage: "none",
+        },
+        "& .MuiDrawer-paper": {
+          width: {
+            xs: "100%",
+            sm: "320px",
+          },
+          backgroundImage: "none",
+          backgroundColor: mode === "light" ? "#F8FAFF" : "#1A232D",
+        },
+        "& .MuiPaper-root": {
+          boxShadow: `${theme.shadows[2]} !important`,
+        },
       }}
       height="100%"
-      sx={{
-        backgroundColor: mode === "light" ? "#F8FAFF" : "#1A232D",
-        ...(isSidebarOpen
-          ? {
-              display: "flex",
-            }
-          : {
-              display: "none",
-            }),
-        position: {
-          xs: "fixed",
-          xl: "relative",
-        },
-        zIndex: {
-          xs: theme.zIndex.drawer,
-          xl: "0",
-        },
-        top: 0,
-        right: 0,
-        bottom: 0,
-        boxShadow: {
-          xs: "none",
-          sm: theme.shadows[3],
-          xl: theme.shadows[2],
-        },
-        p: 0,
-      }}
     >
       {(() => {
         switch (type) {
@@ -61,7 +59,7 @@ const Contact = () => {
             return null;
         }
       })()}
-    </Stack>
+    </Drawer>
   );
 };
 

@@ -6,7 +6,6 @@ import {
   alpha,
   IconButton,
   Avatar,
-  Divider,
   Tooltip,
 } from "@mui/material";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -65,37 +64,43 @@ const Navbar = () => {
                 />
               </Box>
             </Stack>
-            <Stack direction="column" spacing={2}>
-              {Nav_Buttons.map((item) => (
-                <Fragment key={item.index}>
-                  <Tooltip title={item.title} placement="right">
-                    <Box
+          </Stack>
+          <Stack direction="column" spacing={2} alignItems="center">
+            {Nav_Buttons.map((item) => (
+              <Fragment key={item.index}>
+                <Tooltip title={item.title} placement="right">
+                  <Box
+                    sx={{
+                      p: 0.5,
+                      borderRadius: 1.5,
+                      backgroundColor:
+                        item.to === pathname &&
+                        alpha(theme.palette.primary.main, 0.2),
+                      cursor: "pointer",
+                    }}
+                    onClick={() => navigate(item.to)}
+                  >
+                    <IconButton
                       sx={{
-                        p: 0.5,
-                        borderRadius: 1.5,
-                        backgroundColor: item.to === pathname && "primary.main",
-                        cursor: "pointer",
+                        ...(item.to === pathname
+                          ? {
+                              color:
+                                mode === "light"
+                                  ? "primary.dark"
+                                  : "primary.lighter",
+                            }
+                          : {
+                              color: mode === "light" ? "grey.600" : "grey.500",
+                            }),
                       }}
-                      onClick={() => navigate(item.to)}
+                      disableRipple
                     >
-                      <IconButton
-                        sx={{
-                          color:
-                            item.to === pathname
-                              ? "white"
-                              : mode === "light"
-                              ? "black"
-                              : "white",
-                        }}
-                      >
-                        {item.icon}
-                      </IconButton>
-                    </Box>
-                  </Tooltip>
-                  {item.index === 2 && <Divider sx={{ pt: 1 }} />}
-                </Fragment>
-              ))}
-            </Stack>
+                      {item.icon}
+                    </IconButton>
+                  </Box>
+                </Tooltip>
+              </Fragment>
+            ))}
           </Stack>
           <User />
         </Stack>

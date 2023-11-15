@@ -55,17 +55,9 @@ const Actions = [
   },
 ];
 
-const Input = () => {
+const Input = ({ textInput, handleChangeTextInput, handleAddEmoji }) => {
   const theme = useTheme();
-
-  const [anchorElActions, setAnchorElActions] = useState(null);
-  const openActions = Boolean(anchorElActions);
-  const handleClickOpenActions = (event) => {
-    setAnchorElActions(event.currentTarget);
-  };
-  const handleCloseActions = () => {
-    setAnchorElActions(null);
-  };
+  const mode = theme.palette.mode;
 
   const [anchorElPicker, setAnchorElPicker] = useState(null);
   const openPicker = Boolean(anchorElPicker);
@@ -78,53 +70,6 @@ const Input = () => {
 
   return (
     <Box width="100%" position="relative">
-      <Menu
-        id="basic-menu-1"
-        anchorEl={anchorElActions}
-        open={openActions}
-        onClose={handleCloseActions}
-        MenuListProps={{
-          "aria-labelledby": "basic-button-1",
-        }}
-        sx={{
-          "& .MuiPaper-root": {
-            backgroundColor: "transparent !important",
-            boxShadow: "none !important",
-            transform: openActions && "translateY(-55px) !important",
-          },
-        }}
-        anchorOrigin={{
-          vertical: "top",
-          horizontal: "center",
-        }}
-        transformOrigin={{
-          vertical: "top",
-          horizontal: "center",
-        }}
-      >
-        <Stack
-          direction="column"
-          spacing={2}
-          sx={{
-            position: "relative",
-          }}
-        >
-          {Actions.map((item, index) => (
-            <Tooltip title={item.title} placement="right" key={index}>
-              <Fab
-                sx={{
-                  backgroundColor: item.color,
-                  p: 1,
-                }}
-                onClick={handleCloseActions}
-              >
-                {item.icon}
-              </Fab>
-            </Tooltip>
-          ))}
-        </Stack>
-      </Menu>
-
       <TextField
         sx={{
           width: "100%",
@@ -141,27 +86,29 @@ const Input = () => {
             mt: "0px !important",
           },
           "& .MuiInputBase-root": {
-            borderRadius: 1.2,
+            borderRadius: 2,
           },
+        }}
+        value={textInput}
+        onChange={(event) => {
+          handleChangeTextInput(event.target.value);
         }}
         InputProps={{
           disableUnderline: true,
-          startAdornment: (
-            <InputAdornment position="start">
-              <IconButton onClick={handleClickOpenActions}>
-                <LinkSimple size={27} />
-              </IconButton>
-            </InputAdornment>
-          ),
           endAdornment: (
             <InputAdornment position="start">
-              <IconButton onClick={handleClickOpenPicker}>
-                <Smiley size={27} />
+              <IconButton
+                sx={{
+                  color: mode === "light" ? "primary.light" : "primary.lighter",
+                }}
+                onClick={handleClickOpenPicker}
+              >
+                <Smiley size={25} />
               </IconButton>
             </InputAdornment>
           ),
         }}
-        placeholder="Write a message..."
+        placeholder="Enter message..."
         variant="filled"
       />
       <Menu
@@ -181,7 +128,9 @@ const Input = () => {
       >
         <Picker
           data={data}
-          onEmojiSelect={console.log}
+          onEmojiSelect={(data) => {
+            handleAddEmoji(data.native);
+          }}
           theme={theme.palette.mode}
         />
       </Menu>

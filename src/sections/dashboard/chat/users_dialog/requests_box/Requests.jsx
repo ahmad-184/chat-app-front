@@ -12,6 +12,8 @@ import {
 } from "@mui/material";
 import { Trash, Check } from "phosphor-react";
 
+import createAvatar from "../../../../../utils/createAvatar";
+
 export const ReceivedFriendRequest = ({
   item: { sender, _id },
   handleAcceptFriendRequest,
@@ -20,6 +22,8 @@ export const ReceivedFriendRequest = ({
   const [isLoading, setIsLoading] = useState(false);
   const theme = useTheme();
   const mode = theme.palette.mode;
+
+  const avatar = createAvatar(sender.firstname);
 
   return (
     <Box
@@ -36,7 +40,9 @@ export const ReceivedFriendRequest = ({
           <Avatar
             alt={`${sender.firstname} ${sender.lastname}`}
             src={sender.avatar}
-          />
+          >
+            {avatar.name}
+          </Avatar>
         </Box>
         <Stack sx={{ minWidth: 0, maxWidth: "50%" }}>
           <Typography
@@ -92,6 +98,8 @@ export const RequestsStatus = ({
   const theme = useTheme();
   const mode = theme.palette.mode;
 
+  const avatar = createAvatar(reciver.firstname);
+
   return (
     <Box
       sx={{
@@ -107,7 +115,9 @@ export const RequestsStatus = ({
           <Avatar
             alt={`${reciver.firstname} ${reciver.lastname}`}
             src={reciver.avatar}
-          />
+          >
+            {avatar.name}
+          </Avatar>
         </Box>
         <Stack sx={{ minWidth: 0, maxWidth: "50%" }}>
           <Typography

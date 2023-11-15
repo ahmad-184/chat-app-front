@@ -11,10 +11,13 @@ import SnakbarProvider from "./components/SnakbarProvider";
 import "./i18next";
 // simplebar-react styles
 import "simplebar-react/dist/simplebar.min.css";
+// swiper css file
+import "swiper/css";
+import "swiper/css/free-mode";
 
 function App() {
   return (
-    <Suspense>
+    <Suspense fallback={"loading..."}>
       <ThemeProvider>
         <ThemeSettings>
           <SnakbarProvider />

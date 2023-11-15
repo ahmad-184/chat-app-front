@@ -1,16 +1,5 @@
 import { useEffect } from "react";
-import {
-  Stack,
-  Box,
-  Typography,
-  Avatar,
-  useTheme,
-  Button,
-  alpha,
-  Chip,
-  IconButton,
-  Divider,
-} from "@mui/material";
+import { Stack, Box, Typography, useTheme, Divider } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { Trash, Check } from "phosphor-react";
 
@@ -28,6 +17,11 @@ import { socket } from "../../../../../socket";
 
 import { ReceivedFriendRequest, RequestsStatus } from "./Requests";
 import { enqueueSnackbar } from "notistack";
+
+import {
+  MotionContainer,
+  MotionViewport,
+} from "../../../../../components/animate";
 
 const FriendsBox = () => {
   const { received, sent } = useSelector(getFriendRequests);

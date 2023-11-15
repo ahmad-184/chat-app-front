@@ -111,6 +111,16 @@ const appSlice = createSlice({
         ({ _id }) => _id !== payload
       );
     },
+    updateFriendsStatus(state, action) {
+      const { friend_id, friend_status } = action.payload;
+      const conversationIndex = state.friends.findIndex(
+        (item) => item._id === friend_id
+      );
+      state.friends[conversationIndex] = {
+        ...state.friends[conversationIndex],
+        status: friend_status,
+      };
+    },
   },
   extraReducers: {
     [updateUsersThunk.pending]: (state) => {
@@ -123,7 +133,7 @@ const appSlice = createSlice({
         state.users = [...data];
       }
     },
-    [updateUsersThunk.rejected]: (_, action) => {
+    [updateUsersThunk.rejected]: (state, action) => {
       const { error, message } = action.payload;
       state.loading = false;
       if (error) {
@@ -141,7 +151,7 @@ const appSlice = createSlice({
         state.friends = [...data];
       }
     },
-    [updateFriendsThunk.rejected]: (_, action) => {
+    [updateFriendsThunk.rejected]: (state, action) => {
       const { error, message } = action.payload;
       state.loading = false;
       if (error) {
@@ -158,7 +168,7 @@ const appSlice = createSlice({
         state.friend_requests = { ...data };
       }
     },
-    [updateFriendRequestsThunk.rejected]: (_, action) => {
+    [updateFriendRequestsThunk.rejected]: (state, action) => {
       const { error, message } = action.payload;
       state.loading = false;
       if (error) {
@@ -181,6 +191,7 @@ export const {
   addRecievedFriendRequest,
   addSentFriendRequest,
   updateFriendRequests,
+  updateFriendsStatus,
 } = appSlice.actions;
 
 export const getRightSidebar = (state) => state.app.right_sidebar;

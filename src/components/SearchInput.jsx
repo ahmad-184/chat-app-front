@@ -1,4 +1,4 @@
-import { Stack, Box, useTheme, InputBase, alpha } from "@mui/material";
+import { Box, useTheme, InputBase } from "@mui/material";
 import { MagnifyingGlass } from "phosphor-react";
 
 const SearchInput = ({ ...props }) => {
@@ -8,9 +8,8 @@ const SearchInput = ({ ...props }) => {
   return (
     <Box
       sx={{
-        backgroundColor:
-          mode === "light" ? "#EAF2FE" : alpha(theme.palette.grey[700], 0.3),
-        borderRadius: 2.3,
+        backgroundColor: mode === "light" ? "grey.300" : "grey.900",
+        borderRadius: 2,
         display: "flex",
         flexDirection: "row",
         py: 1,
@@ -22,8 +21,8 @@ const SearchInput = ({ ...props }) => {
     >
       <Box
         sx={{
-          lineHeight: "15px",
-          color: mode === "light" ? "#709CE6" : theme.palette.grey[500],
+          lineHeight: "16px",
+          color: mode === "light" ? "grey.600" : "grey.500",
         }}
       >
         <MagnifyingGlass size={24} weight="regular" />
@@ -33,10 +32,10 @@ const SearchInput = ({ ...props }) => {
         {...props}
         sx={{
           width: "100%",
-          color: mode === "light" ? "#709CE6" : theme.palette.grey[400],
+          color: mode === "light" ? "grey.700" : theme.palette.grey[400],
           fontWeight: "500",
           "& .MuiInputBase-input::placeholder": {
-            color: mode === "light" ? "#709CE6" : theme.palette.grey[600],
+            color: mode === "light" ? "grey.600" : theme.palette.grey[600],
           },
         }}
       />

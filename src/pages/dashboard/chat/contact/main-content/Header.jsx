@@ -1,5 +1,5 @@
 import { Stack, Typography, IconButton, useTheme } from "@mui/material";
-import { XCircle } from "phosphor-react";
+import { X } from "phosphor-react";
 import { useDispatch } from "react-redux";
 
 import { toggleSidebar } from "../../../../../app/slices/app";
@@ -15,18 +15,26 @@ const Header = () => {
 
   return (
     <HeaderContainer>
-      <IconButton onClick={handleToggleSidebar}>
-        <XCircle size={25} />
-      </IconButton>
-      <Typography
-        variant="body1"
-        fontWeight={mode === "light" ? "500" : "400"}
-        sx={{
-          color: mode === "light" ? "grey.700" : "grey.200",
-        }}
+      <Stack
+        height="100%"
+        direction="row"
+        justifyContent="space-between"
+        width="100%"
+        alignItems="center"
       >
-        Contact info
-      </Typography>
+        <Typography
+          variant="h6"
+          fontWeight={mode === "light" ? "500" : "400"}
+          sx={{
+            color: mode === "light" ? "grey.700" : "grey.200",
+          }}
+        >
+          Contact info
+        </Typography>
+        <IconButton onClick={handleToggleSidebar}>
+          <X size={23} weight="bold" />
+        </IconButton>
+      </Stack>
     </HeaderContainer>
   );
 };

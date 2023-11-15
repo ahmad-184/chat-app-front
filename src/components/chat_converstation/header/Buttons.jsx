@@ -5,19 +5,15 @@ import { VideoCamera, Phone, MagnifyingGlass, CaretDown } from "phosphor-react";
 const icons = [
   {
     id: 0,
-    icon: <VideoCamera />,
+    icon: <MagnifyingGlass fontSize={23} weight="regular" />,
   },
   {
     id: 1,
-    icon: <Phone />,
+    icon: <VideoCamera fontSize={23} weight="regular" />,
   },
   {
     id: 2,
-    icon: <MagnifyingGlass />,
-  },
-  {
-    id: 3,
-    icon: <CaretDown />,
+    icon: <Phone fontSize={23} weight="regular" />,
   },
 ];
 
@@ -38,18 +34,11 @@ const Buttons = () => {
         <Fragment key={item.id}>
           <Box>
             <IconButton
-              sx={{ color: mode === "light" ? "grey.600" : "grey.200" }}
+              sx={{ color: mode === "light" ? "grey.700" : "grey.300" }}
             >
               {item.icon}
             </IconButton>
           </Box>
-          {item.id === 2 && (
-            <Divider
-              orientation="vertical"
-              variant="fullWidth"
-              sx={{ height: "auto" }}
-            />
-          )}
         </Fragment>
       ))}
     </Stack>

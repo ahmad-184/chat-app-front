@@ -21,17 +21,17 @@ const BlockDiagram = ({ open, handleClose }) => {
         onClose={handleClose}
         aria-describedby="alert-dialog-slide-description"
       >
-        <DialogTitle>Block Contact</DialogTitle>
-        <DialogContent>
+        <DialogTitle sx={{ pb: 0.5 }}>Block Contact</DialogTitle>
+        <DialogContent sx={{ pb: 0.5 }}>
           <DialogContentText id="alert-dialog-slide-description">
             Are you sure you want to block this Contact?
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button color="error" onClick={handleClose}>
+          <Button color="inherit" onClick={handleClose}>
             Cancel
           </Button>
-          <Button variant="contained" onClick={handleClose}>
+          <Button variant="outlined" color="error" onClick={handleClose}>
             Yes
           </Button>
         </DialogActions>

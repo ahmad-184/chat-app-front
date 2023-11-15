@@ -27,25 +27,25 @@ const Profile_Menu = [
 const Nav_Buttons = [
   {
     index: 0,
-    icon: <ChatCircleDots />,
+    icon: <ChatCircleDots weight="regular" />,
     to: "/app",
     title: "Chats",
   },
   {
     index: 1,
-    icon: <Users />,
+    icon: <Users weight="regular" />,
     to: "/groups",
     title: "Groups",
   },
   {
     index: 2,
-    icon: <Phone />,
+    icon: <Phone weight="regular" />,
     to: "/calls",
     title: "Calls",
   },
   {
     index: 3,
-    icon: <Gear />,
+    icon: <Gear weight="regular" />,
     to: "/settings",
     title: "Settings",
   },

@@ -105,10 +105,17 @@ const SettingsPanel = () => {
         <SimpleBarStyle style={{ width: "100%", height: "100%" }}>
           <Stack direction="column" spacing={4} p={3} pb={2} width="100%">
             <Stack direction="row" spacing={3} width="100%" alignItems="center">
-              <IconButton sx={{ color: mode === "light" && "grey.700" }}>
+              <IconButton
+                sx={{ color: mode === "light" && "grey.700" }}
+                onClick={() => {
+                  window.history.back();
+                }}
+              >
                 <CaretLeft size={27} weight="regular" />
               </IconButton>
-              <Typography variant="h3">Settings</Typography>
+              <Typography variant="h4" fontSize={"26px !important"}>
+                Settings
+              </Typography>
             </Stack>
             <Stack direction="row" spacing={3} alignItems="center">
               <Avatar

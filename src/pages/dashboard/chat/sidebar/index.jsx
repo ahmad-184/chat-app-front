@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Box,
   Typography,
@@ -10,20 +10,33 @@ import {
 } from "@mui/material";
 import { CircleDashed, ArchiveBox, Users } from "phosphor-react";
 import * as _ from "lodash";
+import { useDispatch, useSelector } from "react-redux";
 
 import { SimpleBarStyle } from "../../../../components/Scrollbar";
 import UserChatList from "./UserChatList";
+import OnlineUsers from "./OnlineUsers";
 import SearchInput from "../../../../components/SearchInput";
 import SidebarContainer from "../../SidebarContainer";
-import { ChatList } from "../../../../data";
 import UsersDialog from "../../../../sections/dashboard/chat/users_dialog";
+
+import {
+  getChatConversations,
+  updateChatConversations,
+} from "../../../../app/slices/chat_conversation";
+import { getUserId } from "../../../../app/slices/auth";
+
+import { socket } from "../../../../socket";
 
 const Sidebar = () => {
   const theme = useTheme();
+  const dispatch = useDispatch();
+  const userId = useSelector(getUserId);
 
   const [openUsersDialog, setOpenUsersDialog] = useState(false);
   const closeUserDialog = () => setOpenUsersDialog(false);
   const handleOpenUserDialog = () => setOpenUsersDialog(true);
+
+  const chats = useSelector(getChatConversations);
 
   const [filteredData, setFilteredData] = useState([]);
   const [value, setValue] = useState("");
@@ -33,11 +46,20 @@ const Sidebar = () => {
     setValue(query);
     if (query === "" || query === null) return setFilteredData([]);
     setFilteredData(() => {
-      return ChatList.filter(({ name }) =>
+      return chats.filter(({ name }) =>
         name.toLowerCase().includes(query.toLowerCase())
       );
     });
   }, 600);
+
+  useEffect(() => {
+    socket.emit("get_conversations", { user_id: userId }, async (data) => {
+      dispatch(updateChatConversations(data));
+    });
+    return () => {
+      socket.off("get_conversations");
+    };
+  }, []);
 
   return (
     <SidebarContainer>
@@ -50,7 +72,9 @@ const Sidebar = () => {
           justifyContent="space-between"
           alignItems="center"
         >
-          <Typography variant="h3">Chats</Typography>
+          <Typography variant="h4" fontSize={"26px !important"}>
+            Chats
+          </Typography>
           <Stack direction="row" spacing={1}>
             <IconButton onClick={handleOpenUserDialog}>
               <Users />
@@ -61,55 +85,67 @@ const Sidebar = () => {
           </Stack>
         </Stack>
         <SearchInput onChange={handleSearch} />
-        <Stack direction="row" spacing={1} alignItems="center">
-          <ArchiveBox size={22} />
-          <Button
-            variant="text"
-            color="info"
-            sx={{
-              color: theme.palette.info.main,
-            }}
-          >
-            archived
-          </Button>
-        </Stack>
       </Stack>
-      <Box mb={2} px={3}>
-        <Divider variant="fullWidth" />
-      </Box>
+      <Stack
+        mt={1}
+        mb={2}
+        width="100%"
+        sx={{
+          overflowX: "hidden",
+        }}
+      >
+        <OnlineUsers />
+      </Stack>
       <SimpleBarStyle
         timeout={500}
         clickOnTrack={false}
         style={{ display: "flex", flexGrow: 1, overflow: "auto" }}
       >
-        <Stack direction="column" spacing={2} px={3} pb={2}>
-          {filteredData.length || value.length ? (
-            <Stack direction="column" spacing={2}>
-              {filteredData.map((item) => (
-                <UserChatList key={item.id} data={item} />
-              ))}
-            </Stack>
-          ) : (
-            <>
+        {chats.length !== 0 && (
+          <Stack direction="column" spacing={2} px={3} pb={2} pt={0}>
+            {filteredData.length || value.length ? (
               <Stack direction="column" spacing={2}>
-                <Typography variant="subtitle2" sx={{ color: "grey.500" }}>
-                  Pinned
-                </Typography>
-                {/* {ChatList.filter((item) => item.pinned).map((item) => (
-                  <UserChatList key={item.id} data={item} />
-                ))} */}
+                {filteredData.map((item, index) => (
+                  <UserChatList
+                    key={`${item._id}_${Math.floor(
+                      Math.random * 10500
+                    )}_${index}`}
+                    data={item}
+                  />
+                ))}
               </Stack>
-              <Stack direction="column" spacing={2}>
-                <Typography variant="subtitle2" sx={{ color: "grey.500" }}>
-                  All chats
-                </Typography>
-                {/* {ChatList.filter((item) => !item.pinned).map((item) => (
-                  <UserChatList key={item.id} data={item} />
-                ))} */}
-              </Stack>
-            </>
-          )}
-        </Stack>
+            ) : (
+              <>
+                <Stack direction="column" spacing={2}>
+                  <Typography
+                    variant="body1"
+                    sx={{
+                      color: "inherit",
+                      fontWeight: "700",
+                      "&.MuiTypography-root": {
+                        marginLeft: "-7px",
+                      },
+                    }}
+                  >
+                    Recent
+                  </Typography>
+                  <Stack spacing={1.5}>
+                    {chats
+                      .filter((item) => !item.pinned)
+                      .map((item, index) => (
+                        <UserChatList
+                          key={`${item._id}_${Math.floor(
+                            Math.random * 10500
+                          )}_${index}`}
+                          data={item}
+                        />
+                      ))}
+                  </Stack>
+                </Stack>
+              </>
+            )}
+          </Stack>
+        )}
       </SimpleBarStyle>
     </SidebarContainer>
   );

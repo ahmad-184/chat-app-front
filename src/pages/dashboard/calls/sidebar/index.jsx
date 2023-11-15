@@ -39,7 +39,9 @@ const Sidebar = () => {
           justifyContent="space-between"
           alignItems="center"
         >
-          <Typography variant="h3">Call Log</Typography>
+          <Typography variant="h4" fontSize={"26px !important"}>
+            Call Log
+          </Typography>
         </Stack>
         <SearchInput onChange={handleSearch} />
         <Stack

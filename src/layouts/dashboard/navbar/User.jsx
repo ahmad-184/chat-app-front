@@ -11,12 +11,13 @@ import {
 } from "@mui/material";
 import { faker } from "@faker-js/faker";
 import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import useSettings from "../../../hooks/useSettings";
 import { Profile_Menu } from "../../../data";
 import { logOut } from "../../../app/slices/auth";
 import { appLogout } from "../../../app/slices/app";
+import { logOutChatConv } from "../../../app/slices/chat_conversation";
 import { socket } from "../../../socket";
 
 const ThemeSwitch = styled(Switch)(({ theme }) => ({
@@ -71,6 +72,8 @@ const User = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
+  const user = useSelector((state) => state.auth.user);
+
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
@@ -85,10 +88,13 @@ const User = () => {
   const mode = theme.palette.mode;
 
   const handleLeaveApp = async () => {
-    await dispatch(logOut());
     await dispatch(appLogout());
+    await dispatch(logOutChatConv());
+    await dispatch(logOut());
     await socket.disconnect();
-    navigate("/auth/login");
+    window.localStorage.removeItem("redux-root");
+    window.location = "/auth.login";
+    window.location.reload();
   };
 
   return (
@@ -105,7 +111,7 @@ const User = () => {
       />
       <Avatar
         onClick={handleClick}
-        src={faker.image.avatar()}
+        src={user?.avatar}
         alt="user avatar"
         sx={{ cursor: "pointer" }}
       />
@@ -132,9 +138,7 @@ const User = () => {
                     navigate("/settings");
                     break;
                   case 2:
-                    handleLeaveApp().then(() => {
-                      window.location.reload();
-                    });
+                    handleLeaveApp();
                     handleClose();
                   default:
                     handleClose();

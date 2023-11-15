@@ -9,6 +9,7 @@ import {
 import { CaretLeft } from "phosphor-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useSelector } from "react-redux";
 
 import { SimpleBarStyle } from "../../../components/Scrollbar";
 import SidebarContainer from "../SidebarContainer";
@@ -20,10 +21,12 @@ const ProfilePanel = () => {
   const theme = useTheme();
   const mode = theme.palette.mode;
 
+  const user = useSelector((state) => state.auth.user);
+
   const defaultValues = {
-    name: "",
-    about: "",
-    avatarUrl: "",
+    name: `${user?.firstname} ${user?.lastname}`,
+    about: user.about,
+    avatarUrl: user.avatar,
   };
 
   const methods = useForm({
@@ -33,10 +36,8 @@ const ProfilePanel = () => {
 
   const {
     handleSubmit,
-    reset,
-    formState: { errors, isSubmitSuccessful, isSubmitting },
+    formState: { errors },
     setError,
-    watch,
   } = methods;
 
   const onSubmit = async (data) => {
@@ -57,10 +58,17 @@ const ProfilePanel = () => {
         <SimpleBarStyle style={{ width: "100%", height: "100%" }}>
           <Stack direction="column" spacing={4} p={3} pb={2} width="100%">
             <Stack direction="row" spacing={3} width="100%" alignItems="center">
-              <IconButton sx={{ color: mode === "light" && "grey.700" }}>
+              <IconButton
+                sx={{ color: mode === "light" && "grey.700" }}
+                onClick={() => {
+                  window.history.back();
+                }}
+              >
                 <CaretLeft size={27} weight="regular" />
               </IconButton>
-              <Typography variant="h3">Profile</Typography>
+              <Typography variant="h4" fontSize={"26px !important"}>
+                Profile
+              </Typography>
             </Stack>
             <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
               <Stack spacing={2}>
@@ -81,10 +89,10 @@ const ProfilePanel = () => {
                 />
                 <Stack direction="row" justifyContent="end" pt={1}>
                   <Button
-                    color="info"
+                    color="primary"
                     type="submit"
                     size="medium"
-                    variant="outlined"
+                    variant="contained"
                     sx={{ px: 4, py: 1.2, boxShadow: "none" }}
                   >
                     Save

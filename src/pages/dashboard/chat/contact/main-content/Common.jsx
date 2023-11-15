@@ -50,7 +50,7 @@ const Common = ({ handleOpenBlockDiagram, handleOpenDeleteDiagram }) => {
         </Stack>
         <Stack direction="row" justifyContent="space-between">
           <Button
-            color="info"
+            color="warning"
             startIcon={<Prohibit size={25} />}
             size="large"
             variant="outlined"
@@ -59,7 +59,7 @@ const Common = ({ handleOpenBlockDiagram, handleOpenDeleteDiagram }) => {
             Block
           </Button>
           <Button
-            color="info"
+            color="error"
             startIcon={<Trash size={25} />}
             size="large"
             variant="outlined"

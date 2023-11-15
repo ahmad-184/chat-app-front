@@ -6,7 +6,7 @@ import { encryptTransform } from "redux-persist-transform-encrypt";
 
 import appReducer from "../slices/app";
 import authReducer from "../slices/auth";
-import conversationReducer from '../slices/conversation'
+import chatConversationReducer from "../slices/chat_conversation";
 
 import { SECRET_KEY } from "../../config";
 
@@ -27,7 +27,7 @@ const rootPersistConfig = {
 const compinedReducers = combineReducers({
   app: appReducer,
   auth: authReducer,
-  conversation: conversationReducer
+  chat_conversation: chatConversationReducer,
 });
 
 const store = configureStore({

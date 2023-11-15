@@ -9,29 +9,45 @@ import Navbar from "./navbar";
 
 import {
   addFriend,
-  removeSentRequest,
   removeReceivedRequest,
   updateRequest,
   removeUser,
   updateFriendRequestsThunk,
   updateFriendsThunk,
   updateUsersThunk,
+  updateFriendsStatus,
+  appLogout,
 } from "../../app/slices/app";
+import {
+  logOutChatConv,
+  updateChatConversationsStatus,
+} from "../../app/slices/chat_conversation";
 
 import { socket, socketConnect } from "../../socket";
+import { logOut } from "../../app/slices/auth";
 
 const DashboardLayout = () => {
   const { isLoggedIn, token, userId } = useSelector((state) => state.auth);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    const UpdateUsersData = async () => {
-      await dispatch(updateUsersThunk({ token }));
-      await dispatch(updateFriendsThunk({ token }));
-      await dispatch(updateFriendRequestsThunk({ token }));
-    };
+  const handleLeaveApp = async () => {
+    await dispatch(appLogout());
+    await dispatch(logOutChatConv());
+    await dispatch(logOut());
+    await socket.disconnect();
+    window.localStorage.removeItem("redux-root");
+    window.location = "/auth.login";
+    window.location.reload();
+  };
 
+  const UpdateUsersData = async () => {
+    await dispatch(updateUsersThunk({ token }));
+    await dispatch(updateFriendsThunk({ token }));
+    await dispatch(updateFriendRequestsThunk({ token }));
+  };
+
+  useEffect(() => {
     if (isLoggedIn) {
       UpdateUsersData();
 
@@ -70,8 +86,23 @@ const DashboardLayout = () => {
         );
       });
 
+      socket.on("update_friends_status", (data) => {
+        console.log(data);
+        dispatch(updateChatConversationsStatus(data));
+        dispatch(updateFriendsStatus(data));
+      });
+
+      socket.on("new_message", ({ message }) => {
+        console.log(message);
+      });
+
       socket.on("error", (data) => {
         enqueueSnackbar(data.message, { variant: "error" });
+      });
+
+      socket.on("auth_error", (message) => {
+        enqueueSnackbar(message, { variant: "error" });
+        setTimeout(handleLeaveApp, 4000);
       });
 
       socket.on("connect_error", () => {
@@ -87,23 +118,20 @@ const DashboardLayout = () => {
         });
       });
     }
+
     return () => {
-      socket.off("new_friend_request");
-      socket.off("friend_request_sent");
-      socket.off("accepted_friend_request");
-      socket.off("rejected_friend_request");
-      socket.off("get_test");
-      socket.off("connect_error");
-      socket.off("error");
-      socket.off("reconnect_attempt");
-      socket.off("reconnect");
-      socket.off("request_deleted");
-      socket.off("request_rejected");
-      socket.off("your_request_rejected");
-      socket.off("your_friend_request_accepted");
-      socket.off("request_accepted");
-      socket.off("request_not_exist");
-      socket.off("request_not_exist");
+      if (socket) {
+        socket.off("new_friend_request");
+        socket.off("connect_error");
+        socket.off("update_friends_status");
+        socket.off("error");
+        socket.off("reconnect");
+        socket.off("your_request_rejected");
+        socket.off("your_friend_request_accepted");
+        socket.off("request_not_exist");
+        socket.off("auth_error");
+        socket.off("new_message");
+      }
     };
   }, [socket, isLoggedIn]);
 

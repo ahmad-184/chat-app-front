@@ -21,17 +21,17 @@ const DeleteDiagram = ({ open, handleClose }) => {
         onClose={handleClose}
         aria-describedby="alert-dialog-slide-description"
       >
-        <DialogTitle>Delete Contact</DialogTitle>
-        <DialogContent>
+        <DialogTitle sx={{ pb: 0.5 }}>Delete Contact</DialogTitle>
+        <DialogContent sx={{ pb: 0.5 }}>
           <DialogContentText id="alert-dialog-slide-description">
             Are you sure you want to Delete this Contact?
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button color="error" onClick={handleClose}>
+          <Button color="inherit" onClick={handleClose}>
             Cancel
           </Button>
-          <Button variant="contained" onClick={handleClose}>
+          <Button variant="outlined" color="error" onClick={handleClose}>
             Yes
           </Button>
         </DialogActions>

@@ -1,6 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { enqueueSnackbar } from "notistack";
-import { socket } from "../../socket";
 
 import {
   forgotPasswordApi,

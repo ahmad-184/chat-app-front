@@ -5,6 +5,11 @@ import UserBox from "./user_box";
 import FriendBox from "./friends_box";
 import RequestsBox from "./requests_box";
 
+import {
+  MotionContainer,
+  MotionViewport,
+} from "../../../../components/animate";
+
 const tabsData = ["Explore", "Friends", "Requests"];
 
 const UsersDialog = ({ open, handleClose }) => {
@@ -42,7 +47,7 @@ const UsersDialog = ({ open, handleClose }) => {
                 case 0:
                   return <UserBox />;
                 case 1:
-                  return <FriendBox />;
+                  return <FriendBox handleClose={handleClose} />;
                 case 2:
                   return <RequestsBox />;
               }

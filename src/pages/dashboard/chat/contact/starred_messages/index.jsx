@@ -2,7 +2,7 @@ import { Box } from "@mui/material";
 
 import Header from "./Header";
 import Container from "../Container";
-import Messages from "../../../../../components/converstation/msg";
+import Messages from "../../../../../components/chat_converstation/msg";
 
 const StarredMessages = () => {
   return (

@@ -11,14 +11,26 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { ChatTeardropDots } from "phosphor-react";
 
-import { updateFriendsThunk, getFriends } from "../../../../../app/slices/app";
-import { getToken } from "../../../../../app/slices/auth";
+import {
+  updateFriendsThunk,
+  getFriends,
+  selectConversation,
+} from "../../../../../app/slices/app";
+import { getToken, getUserId } from "../../../../../app/slices/auth";
+import {
+  startNewChatConversation,
+  addChatConversation,
+} from "../../../../../app/slices/chat_conversation";
 
 import { socket } from "../../../../../socket";
+import createAvatar from "../../../../../utils/createAvatar";
 
-const FriendBox = () => {
+import StyledBadge from "../../../../../components/StyledBadge";
+
+const FriendBox = ({ handleClose }) => {
   const friends = useSelector(getFriends);
   const token = useSelector(getToken);
+  const userId = useSelector(getUserId);
   const dispatch = useDispatch();
 
   const [isLoading, setIsLoading] = useState(false);
@@ -29,54 +41,92 @@ const FriendBox = () => {
     dispatch(updateFriendsThunk({ token }));
   }, []);
 
-  const handleStartConversation = async () => {};
+  const handleStartConversation = async (friendId) => {
+    socket.emit(
+      "start_conversation",
+      { friend_id: friendId, user_id: userId },
+      ({ conversation, messages }) => {
+        dispatch(addChatConversation(conversation));
+        dispatch(startNewChatConversation({ conversation, messages }));
+        setIsLoading(false);
+        handleClose(false);
+        dispatch(
+          selectConversation({
+            chat_type: "dividual",
+            room_id: conversation._id,
+          })
+        );
+      }
+    );
+  };
 
   return (
     <Stack px={1} py={1} spacing={1.5} width="100%">
       {friends.length ? (
-        friends.map((item, index) => (
-          <Box
-            sx={{
-              p: 1,
-              borderRadius: 1,
-              cursor: "pointer",
-              backgroundColor:
-                theme.palette.mode === "light"
-                  ? "grey.200"
-                  : alpha(theme.palette.grey[900], 0.4),
-            }}
-            key={index}
-          >
-            <Stack direction="row" spacing={1} alignItems="center">
-              <Box p={0.5}>
-                <Avatar
-                  alt={`${item.firstname} ${item.lastname}`}
-                  src={item.avatar}
-                />
-              </Box>
-              <Stack sx={{ minWidth: 0, maxWidth: "45%" }}>
-                <Typography
-                  noWrap
-                  variant="body1"
-                >{`${item.firstname} ${item.lastname}`}</Typography>
-                <Typography noWrap variant="body2">
-                  {item.email}
-                </Typography>
+        friends.map((item, index) => {
+          const avatar = createAvatar(item.firstname);
+
+          return (
+            <Box
+              sx={{
+                p: 1,
+                borderRadius: 1,
+                cursor: "pointer",
+                backgroundColor:
+                  theme.palette.mode === "light"
+                    ? "grey.200"
+                    : alpha(theme.palette.grey[900], 0.4),
+              }}
+              key={index}
+            >
+              <Stack direction="row" spacing={1} alignItems="center">
+                <Box p={0.5}>
+                  {item.status === "Online" ? (
+                    <StyledBadge
+                      overlap="circular"
+                      anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+                      variant="dot"
+                    >
+                      <Avatar
+                        alt={`${item.firstname} ${item.lastname}`}
+                        src={item.avatar}
+                      >
+                        {avatar.name}
+                      </Avatar>
+                    </StyledBadge>
+                  ) : (
+                    <Avatar
+                      alt={`${item.firstname} ${item.lastname}`}
+                      src={item.avatar}
+                    >
+                      {avatar.name}
+                    </Avatar>
+                  )}
+                </Box>
+                <Stack sx={{ minWidth: 0, maxWidth: "45%" }}>
+                  <Typography
+                    noWrap
+                    variant="body1"
+                  >{`${item.firstname} ${item.lastname}`}</Typography>
+                  <Typography noWrap variant="body2">
+                    {item.email}
+                  </Typography>
+                </Stack>
+                <Box display="flex" flexGrow={1} justifyContent="end">
+                  <IconButton
+                    disabled={isLoading}
+                    onClick={() => {
+                      handleStartConversation(item._id);
+                      setIsLoading(true);
+                    }}
+                  >
+                    <ChatTeardropDots size={33} />
+                  </IconButton>
+                </Box>
               </Stack>
-              <Box display="flex" flexGrow={1} justifyContent="end">
-                <IconButton
-                  disabled={isLoading}
-                  onClick={() => {
-                    handleStartConversation(item._id);
-                    setIsLoading(true);
-                  }}
-                >
-                  <ChatTeardropDots size={33} />
-                </IconButton>
-              </Box>
-            </Stack>
-          </Box>
-        ))
+            </Box>
+          );
+        })
       ) : (
         <Typography
           variant="body2"

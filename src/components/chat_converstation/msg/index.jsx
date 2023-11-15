@@ -13,6 +13,8 @@ import {
 import { SimpleBarStyle } from "../../Scrollbar";
 
 const Msg = ({ showMenu = true, showTime = true }) => {
+  const chats = [];
+
   return (
     <Box width="100%" height="100%">
       <SimpleBarStyle
@@ -28,7 +30,7 @@ const Msg = ({ showMenu = true, showTime = true }) => {
           py={2}
           px={{ xs: 2, md: 4 }}
         >
-          {Chat_History.map((item, index) => {
+          {chats.map((item, index) => {
             const msgType = item.type;
 
             switch (msgType) {

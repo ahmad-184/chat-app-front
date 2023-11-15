@@ -1,13 +1,18 @@
 import { Typography, Stack, Avatar } from "@mui/material";
-import { useDispatch } from "react-redux";
-import { faker } from "@faker-js/faker";
+import { useDispatch, useSelector } from "react-redux";
 
 import { toggleSidebar } from "../../../app/slices/app";
+import { getCurrentConversation } from "../../../app/slices/chat_conversation";
+
+import createAvatar from "../../../utils/createAvatar";
 
 const User = () => {
   const dispatch = useDispatch();
 
   const handleToggleSidebar = () => dispatch(toggleSidebar());
+  const current_conversation = useSelector(getCurrentConversation);
+
+  const avatar = createAvatar(current_conversation.name);
 
   return (
     <Stack
@@ -20,12 +25,14 @@ const User = () => {
     >
       <Avatar
         onClick={handleToggleSidebar}
-        src={faker.image.avatar()}
+        src={current_conversation.avatar}
         alt="user profile picture"
         sx={{
           cursor: "pointer",
         }}
-      />
+      >
+        {avatar.name}
+      </Avatar>
       <Stack
         direction="column"
         sx={{
@@ -33,10 +40,18 @@ const User = () => {
         }}
       >
         <Typography variant="subtitle1" noWrap>
-          {faker.name.fullName()}
+          {current_conversation.name}
         </Typography>
-        <Typography variant="caption" sx={{ color: "success.main" }}>
-          Online
+        <Typography
+          variant="caption"
+          sx={{
+            color:
+              current_conversation.status === "Online"
+                ? "success.main"
+                : "grey.500",
+          }}
+        >
+          {current_conversation.status}
         </Typography>
       </Stack>
     </Stack>
