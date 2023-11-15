@@ -19,8 +19,12 @@ import {
   appLogout,
 } from "../../app/slices/app";
 import {
+  addMessage,
+  getChatConversations,
+  getCurrentConversation,
   logOutChatConv,
   updateChatConversationsStatus,
+  updateTypingStatus,
 } from "../../app/slices/chat_conversation";
 
 import { socket, socketConnect } from "../../socket";
@@ -28,6 +32,8 @@ import { logOut } from "../../app/slices/auth";
 
 const DashboardLayout = () => {
   const { isLoggedIn, token, userId } = useSelector((state) => state.auth);
+  const { room_id } = useSelector((state) => state.app);
+  const conversations = useSelector(getChatConversations);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -41,16 +47,18 @@ const DashboardLayout = () => {
     window.location.reload();
   };
 
-  const UpdateUsersData = async () => {
-    await dispatch(updateUsersThunk({ token }));
-    await dispatch(updateFriendsThunk({ token }));
-    await dispatch(updateFriendRequestsThunk({ token }));
-  };
+  useEffect(() => {
+    const UpdateUsersData = async () => {
+      await dispatch(updateUsersThunk({ token }));
+      await dispatch(updateFriendsThunk({ token }));
+      await dispatch(updateFriendRequestsThunk({ token }));
+    };
+
+    UpdateUsersData();
+  }, []);
 
   useEffect(() => {
     if (isLoggedIn) {
-      UpdateUsersData();
-
       if (!socket) {
         socketConnect(userId, token);
       }
@@ -87,13 +95,26 @@ const DashboardLayout = () => {
       });
 
       socket.on("update_friends_status", (data) => {
-        console.log(data);
         dispatch(updateChatConversationsStatus(data));
         dispatch(updateFriendsStatus(data));
       });
 
+      socket.on("typing", (data) => {
+        dispatch(updateTypingStatus(data));
+      });
+
       socket.on("new_message", ({ message }) => {
         console.log(message);
+        if (message.conversation_id.toString() === room_id) {
+          dispatch(addMessage(message));
+        } else {
+          const conversation = conversations.find(
+            (item) => item._id === message.conversation_id
+          );
+          enqueueSnackbar({
+            message: `A message received from ${conversation.name}`,
+          });
+        }
       });
 
       socket.on("error", (data) => {

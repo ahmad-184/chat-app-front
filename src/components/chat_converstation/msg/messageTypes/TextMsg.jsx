@@ -1,29 +1,27 @@
 import { Stack, Box, useTheme, Typography } from "@mui/material";
+import { useSelector } from "react-redux";
 
 import ShowMsgTime from "./ShowMsgTime";
 import Menu from "./Menu";
 
 const TextMsg = ({ data, showMenu = true, showTime = true }) => {
   const theme = useTheme();
+  const { userId } = useSelector((state) => state.auth);
 
   const mode = theme.palette.mode;
 
-  const isIncoming = Boolean(data.incoming);
-  const isOutgoing = Boolean(data.outgoing);
+  const isOutgoing = Boolean(data?.sender === userId);
 
   return (
-    <Stack
-      direction="row"
-      justifyContent={isIncoming ? "start" : isOutgoing ? "end" : "center"}
-    >
+    <Stack direction="row" justifyContent={!isOutgoing ? "start" : "end"}>
       <Box
         sx={{
           ...(mode === "dark"
             ? {
-                backgroundColor: isIncoming ? "grey.800" : "primary.main",
+                backgroundColor: !isOutgoing ? "grey.800" : "primary.main",
               }
             : {
-                backgroundColor: isIncoming ? "grey.300" : "primary.main",
+                backgroundColor: !isOutgoing ? "grey.300" : "primary.main",
               }),
           borderRadius: 1.4,
           p: 1,
@@ -31,23 +29,23 @@ const TextMsg = ({ data, showMenu = true, showTime = true }) => {
           position: "relative",
         }}
       >
-        {showMenu && <Menu data={data} />}
+        {showMenu && <Menu data={data} userId={userId} />}
         <Typography
           variant="body2"
           sx={{
             ...(mode === "dark"
               ? {
-                  color: isIncoming ? "grey.200" : "grey.200",
+                  color: !isOutgoing ? "grey.200" : "grey.200",
                 }
               : {
-                  color: isIncoming ? "grey.700" : "grey.200",
+                  color: !isOutgoing ? "grey.700" : "grey.200",
                 }),
             fontWeight: "500",
           }}
         >
-          {data.message}
+          {data?.text}
         </Typography>
-        {showTime && <ShowMsgTime data={data} />}
+        {showTime && <ShowMsgTime data={data} userId={userId} />}
       </Box>
     </Stack>
   );

@@ -90,7 +90,7 @@ const UserChatList = ({ data }) => {
       <Stack direction="row" alignItems="center" justifyContent="space-between">
         <Stack
           direction="row"
-          spacing={2.5}
+          spacing={2}
           alignItems="center"
           sx={{ minWidth: "0px", maxWidth: "83%" }}
         >
@@ -118,8 +118,7 @@ const UserChatList = ({ data }) => {
               color={mode === "light" ? "grey.600" : "grey.400"}
               noWrap
             >
-              {/* {data.msg} {data.msg} */}
-              {faker.music.songName()}
+              {data.typing ? "Typing..." : data.last_message.text || "...."}
             </Typography>
           </Stack>
         </Stack>

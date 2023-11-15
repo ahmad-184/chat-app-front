@@ -1,14 +1,6 @@
 import { useState, useEffect } from "react";
-import {
-  Box,
-  Typography,
-  Stack,
-  IconButton,
-  useTheme,
-  Button,
-  Divider,
-} from "@mui/material";
-import { CircleDashed, ArchiveBox, Users } from "phosphor-react";
+import { Typography, Stack, IconButton } from "@mui/material";
+import { CircleDashed, Users } from "phosphor-react";
 import * as _ from "lodash";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -21,16 +13,13 @@ import UsersDialog from "../../../../sections/dashboard/chat/users_dialog";
 
 import {
   getChatConversations,
-  updateChatConversations,
+  fetchConversationsThunk,
 } from "../../../../app/slices/chat_conversation";
-import { getUserId } from "../../../../app/slices/auth";
-
-import { socket } from "../../../../socket";
+import { getToken } from "../../../../app/slices/auth";
 
 const Sidebar = () => {
-  const theme = useTheme();
   const dispatch = useDispatch();
-  const userId = useSelector(getUserId);
+  const token = useSelector(getToken);
 
   const [openUsersDialog, setOpenUsersDialog] = useState(false);
   const closeUserDialog = () => setOpenUsersDialog(false);
@@ -53,12 +42,10 @@ const Sidebar = () => {
   }, 600);
 
   useEffect(() => {
-    socket.emit("get_conversations", { user_id: userId }, async (data) => {
-      dispatch(updateChatConversations(data));
-    });
-    return () => {
-      socket.off("get_conversations");
+    const getUserChatConversations = async () => {
+      await dispatch(fetchConversationsThunk({ token }));
     };
+    getUserChatConversations();
   }, []);
 
   return (
@@ -87,8 +74,8 @@ const Sidebar = () => {
         <SearchInput onChange={handleSearch} />
       </Stack>
       <Stack
-        mt={1}
-        mb={2}
+        mt={0.5}
+        mb={2.5}
         width="100%"
         sx={{
           overflowX: "hidden",

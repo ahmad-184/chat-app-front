@@ -98,7 +98,6 @@ const appSlice = createSlice({
       }
     },
     removeUser(state, { payload }) {
-      console.log(payload);
       state.users = state.users.filter(({ _id }) => _id !== payload);
     },
     removeReceivedRequest(state, { payload }) {
@@ -146,7 +145,6 @@ const appSlice = createSlice({
     [updateFriendsThunk.fulfilled]: (state, action) => {
       const { data, status } = action.payload.data;
       state.loading = false;
-      console.log(action.payload);
       if (status === 200) {
         state.friends = [...data];
       }

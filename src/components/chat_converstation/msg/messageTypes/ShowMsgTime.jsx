@@ -1,8 +1,7 @@
 import { Box, Typography } from "@mui/material";
 
-const ShowMsgTime = ({ data }) => {
-  const isIncoming = Boolean(data.incoming);
-  const isOutgoing = Boolean(data.outgoing);
+const ShowMsgTime = ({ data, userId }) => {
+  const isOutgoing = Boolean(data?.sender === userId);
 
   const hour = "0" + (Math.floor(Math.random() * 24) % 24);
   const minute = "0" + (Math.floor(Math.random() * 59) % 59);
@@ -19,7 +18,7 @@ const ShowMsgTime = ({ data }) => {
           bottom: -11,
           left: -35,
         }),
-        ...(isIncoming && {
+        ...(!isOutgoing && {
           bottom: -11,
           right: -35,
         }),

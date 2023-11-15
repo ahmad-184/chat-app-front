@@ -45,13 +45,15 @@ const User = () => {
         <Typography
           variant="caption"
           sx={{
-            color:
-              current_conversation.status === "Online"
-                ? "success.main"
-                : "grey.500",
+            color: "grey.500",
+            // current_conversation.status === "Online"
+            //   ? "success.main"
+            //   : "grey.500",
           }}
         >
-          {current_conversation.status}
+          {current_conversation.typing
+            ? "Typing..."
+            : current_conversation.status}
         </Typography>
       </Stack>
     </Stack>

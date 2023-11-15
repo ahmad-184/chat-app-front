@@ -73,3 +73,14 @@ export const fetchChatConversationsApi = async ({ token }) => {
     },
   });
 };
+
+// @Route http://localhost:9000/api/user/get_messages
+// @Desc GET get conversation messages
+export const fetchMessagesApi = async ({ token, conversation_id }) => {
+  return await axios.get(`/conversation/get_messages/${conversation_id}`, {
+    headers: {
+      Accept: "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};

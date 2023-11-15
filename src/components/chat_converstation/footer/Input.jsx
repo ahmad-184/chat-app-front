@@ -6,56 +6,19 @@ import {
   IconButton,
   Menu,
   useTheme,
-  Fab,
-  Stack,
-  Tooltip,
 } from "@mui/material";
-import {
-  LinkSimple,
-  Smiley,
-  Image,
-  Sticker,
-  Camera,
-  File,
-  User,
-} from "phosphor-react";
+import { Smiley } from "phosphor-react";
 import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
 
-const Actions = [
-  {
-    color: "#013f7f",
-    icon: <User size={24} />,
-    y: 382,
-    title: "Contact",
-  },
-  {
-    color: "#0159b2",
-    icon: <File size={24} />,
-    y: 312,
-    title: "Document",
-  },
-  {
-    color: "#0172e4",
-    icon: <Camera size={24} />,
-    y: 242,
-    title: "Image",
-  },
-  {
-    color: "#1b8cfe",
-    icon: <Sticker size={24} />,
-    y: 172,
-    title: "Stickers",
-  },
-  {
-    color: "#4da5fe",
-    icon: <Image size={24} />,
-    y: 102,
-    title: "Photo/Video",
-  },
-];
-
-const Input = ({ textInput, handleChangeTextInput, handleAddEmoji }) => {
+const Input = ({
+  textInput,
+  handleChangeTextInput,
+  handleAddEmoji,
+  startTyping,
+  stopTyping,
+  handleSendMessage,
+}) => {
   const theme = useTheme();
   const mode = theme.palette.mode;
 
@@ -66,6 +29,13 @@ const Input = ({ textInput, handleChangeTextInput, handleAddEmoji }) => {
   };
   const handleClosePicker = () => {
     setAnchorElPicker(null);
+  };
+
+  const handlChange = (event) => {
+    const value = event.target.value;
+    startTyping();
+    stopTyping();
+    handleChangeTextInput(value);
   };
 
   return (
@@ -90,8 +60,11 @@ const Input = ({ textInput, handleChangeTextInput, handleAddEmoji }) => {
           },
         }}
         value={textInput}
-        onChange={(event) => {
-          handleChangeTextInput(event.target.value);
+        onChange={handlChange}
+        onKeyUp={(event) => {
+          if (event.key === "Enter") {
+            handleSendMessage();
+          }
         }}
         InputProps={{
           disableUnderline: true,

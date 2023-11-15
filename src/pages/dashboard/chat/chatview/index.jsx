@@ -1,22 +1,28 @@
 import { useEffect } from "react";
 import { Box, Typography, useTheme, Stack } from "@mui/material";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import ConversationView from "../../../../sections/dashboard/chat/conversation_view";
 
 import NoChat from "../../../../assets/Illustration/NoChat";
-import { getCurrentConversation } from "../../../../app/slices/chat_conversation";
+import {
+  getCurrentConversation,
+  fetchMessagesThunk,
+} from "../../../../app/slices/chat_conversation";
+import { getToken } from "../../../../app/slices/auth";
 
 import { socket } from "../../../../socket";
 
 const ChatView = () => {
   const mode = useTheme().palette.mode;
+  const dispatch = useDispatch();
   const {
     right_sidebar: { open },
     chat_type,
     room_id,
   } = useSelector((state) => state.app);
   const current_conversation = useSelector(getCurrentConversation);
+  const token = useSelector(getToken);
 
   const isSidebarOpen = Boolean(open);
 
@@ -25,6 +31,9 @@ const ChatView = () => {
       socket.emit("join_a_chat_conversation", { room_id }, ({ message }) => {
         console.log(message);
       });
+      dispatch(
+        fetchMessagesThunk({ token, conversation_id: current_conversation._id })
+      );
     }
     return () => {
       if (chat_type === "dividual" && room_id) {

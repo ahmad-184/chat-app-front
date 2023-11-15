@@ -4,9 +4,8 @@ import { DotsThreeVertical } from "phosphor-react";
 
 import { Message_options } from "../../../../data";
 
-const Menu = ({ data }) => {
-  const isIncoming = Boolean(data.incoming);
-  const isOutgoing = Boolean(data.outgoing);
+const Menu = ({ data, userId }) => {
+  const isOutgoing = Boolean(data?.sender === userId);
 
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
@@ -26,7 +25,7 @@ const Menu = ({ data }) => {
             top: 0,
             right: -23,
           }),
-          ...(isIncoming && {
+          ...(!isOutgoing && {
             top: 0,
             left: -23,
           }),
@@ -44,7 +43,7 @@ const Menu = ({ data }) => {
         onClose={handleClose}
         anchorOrigin={{
           vertical: "bottom",
-          horizontal: isIncoming ? "left" : "right",
+          horizontal: !isOutgoing ? "left" : "right",
         }}
         transformOrigin={{
           vertical: "top",
@@ -54,7 +53,7 @@ const Menu = ({ data }) => {
         <Stack direction="column" spacing={1}>
           {Message_options.map((item, index) => (
             <MenuItem onClick={handleClose} key={index}>
-              {item.title}
+              {item?.title}
             </MenuItem>
           ))}
         </Stack>

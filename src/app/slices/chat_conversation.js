@@ -3,8 +3,9 @@ import {
   createEntityAdapter,
   createAsyncThunk,
 } from "@reduxjs/toolkit";
+import { enqueueSnackbar } from "notistack";
 
-import { fetchChatConversationsApi } from "../../services";
+import { fetchChatConversationsApi, fetchMessagesApi } from "../../services";
 
 const conversationAdaptor = createEntityAdapter({
   selectId: (item) => item._id,
@@ -21,6 +22,18 @@ export const fetchConversationsThunk = createAsyncThunk(
   async (data, { rejectWithValue }) => {
     try {
       const res = await fetchChatConversationsApi(data);
+      return res;
+    } catch (err) {
+      return rejectWithValue(err);
+    }
+  }
+);
+
+export const fetchMessagesThunk = createAsyncThunk(
+  "chat_conversation/fetchMessagesThunk",
+  async (data, { rejectWithValue }) => {
+    try {
+      const res = await fetchMessagesApi(data);
       return res;
     } catch (err) {
       return rejectWithValue(err);
@@ -88,6 +101,21 @@ const conversationSlice = createSlice({
           state.current_conversation.status = friend_status;
       }
     },
+    updateTypingStatus(state, action) {
+      const { conversation_id, typing_status } = action.payload;
+      const conversationIndex = state.conversations.findIndex(
+        (item) => item._id === conversation_id
+      );
+      state.conversations[conversationIndex].typing = typing_status;
+      if (state.current_conversation._id === conversation_id) {
+        state.current_conversation.typing = typing_status;
+      }
+    },
+    addMessage(state, action) {
+      const message = action.payload;
+      console.log(message);
+      conversationAdaptor.addOne(state, message);
+    },
   },
   extraReducers: {
     [fetchConversationsThunk.pending]: (state) => {
@@ -97,10 +125,27 @@ const conversationSlice = createSlice({
       const { data, status } = action.payload.data;
       state.loading = false;
       if (status === 200) {
-        state.conversations = [...data.conversations];
+        state.conversations = [...data];
       }
     },
     [fetchConversationsThunk.rejected]: (state, action) => {
+      const { error, message } = action.payload;
+      state.loading = false;
+      if (error) {
+        enqueueSnackbar(message, { variant: "error" });
+      }
+    },
+    [fetchMessagesThunk.pending]: (state) => {
+      state.loading = true;
+    },
+    [fetchMessagesThunk.fulfilled]: (state, action) => {
+      const { data, status } = action.payload.data;
+      state.loading = false;
+      if (status === 200) {
+        conversationAdaptor.setAll(state, data);
+      }
+    },
+    [fetchMessagesThunk.rejected]: (state, action) => {
       const { error, message } = action.payload;
       state.loading = false;
       if (error) {
@@ -117,7 +162,13 @@ export const {
   addChatConversation,
   startChatConversation,
   updateChatConversationsStatus,
+  updateTypingStatus,
+  addMessage,
 } = conversationSlice.actions;
+
+export const { selectAll: getAllMessages } = conversationAdaptor.getSelectors(
+  (state) => state.chat_conversation
+);
 
 export const getChatConversations = (state) =>
   state.chat_conversation.conversations;
