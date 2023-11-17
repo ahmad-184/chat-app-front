@@ -8,7 +8,6 @@ import {
   Skeleton,
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import { faker } from "@faker-js/faker";
 
 import StyledBadge from "../../../../components/StyledBadge";
 import {
@@ -23,6 +22,7 @@ const UserChatList = ({ data }) => {
   const theme = useTheme();
   const dispatch = useDispatch();
   const currentChat = useSelector(getCurrentConversation);
+  const { userId } = useSelector((state) => state.auth);
 
   const mode = theme.palette.mode;
 
@@ -41,7 +41,6 @@ const UserChatList = ({ data }) => {
           width: "100%",
           p: 2,
           borderRadius: 2,
-          // cursor: "pointer",
         }}
       >
         <Stack
@@ -101,12 +100,12 @@ const UserChatList = ({ data }) => {
               variant="dot"
             >
               <Avatar src={data?.avatar} alt="user profile picture">
-                {avatar.name}
+                {avatar?.name}
               </Avatar>
             </StyledBadge>
           ) : (
             <Avatar src={data?.avatar} alt="user profile picture">
-              {avatar.name}
+              {avatar?.name}
             </Avatar>
           )}
           <Stack direction="column" spacing={0.5} sx={{ minWidth: "0px" }}>
@@ -114,11 +113,15 @@ const UserChatList = ({ data }) => {
               {data?.name}
             </Typography>
             <Typography
-              variant="caption"
+              variant="body2"
               color={mode === "light" ? "grey.600" : "grey.400"}
               noWrap
             >
-              {data.typing ? "Typing..." : data.last_message.text || "...."}
+              {data.typing
+                ? "Typing..."
+                : data?.last_message.text
+                ? data?.last_message.text
+                : "..."}
             </Typography>
           </Stack>
         </Stack>
@@ -128,7 +131,7 @@ const UserChatList = ({ data }) => {
           </Typography>
           <Box display="flex" justifyContent="end" position="relative">
             <Badge
-              badgeContent={data?.unread || 2}
+              badgeContent={data?.unseen}
               color="primary"
               variant="standard"
               sx={{

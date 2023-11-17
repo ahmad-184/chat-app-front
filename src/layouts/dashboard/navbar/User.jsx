@@ -9,7 +9,6 @@ import {
   MenuItem,
   ListItemIcon,
 } from "@mui/material";
-import { faker } from "@faker-js/faker";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 

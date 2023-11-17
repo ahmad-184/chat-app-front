@@ -25,6 +25,7 @@ import {
   logOutChatConv,
   updateChatConversationsStatus,
   updateTypingStatus,
+  changeLastMessage,
 } from "../../app/slices/chat_conversation";
 
 import { socket, socketConnect } from "../../socket";
@@ -48,13 +49,15 @@ const DashboardLayout = () => {
   };
 
   useEffect(() => {
-    const UpdateUsersData = async () => {
-      await dispatch(updateUsersThunk({ token }));
-      await dispatch(updateFriendsThunk({ token }));
-      await dispatch(updateFriendRequestsThunk({ token }));
-    };
+    if (isLoggedIn) {
+      const UpdateUsersData = async () => {
+        await dispatch(updateUsersThunk({ token }));
+        await dispatch(updateFriendsThunk({ token }));
+        await dispatch(updateFriendRequestsThunk({ token }));
+      };
 
-    UpdateUsersData();
+      UpdateUsersData();
+    }
   }, []);
 
   useEffect(() => {
@@ -63,7 +66,11 @@ const DashboardLayout = () => {
         socketConnect(userId, token);
       }
       socket.connect();
+    }
+  }, [isLoggedIn, socket]);
 
+  useEffect(() => {
+    if (isLoggedIn && socket) {
       socket.on("new_friend_request", async ({ message }) => {
         await dispatch(updateFriendRequestsThunk({ token })).then(() =>
           enqueueSnackbar(message, { variant: "info" })
@@ -111,6 +118,7 @@ const DashboardLayout = () => {
           const conversation = conversations.find(
             (item) => item._id === message.conversation_id
           );
+          dispatch(changeLastMessage(message));
           enqueueSnackbar({
             message: `A message received from ${conversation.name}`,
           });
@@ -154,7 +162,7 @@ const DashboardLayout = () => {
         socket.off("new_message");
       }
     };
-  }, [socket, isLoggedIn]);
+  }, [socket, isLoggedIn, room_id]);
 
   useEffect(() => {
     if (!isLoggedIn) {

@@ -3,10 +3,12 @@ import { Button, Stack, Box, useTheme, alpha, IconButton } from "@mui/material";
 import { Microphone, PaperPlaneRight, LinkSimple, Image } from "phosphor-react";
 import { useDispatch, useSelector } from "react-redux";
 import * as _ from "lodash";
+import ObjectId from "bson-objectid";
 
 import {
   getCurrentConversation,
   addMessage,
+  setMessageDelivered,
 } from "../../../app/slices/chat_conversation";
 
 import { socket } from "../../../socket";
@@ -50,27 +52,39 @@ const Footer = () => {
     setMessage({ ...message, text: `${message.text || ""}${emoji}` });
 
   const handleSendMessage = () => {
-    if (!message.text) return;
-    setIsLoading(true);
-    const data = {
-      conversation_id: _id,
-      type: message.type || "Text",
-      text: message.text,
-      sender: userId,
-      receiver: friend_id,
-    };
-    socket.emit("send_message", { message: data, room_id }, ({ message }) => {
-      dispatch(addMessage(message));
-      console.log(message);
-      setMessage({
-        conversation_id: "",
-        type: "",
-        text: "",
-        sender: "",
-        receiver: "",
+    try {
+      if (!message.text || !message.text.length || !message.text.trim().length)
+        return;
+      // setIsLoading(true);
+      const newId = new ObjectId().toHexString();
+      const data = {
+        _id: newId,
+        conversation_id: _id,
+        type: message.type || "Text",
+        text: message.text,
+        sender: userId,
+        receiver: friend_id,
+        status: "Created",
+        edited: false,
+        createdAt: Date.now(),
+      };
+      dispatch(addMessage(data));
+      console.log(newId);
+      socket.emit("send_message", { message: data, room_id }, ({ message }) => {
+        dispatch(setMessageDelivered(message));
+        console.log(message);
+        setMessage({
+          conversation_id: "",
+          type: "",
+          text: "",
+          sender: "",
+          receiver: "",
+        });
+        // setIsLoading(false);
       });
-      setIsLoading(false);
-    });
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   const startTyping = useCallback(
@@ -156,7 +170,7 @@ const Footer = () => {
               },
             }}
             variant="contained"
-            disabled={isLoading}
+            // disabled={isLoading}
             onClick={handleSendMessage}
           >
             <PaperPlaneRight size={23} weight="fill" />

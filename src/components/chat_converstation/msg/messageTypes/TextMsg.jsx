@@ -1,5 +1,6 @@
 import { Stack, Box, useTheme, Typography } from "@mui/material";
 import { useSelector } from "react-redux";
+import { Check, Checks } from "phosphor-react";
 
 import ShowMsgTime from "./ShowMsgTime";
 import Menu from "./Menu";
@@ -14,39 +15,62 @@ const TextMsg = ({ data, showMenu = true, showTime = true }) => {
 
   return (
     <Stack direction="row" justifyContent={!isOutgoing ? "start" : "end"}>
-      <Box
-        sx={{
-          ...(mode === "dark"
-            ? {
-                backgroundColor: !isOutgoing ? "grey.800" : "primary.main",
-              }
-            : {
-                backgroundColor: !isOutgoing ? "grey.300" : "primary.main",
-              }),
-          borderRadius: 1.4,
-          p: 1,
-          px: 2,
-          position: "relative",
-        }}
-      >
-        {showMenu && <Menu data={data} userId={userId} />}
-        <Typography
-          variant="body2"
+      <Stack spacing={0.7}>
+        <Box
           sx={{
             ...(mode === "dark"
               ? {
-                  color: !isOutgoing ? "grey.200" : "grey.200",
+                  backgroundColor: !isOutgoing ? "grey.800" : "primary.main",
                 }
               : {
-                  color: !isOutgoing ? "grey.700" : "grey.200",
+                  backgroundColor: !isOutgoing ? "grey.800" : "primary.main",
                 }),
-            fontWeight: "500",
+            borderRadius: 1.4,
+            p: 1,
+            px: 2,
+            position: "relative",
           }}
         >
-          {data?.text}
-        </Typography>
-        {showTime && <ShowMsgTime data={data} userId={userId} />}
-      </Box>
+          {showMenu && <Menu data={data} userId={userId} />}
+          <Typography
+            variant="body2"
+            sx={{
+              ...(mode === "dark"
+                ? {
+                    color: !isOutgoing ? "grey.200" : "grey.200",
+                  }
+                : {
+                    color: !isOutgoing ? "grey.200" : "grey.200",
+                  }),
+              fontWeight: "500",
+            }}
+          >
+            {data?.text}
+          </Typography>
+        </Box>
+        <Stack
+          direction="row"
+          justifyContent={isOutgoing && "end"}
+          width="100%"
+        >
+          <Stack
+            direction="row"
+            alignItems="center"
+            spacing={0.5}
+            color="grey.500"
+          >
+            {isOutgoing && data?.status === "Created" ? null : isOutgoing &&
+              data?.status === "Delivered" ? (
+              <Check size={16} weight="bold" />
+            ) : isOutgoing && data?.status === "Seen" ? (
+              <Checks size={16} weight="bold" />
+            ) : null}
+            {showTime && data.createdAt && (
+              <ShowMsgTime data={data} userId={userId} />
+            )}
+          </Stack>
+        </Stack>
+      </Stack>
     </Stack>
   );
 };

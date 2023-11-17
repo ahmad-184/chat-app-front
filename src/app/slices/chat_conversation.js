@@ -50,16 +50,6 @@ const conversationSlice = createSlice({
       state.current_conversation = null;
       conversationAdaptor.removeAll(state);
     },
-    updateChatConversations(state, action) {
-      state.conversations = [...action.payload];
-      if (state.current_conversation) {
-        const currentConversationIndex = state.conversations.findIndex(
-          (item) => item._id === state.current_conversation._id
-        );
-        state.current_conversation =
-          state.conversations[currentConversationIndex];
-      }
-    },
     startNewChatConversation(state, action) {
       const { conversation, messages } = action.payload;
       const conversationIndex = state.conversations.findIndex(
@@ -111,10 +101,25 @@ const conversationSlice = createSlice({
         state.current_conversation.typing = typing_status;
       }
     },
+    setMessageDelivered(state, action) {
+      const message = action.payload;
+      conversationAdaptor.setOne(state, message);
+    },
     addMessage(state, action) {
       const message = action.payload;
       console.log(message);
       conversationAdaptor.addOne(state, message);
+      const conversationIndex = state.conversations.findIndex(
+        (item) => item._id === message.conversation_id
+      );
+      state.conversations[conversationIndex].last_message = message;
+    },
+    changeLastMessage(state, action) {
+      const message = action.payload;
+      const conversationIndex = state.conversations.findIndex(
+        (item) => item._id === message.conversation_id
+      );
+      state.conversations[conversationIndex].last_message = message;
     },
   },
   extraReducers: {
@@ -126,6 +131,13 @@ const conversationSlice = createSlice({
       state.loading = false;
       if (status === 200) {
         state.conversations = [...data];
+        if (state.current_conversation) {
+          const currentConversationIndex = state.conversations.findIndex(
+            (item) => item._id === state.current_conversation._id
+          );
+          state.current_conversation =
+            state.conversations[currentConversationIndex];
+        }
       }
     },
     [fetchConversationsThunk.rejected]: (state, action) => {
@@ -164,6 +176,8 @@ export const {
   updateChatConversationsStatus,
   updateTypingStatus,
   addMessage,
+  changeLastMessage,
+  setMessageDelivered,
 } = conversationSlice.actions;
 
 export const { selectAll: getAllMessages } = conversationAdaptor.getSelectors(
