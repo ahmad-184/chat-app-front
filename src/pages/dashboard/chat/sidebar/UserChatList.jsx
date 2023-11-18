@@ -6,6 +6,7 @@ import {
   Avatar,
   Badge,
   Skeleton,
+  alpha,
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -18,11 +19,89 @@ import { selectConversation } from "../../../../app/slices/app";
 
 import createAvatar from "../../../../utils/createAvatar";
 
+import {
+  format,
+  isThisMonth,
+  isThisWeek,
+  isThisYear,
+  isToday,
+  isYesterday,
+} from "date-fns";
+import { fTimestamp } from "../../../../utils/formatTime";
+
+const time = (data) => {
+  const HM = data.lastSeen ? format(fTimestamp(data?.lastSeen), "p") : "";
+  const day = data.lastSeen ? format(fTimestamp(data?.lastSeen), "dd") : "";
+  const weekDay = data.lastSeen ? format(fTimestamp(data?.lastSeen), "EE") : "";
+  const month = data.lastSeen ? format(fTimestamp(data?.lastSeen), "MMM") : "";
+  const year = data.lastSeen ? format(fTimestamp(data?.lastSeen), "yyyy") : "";
+
+  const isDateForToday = data.lastSeen
+    ? isToday(fTimestamp(data?.lastSeen))
+    : "";
+  const isDateForThisWeek = data.lastSeen
+    ? isThisWeek(fTimestamp(data?.lastSeen))
+    : "";
+  const isDateForThisYear = data.lastSeen
+    ? isThisYear(fTimestamp(data?.lastSeen))
+    : "";
+  return (
+    <>
+      {`${isDateForToday ? HM : ""} `}
+      {`${!isDateForToday && isDateForThisWeek ? weekDay : ""} `}
+      {`${
+        !isDateForToday && !isDateForThisWeek && isDateForThisYear
+          ? `${day} ${month}`
+          : ""
+      } `}
+      {`${
+        !isDateForToday && !isDateForThisWeek && !isDateForThisYear
+          ? `${day} ${month} ${year}`
+          : ""
+      } `}
+    </>
+  );
+};
+
+const UserBoxSkeleton = () => {
+  const mode = useTheme().palette.mode;
+
+  return (
+    <Box
+      sx={{
+        backgroundColor: mode === "light" ? "grey.200" : "grey.900",
+        width: "100%",
+        p: 2,
+        borderRadius: 2,
+      }}
+    >
+      <Stack direction="row" alignItems="center" justifyContent="space-between">
+        <Stack
+          direction="row"
+          spacing={1.5}
+          sx={{ minWidth: "0px", maxWidth: "83%" }}
+        >
+          <Skeleton variant="circular" width="45px" height="45px" />
+          <Stack direction="column" sx={{ minWidth: "0px" }}>
+            <Skeleton variant="text" width="70px" height="20" />
+            <Skeleton variant="text" width="110px" height="20" />
+          </Stack>
+        </Stack>
+        <Stack direction="column" sx={{ minWidth: "0px", maxWidth: "25%" }}>
+          <Skeleton variant="text" width="30px" height="20" />
+          <Box display="flex" justifyContent="end" position="relative">
+            <Skeleton variant="circular" width="20px" height="20" />
+          </Box>
+        </Stack>
+      </Stack>
+    </Box>
+  );
+};
+
 const UserChatList = ({ data }) => {
   const theme = useTheme();
   const dispatch = useDispatch();
   const currentChat = useSelector(getCurrentConversation);
-  const { userId } = useSelector((state) => state.auth);
 
   const mode = theme.palette.mode;
 
@@ -34,40 +113,7 @@ const UserChatList = ({ data }) => {
   };
 
   if (!data) {
-    return (
-      <Box
-        sx={{
-          backgroundColor: mode === "light" ? "grey.200" : "grey.900",
-          width: "100%",
-          p: 2,
-          borderRadius: 2,
-        }}
-      >
-        <Stack
-          direction="row"
-          alignItems="center"
-          justifyContent="space-between"
-        >
-          <Stack
-            direction="row"
-            spacing={1.5}
-            sx={{ minWidth: "0px", maxWidth: "83%" }}
-          >
-            <Skeleton variant="circular" width="45px" height="45px" />
-            <Stack direction="column" sx={{ minWidth: "0px" }}>
-              <Skeleton variant="text" width="70px" height="20" />
-              <Skeleton variant="text" width="110px" height="20" />
-            </Stack>
-          </Stack>
-          <Stack direction="column" sx={{ minWidth: "0px", maxWidth: "25%" }}>
-            <Skeleton variant="text" width="30px" height="20" />
-            <Box display="flex" justifyContent="end" position="relative">
-              <Skeleton variant="circular" width="20px" height="20" />
-            </Box>
-          </Stack>
-        </Stack>
-      </Box>
-    );
+    return <UserBoxSkeleton />;
   }
 
   return (
@@ -77,7 +123,10 @@ const UserChatList = ({ data }) => {
           backgroundColor: mode === "light" ? "grey.50" : "grey.900",
         }),
         ...(currentChat?._id === data?._id && {
-          backgroundColor: mode === "light" ? "grey.300" : "grey.700",
+          backgroundColor:
+            mode === "light"
+              ? alpha(theme.palette.primary.lighter, 0.25)
+              : alpha(theme.palette.primary.lighter, 0.1),
         }),
         width: "100%",
         p: 2,
@@ -89,9 +138,9 @@ const UserChatList = ({ data }) => {
       <Stack direction="row" alignItems="center" justifyContent="space-between">
         <Stack
           direction="row"
-          spacing={2}
+          spacing={1.5}
           alignItems="center"
-          sx={{ minWidth: "0px", maxWidth: "83%" }}
+          sx={{ minWidth: "0px", maxWidth: "80%" }}
         >
           {data?.status === "Online" ? (
             <StyledBadge
@@ -109,7 +158,13 @@ const UserChatList = ({ data }) => {
             </Avatar>
           )}
           <Stack direction="column" spacing={0.5} sx={{ minWidth: "0px" }}>
-            <Typography variant="body1" fontWeight="600" noWrap>
+            <Typography
+              variant="body2"
+              fontSize={15}
+              fontWeight="600"
+              sx={{ textTransform: "capitalize" }}
+              noWrap
+            >
               {data?.name}
             </Typography>
             <Typography
@@ -126,13 +181,13 @@ const UserChatList = ({ data }) => {
           </Stack>
         </Stack>
         <Stack direction="column" sx={{ minWidth: "0px", maxWidth: "25%" }}>
-          <Typography variant="caption" noWrap>
-            {data?.lastSeen || "05:13"}
+          <Typography variant="caption" fontSize="12px" noWrap title>
+            {data?.lastSeen && time(data)}
           </Typography>
           <Box display="flex" justifyContent="end" position="relative">
             <Badge
               badgeContent={data?.unseen}
-              color="primary"
+              color="info"
               variant="standard"
               sx={{
                 "& .MuiBadge-badge": {

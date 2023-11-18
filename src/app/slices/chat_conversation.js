@@ -75,7 +75,7 @@ const conversationSlice = createSlice({
       }
     },
     updateChatConversationsStatus(state, action) {
-      const { friend_id, friend_status } = action.payload;
+      const { friend_id, friend_status, lastSeen } = action.payload;
       const conversationIndex = state.conversations.findIndex(
         (item) => item.friend_id === friend_id
       );
@@ -83,12 +83,14 @@ const conversationSlice = createSlice({
         state.conversations[conversationIndex] = {
           ...state.conversations[conversationIndex],
           status: friend_status,
+          lastSeen,
         };
         if (
           state.current_conversation &&
           state.current_conversation.friend_id === friend_id
         )
           state.current_conversation.status = friend_status;
+        state.current_conversation.lastSeen = lastSeen;
       }
     },
     updateTypingStatus(state, action) {
@@ -151,10 +153,12 @@ const conversationSlice = createSlice({
       state.loading = true;
     },
     [fetchMessagesThunk.fulfilled]: (state, action) => {
-      const { data, status } = action.payload.data;
+      const { data, status, ordered_message_list } = action.payload.data;
       state.loading = false;
       if (status === 200) {
         conversationAdaptor.setAll(state, data);
+        console.log(ordered_message_list);
+        console.log(data);
       }
     },
     [fetchMessagesThunk.rejected]: (state, action) => {

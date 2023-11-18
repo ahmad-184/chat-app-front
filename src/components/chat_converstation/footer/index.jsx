@@ -10,10 +10,9 @@ import {
   addMessage,
   setMessageDelivered,
 } from "../../../app/slices/chat_conversation";
-
 import { socket } from "../../../socket";
-
 import Input from "./Input";
+import { fullDate } from "../../../utils/formatTime";
 
 const buttons = [
   {
@@ -33,9 +32,8 @@ const Footer = () => {
   const dispatch = useDispatch();
   const { room_id } = useSelector((state) => state.app);
   const userId = useSelector((state) => state.auth.userId);
-  const { friend_id, _id } = useSelector(getCurrentConversation);
+  const { friend_id, _id, status } = useSelector(getCurrentConversation);
 
-  const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState({
     conversation_id: _id,
     type: "Text",
@@ -51,11 +49,19 @@ const Footer = () => {
   const handleAddEmoji = (emoji) =>
     setMessage({ ...message, text: `${message.text || ""}${emoji}` });
 
+  const setMessageEmpty = () =>
+    setMessage({
+      conversation_id: "",
+      type: "",
+      text: "",
+      sender: "",
+      receiver: "",
+    });
+
   const handleSendMessage = () => {
     try {
       if (!message.text || !message.text.length || !message.text.trim().length)
         return;
-      // setIsLoading(true);
       const newId = new ObjectId().toHexString();
       const data = {
         _id: newId,
@@ -66,21 +72,13 @@ const Footer = () => {
         receiver: friend_id,
         status: "Created",
         edited: false,
+        createdAt_day: fullDate(Date.now()),
         createdAt: Date.now(),
       };
       dispatch(addMessage(data));
-      console.log(newId);
+      setMessageEmpty();
       socket.emit("send_message", { message: data, room_id }, ({ message }) => {
         dispatch(setMessageDelivered(message));
-        console.log(message);
-        setMessage({
-          conversation_id: "",
-          type: "",
-          text: "",
-          sender: "",
-          receiver: "",
-        });
-        // setIsLoading(false);
       });
     } catch (err) {
       console.log(err);
@@ -90,6 +88,7 @@ const Footer = () => {
   const startTyping = useCallback(
     _.throttle(
       () => {
+        if (status === "Offline") return;
         socket.emit("update_typing_status", {
           conversatoin_id: _id,
           user_id: userId,
@@ -99,29 +98,24 @@ const Footer = () => {
       1000,
       { trailing: false }
     ),
-    [room_id]
+    [room_id, status]
   );
 
   const stopTyping = useCallback(
     _.debounce(() => {
+      if (status === "Offline") return;
       socket.emit("update_typing_status", {
         conversatoin_id: _id,
         user_id: userId,
         typing_status: false,
       });
     }, 1000),
-    [room_id]
+    [room_id, status]
   );
 
   useEffect(() => {
     return () => {
-      setMessage({
-        conversation_id: "",
-        type: "",
-        text: "",
-        sender: "",
-        receiver: "",
-      });
+      setMessageEmpty();
     };
   }, [room_id]);
 

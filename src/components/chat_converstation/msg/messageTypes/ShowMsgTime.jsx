@@ -3,6 +3,8 @@ import { Typography, Box } from "@mui/material";
 import { fDateTimeHM } from "../../../../utils/formatTime";
 
 const ShowMsgTime = ({ data }) => {
+  const time = fDateTimeHM(data?.createdAt);
+
   return (
     <Box lineHeight={0}>
       <Typography
@@ -11,7 +13,7 @@ const ShowMsgTime = ({ data }) => {
           color: "grey.500",
         }}
       >
-        {fDateTimeHM(data?.createdAt)}
+        {time}
       </Typography>
     </Box>
   );
