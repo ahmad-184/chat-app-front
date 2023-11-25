@@ -7,6 +7,7 @@ import { PersistGate } from "redux-persist/integration/react";
 import App from "./App";
 
 import SettingsProvider from "./contexts/SettingsContext";
+import SocketProvider from "./contexts/SocketContext";
 import { persistedStore, store } from "./app/store";
 
 createRoot(document.getElementById("root")).render(
@@ -15,7 +16,9 @@ createRoot(document.getElementById("root")).render(
       <ReduxProvider store={store}>
         <PersistGate persistor={persistedStore}>
           <SettingsProvider>
-            <App />
+            <SocketProvider>
+              <App />
+            </SocketProvider>
           </SettingsProvider>
         </PersistGate>
       </ReduxProvider>

@@ -9,15 +9,17 @@ import {
   updateFriendRequestsThunk,
 } from "../../../../../app/slices/app";
 import { getToken, getUserId } from "../../../../../app/slices/auth";
-import { socket } from "../../../../../socket";
 
 import User from "./User";
+import useSocket from "../../../../../hooks/useSocket";
 
 const UserBox = () => {
   const users = useSelector(getUsers);
   const token = useSelector(getToken);
   const userId = useSelector(getUserId);
   const dispatch = useDispatch();
+
+  const { socket } = useSocket();
 
   useEffect(() => {
     dispatch(updateUsersThunk({ token }));

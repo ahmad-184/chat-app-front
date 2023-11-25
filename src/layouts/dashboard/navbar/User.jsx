@@ -17,7 +17,6 @@ import { Profile_Menu } from "../../../data";
 import { logOut } from "../../../app/slices/auth";
 import { appLogout } from "../../../app/slices/app";
 import { logOutChatConv } from "../../../app/slices/chat_conversation";
-import { socket } from "../../../socket";
 
 const ThemeSwitch = styled(Switch)(({ theme }) => ({
   width: 60,
@@ -90,7 +89,6 @@ const User = () => {
     await dispatch(appLogout());
     await dispatch(logOutChatConv());
     await dispatch(logOut());
-    await socket.disconnect();
     window.localStorage.removeItem("redux-root");
     window.location = "/auth.login";
     window.location.reload();

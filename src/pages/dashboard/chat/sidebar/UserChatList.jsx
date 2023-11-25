@@ -1,3 +1,4 @@
+import { memo } from "react";
 import {
   Box,
   Typography,
@@ -30,7 +31,7 @@ import {
 import { fTimestamp } from "../../../../utils/formatTime";
 
 const time = (data) => {
-  const HM = data.lastSeen ? format(fTimestamp(data?.lastSeen), "p") : "";
+  const HM = data.lastSeen ? format(fTimestamp(data?.lastSeen), "HH:mm") : "";
   const day = data.lastSeen ? format(fTimestamp(data?.lastSeen), "dd") : "";
   const weekDay = data.lastSeen ? format(fTimestamp(data?.lastSeen), "EE") : "";
   const month = data.lastSeen ? format(fTimestamp(data?.lastSeen), "MMM") : "";
@@ -186,7 +187,7 @@ const UserChatList = ({ data }) => {
           </Typography>
           <Box display="flex" justifyContent="end" position="relative">
             <Badge
-              badgeContent={data?.unseen}
+              badgeContent={data?.unseen.length}
               color="info"
               variant="standard"
               sx={{
@@ -205,4 +206,4 @@ const UserChatList = ({ data }) => {
   );
 };
 
-export default UserChatList;
+export default memo(UserChatList);

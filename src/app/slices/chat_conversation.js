@@ -107,9 +107,30 @@ const conversationSlice = createSlice({
       const message = action.payload;
       conversationAdaptor.setOne(state, message);
     },
+    setMessageSeen(state, action) {
+      conversationAdaptor.upsertOne(state, {
+        _id: action.payload,
+        status: "Seen",
+      });
+    },
+    addUnseenMsg(state, action) {
+      const { msg_id, conv_id } = action.payload;
+      const conversationIndex = state.conversations.findIndex(
+        (item) => item._id === conv_id
+      );
+      state.conversations[conversationIndex].unseen.push(msg_id);
+    },
+    removeUnseenMsg(state, action) {
+      const { msg_id, conv_id } = action.payload;
+      const conversationIndex = state.conversations.findIndex(
+        (item) => item._id === conv_id
+      );
+      state.conversations[conversationIndex].unseen = state.conversations[
+        conversationIndex
+      ].unseen.filter((item) => item !== msg_id);
+    },
     addMessage(state, action) {
       const message = action.payload;
-      console.log(message);
       conversationAdaptor.addOne(state, message);
       const conversationIndex = state.conversations.findIndex(
         (item) => item._id === message.conversation_id
@@ -122,6 +143,20 @@ const conversationSlice = createSlice({
         (item) => item._id === message.conversation_id
       );
       state.conversations[conversationIndex].last_message = message;
+    },
+    changeToFirstConversation(state, action) {
+      const conversation_id = action.payload;
+      const firstConv = state.conversations[0];
+      if (firstConv._id === conversation_id) return;
+      let array = [];
+      for (let conv of state.conversations) {
+        if (conv._id === conversation_id) {
+          array = [conv, ...array];
+        } else array.push(conv);
+      }
+      console.log(array);
+      console.log("array");
+      state.conversations = array;
     },
   },
   extraReducers: {
@@ -157,8 +192,6 @@ const conversationSlice = createSlice({
       state.loading = false;
       if (status === 200) {
         conversationAdaptor.setAll(state, data);
-        console.log(ordered_message_list);
-        console.log(data);
       }
     },
     [fetchMessagesThunk.rejected]: (state, action) => {
@@ -182,6 +215,10 @@ export const {
   addMessage,
   changeLastMessage,
   setMessageDelivered,
+  setMessageSeen,
+  removeUnseenMsg,
+  addUnseenMsg,
+  changeToFirstConversation,
 } = conversationSlice.actions;
 
 export const { selectAll: getAllMessages } = conversationAdaptor.getSelectors(

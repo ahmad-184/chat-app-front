@@ -22,16 +22,18 @@ import {
   addChatConversation,
 } from "../../../../../app/slices/chat_conversation";
 
-import { socket } from "../../../../../socket";
 import createAvatar from "../../../../../utils/createAvatar";
 
 import StyledBadge from "../../../../../components/StyledBadge";
+import useSocket from "../../../../../hooks/useSocket";
 
 const FriendBox = ({ handleClose }) => {
   const friends = useSelector(getFriends);
   const token = useSelector(getToken);
   const userId = useSelector(getUserId);
   const dispatch = useDispatch();
+
+  const { socket } = useSocket();
 
   const [isLoading, setIsLoading] = useState(false);
 

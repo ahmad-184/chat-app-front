@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useTransition } from "react";
 import { Button, Stack, Box, useTheme, alpha, IconButton } from "@mui/material";
 import { Microphone, PaperPlaneRight, LinkSimple, Image } from "phosphor-react";
 import { useDispatch, useSelector } from "react-redux";
@@ -10,9 +10,9 @@ import {
   addMessage,
   setMessageDelivered,
 } from "../../../app/slices/chat_conversation";
-import { socket } from "../../../socket";
 import Input from "./Input";
 import { fullDate } from "../../../utils/formatTime";
+import useSocket from "../../../hooks/useSocket";
 
 const buttons = [
   {
@@ -34,6 +34,10 @@ const Footer = () => {
   const userId = useSelector((state) => state.auth.userId);
   const { friend_id, _id, status } = useSelector(getCurrentConversation);
 
+  const { socket } = useSocket();
+
+  const [isPending, startTransition] = useTransition();
+
   const [message, setMessage] = useState({
     conversation_id: _id,
     type: "Text",
@@ -44,6 +48,14 @@ const Footer = () => {
 
   const handleChangeTextInput = (text) => {
     setMessage({ ...message, text });
+  };
+
+  const handleScrollDown = () => {
+    const chatView = document.querySelector("#chat_view");
+    chatView?.scroll({
+      top: chatView?.scrollHeight,
+      behavior: "smooth",
+    });
   };
 
   const handleAddEmoji = (emoji) =>
@@ -62,6 +74,7 @@ const Footer = () => {
     try {
       if (!message.text || !message.text.length || !message.text.trim().length)
         return;
+
       const newId = new ObjectId().toHexString();
       const data = {
         _id: newId,
@@ -75,10 +88,17 @@ const Footer = () => {
         createdAt_day: fullDate(Date.now()),
         createdAt: Date.now(),
       };
-      dispatch(addMessage(data));
-      setMessageEmpty();
-      socket.emit("send_message", { message: data, room_id }, ({ message }) => {
-        dispatch(setMessageDelivered(message));
+      startTransition(async () => {
+        await dispatch(addMessage(data));
+        handleScrollDown();
+        setMessageEmpty();
+        socket.emit(
+          "send_message",
+          { message: data, room_id },
+          ({ message }) => {
+            dispatch(setMessageDelivered(message));
+          }
+        );
       });
     } catch (err) {
       console.log(err);
@@ -95,7 +115,7 @@ const Footer = () => {
           typing_status: true,
         });
       },
-      1000,
+      3000,
       { trailing: false }
     ),
     [room_id, status]
@@ -109,7 +129,7 @@ const Footer = () => {
         user_id: userId,
         typing_status: false,
       });
-    }, 1000),
+    }, 2000),
     [room_id, status]
   );
 

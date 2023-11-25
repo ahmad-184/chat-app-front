@@ -33,9 +33,9 @@ const Input = ({
 
   const handlChange = (event) => {
     const value = event.target.value;
+    handleChangeTextInput(value);
     startTyping();
     stopTyping();
-    handleChangeTextInput(value);
   };
 
   return (

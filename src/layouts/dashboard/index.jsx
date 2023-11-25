@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, memo, useCallback } from "react";
 import { Outlet } from "react-router-dom";
 import { Stack } from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
@@ -21,15 +21,17 @@ import {
 import {
   addMessage,
   getChatConversations,
-  getCurrentConversation,
   logOutChatConv,
   updateChatConversationsStatus,
   updateTypingStatus,
   changeLastMessage,
+  setMessageSeen,
+  addUnseenMsg,
+  changeToFirstConversation,
 } from "../../app/slices/chat_conversation";
 
-import { socket, socketConnect } from "../../socket";
 import { logOut } from "../../app/slices/auth";
+import useSocket from "../../hooks/useSocket";
 
 const DashboardLayout = () => {
   const { isLoggedIn, token, userId } = useSelector((state) => state.auth);
@@ -38,36 +40,28 @@ const DashboardLayout = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const handleLeaveApp = async () => {
+  const { socket } = useSocket();
+
+  const handleLeaveApp = useCallback(async () => {
     await dispatch(appLogout());
     await dispatch(logOutChatConv());
     await dispatch(logOut());
-    await socket.disconnect();
     window.localStorage.removeItem("redux-root");
     window.location = "/auth.login";
     window.location.reload();
-  };
+  }, []);
+
+  const UpdateUsersData = useCallback(async () => {
+    await dispatch(updateUsersThunk({ token }));
+    await dispatch(updateFriendsThunk({ token }));
+    await dispatch(updateFriendRequestsThunk({ token }));
+  }, [token]);
 
   useEffect(() => {
     if (isLoggedIn) {
-      const UpdateUsersData = async () => {
-        await dispatch(updateUsersThunk({ token }));
-        await dispatch(updateFriendsThunk({ token }));
-        await dispatch(updateFriendRequestsThunk({ token }));
-      };
-
       UpdateUsersData();
     }
   }, []);
-
-  useEffect(() => {
-    if (isLoggedIn) {
-      if (!socket) {
-        socketConnect(userId, token);
-      }
-      socket.connect();
-    }
-  }, [isLoggedIn, socket]);
 
   useEffect(() => {
     if (isLoggedIn && socket) {
@@ -111,18 +105,29 @@ const DashboardLayout = () => {
       });
 
       socket.on("new_message", ({ message }) => {
-        console.log(message);
-        if (message.conversation_id.toString() === room_id) {
+        const conversation_id = message.conversation_id.toString();
+        dispatch(changeToFirstConversation(conversation_id));
+        if (conversation_id === room_id) {
           dispatch(addMessage(message));
         } else {
           const conversation = conversations.find(
-            (item) => item._id === message.conversation_id
+            (item) => item._id === conversation_id
           );
           dispatch(changeLastMessage(message));
           enqueueSnackbar({
             message: `A message received from ${conversation.name}`,
           });
         }
+        dispatch(
+          addUnseenMsg({
+            msg_id: message._id,
+            conv_id: conversation_id,
+          })
+        );
+      });
+
+      socket.on("message_status_changed", ({ message_id }) => {
+        dispatch(setMessageSeen(message_id));
       });
 
       socket.on("error", (data) => {
@@ -133,33 +138,18 @@ const DashboardLayout = () => {
         enqueueSnackbar(message, { variant: "error" });
         setTimeout(handleLeaveApp, 4000);
       });
-
-      socket.on("connect_error", () => {
-        enqueueSnackbar("Offline", {
-          variant: "error",
-        });
-      });
-
-      socket.on("reconnect", (attempt) => {
-        console, log(attempt);
-        enqueueSnackbar("Network connected successfuly", {
-          variant: "success",
-        });
-      });
     }
 
     return () => {
       if (socket) {
-        socket.off("new_friend_request");
-        socket.off("connect_error");
-        socket.off("update_friends_status");
-        socket.off("error");
-        socket.off("reconnect");
-        socket.off("your_request_rejected");
-        socket.off("your_friend_request_accepted");
-        socket.off("request_not_exist");
-        socket.off("auth_error");
-        socket.off("new_message");
+        socket?.off("new_friend_request");
+        socket?.off("update_friends_status");
+        socket?.off("error");
+        socket?.off("your_request_rejected");
+        socket?.off("your_friend_request_accepted");
+        socket?.off("request_not_exist");
+        socket?.off("auth_error");
+        socket?.off("new_message");
       }
     };
   }, [socket, isLoggedIn, room_id]);

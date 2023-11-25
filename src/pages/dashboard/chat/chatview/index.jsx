@@ -11,11 +11,12 @@ import {
 } from "../../../../app/slices/chat_conversation";
 import { getToken } from "../../../../app/slices/auth";
 
-import { socket } from "../../../../socket";
+import useSocket from "../../../../hooks/useSocket";
 
 const ChatView = () => {
   const mode = useTheme().palette.mode;
   const dispatch = useDispatch();
+  const { socket } = useSocket();
   const {
     right_sidebar: { open },
     chat_type,

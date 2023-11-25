@@ -13,8 +13,6 @@ import {
 } from "../../../../../app/slices/app";
 import { getToken } from "../../../../../app/slices/auth";
 
-import { socket } from "../../../../../socket";
-
 import { ReceivedFriendRequest, RequestsStatus } from "./Requests";
 import { enqueueSnackbar } from "notistack";
 
@@ -22,11 +20,14 @@ import {
   MotionContainer,
   MotionViewport,
 } from "../../../../../components/animate";
+import useSocket from "../../../../../hooks/useSocket";
 
 const FriendsBox = () => {
   const { received, sent } = useSelector(getFriendRequests);
   const token = useSelector(getToken);
   const dispatch = useDispatch();
+
+  const { socket } = useSocket();
 
   const theme = useTheme();
   const mode = theme.palette.mode;

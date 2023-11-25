@@ -117,16 +117,14 @@ const Sidebar = () => {
                     Recent
                   </Typography>
                   <Stack spacing={1.5}>
-                    {chats
-                      .filter((item) => !item.pinned)
-                      .map((item, index) => (
-                        <UserChatList
-                          key={`${item._id}_${Math.floor(
-                            Math.random * 10500
-                          )}_${index}`}
-                          data={item}
-                        />
-                      ))}
+                    {chats.map((item, index) => (
+                      <UserChatList
+                        key={`${item._id}_${Math.floor(
+                          Math.random * 10500
+                        )}_${index}`}
+                        data={item}
+                      />
+                    ))}
                   </Stack>
                 </Stack>
               </>

@@ -1,14 +1,7 @@
 import { Stack, Divider, useTheme, Typography } from "@mui/material";
-import {
-  format,
-  isThisWeek,
-  isThisYear,
-  isToday,
-  isTomorrow,
-  isYesterday,
-} from "date-fns";
+import { format, isThisWeek, isThisYear, isToday, isYesterday } from "date-fns";
 
-import { fDate, fullDate, fTimestamp } from "../../../../utils/formatTime";
+import { fTimestamp } from "../../../../utils/formatTime";
 
 const time = (data) => {
   const HM = data ? format(fTimestamp(data), "p") : "";
@@ -18,14 +11,22 @@ const time = (data) => {
   const year = data ? format(fTimestamp(data), "yyyy") : "";
 
   const isDateForToday = data ? isToday(fTimestamp(data)) : "";
+  const isDateForYesterday = data ? isYesterday(fTimestamp(data)) : "";
   const isDateForThisWeek = data ? isThisWeek(fTimestamp(data)) : "";
   const isDateForThisYear = data ? isThisYear(fTimestamp(data)) : "";
   return (
     <>
-      {`${isDateForToday ? "Today" : ""} `}
-      {`${!isDateForToday && isDateForThisWeek ? weekDay : ""} `}
+      {`${isDateForToday ? "Today" : isDateForYesterday ? "Yesterday" : ""} `}
       {`${
-        !isDateForToday && !isDateForThisWeek && isDateForThisYear
+        !isDateForToday && !isDateForYesterday && isDateForThisWeek
+          ? weekDay
+          : ""
+      } `}
+      {`${
+        !isDateForToday &&
+        !isDateForYesterday &&
+        !isDateForThisWeek &&
+        isDateForThisYear
           ? `${day} ${month}`
           : ""
       } `}

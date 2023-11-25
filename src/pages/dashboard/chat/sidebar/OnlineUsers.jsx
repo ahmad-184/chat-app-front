@@ -1,8 +1,8 @@
+import { memo } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Avatar, Stack, Typography, Box, useTheme, alpha } from "@mui/material";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { FreeMode } from "swiper/modules";
-import { faker } from "@faker-js/faker";
 
 import {
   getChatConversations,
@@ -54,18 +54,11 @@ const User = ({ user }) => {
             variant="dot"
           >
             <Avatar
-              // src={user.avatar}
-              src={faker.image.avatar()}
+              src={user.avatar}
               alt={`${user?.name} avatar`}
               sx={{
                 width: "40px",
                 height: "40px",
-                // outline: "2px solid",
-                // outlineOffset: "1px",
-                // outlineColor:
-                //   mode === "light"
-                //     ? theme.palette.grey[400]
-                //     : theme.palette.grey[600],
               }}
             >
               {avatar?.name}
@@ -132,7 +125,7 @@ const OnlineUsers = () => {
           <SwiperSlide
             key={`${item._id}_${Math.floor(Math.random() * 1000)}${index}`}
           >
-            <User user={item} key={`${item?._id}_${index}`} isLast={false} />
+            <User user={item} isLast={false} />
           </SwiperSlide>
         ))}
       </Swiper>
@@ -140,4 +133,4 @@ const OnlineUsers = () => {
   );
 };
 
-export default OnlineUsers;
+export default memo(OnlineUsers);

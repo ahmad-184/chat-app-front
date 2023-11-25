@@ -15,7 +15,7 @@ export function fDateTime(date) {
 }
 
 export function fDateTimeHM(date) {
-  return format(new Date(date), "hh:mm");
+  return format(new Date(date), "HH:mm");
 }
 
 export function fTimestamp(date) {

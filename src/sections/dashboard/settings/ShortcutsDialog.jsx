@@ -106,7 +106,7 @@ const list = [
   },
 ];
 
-const ShortcutsDiagram = ({ open, handleClose }) => {
+const ShortcutsDialog = ({ open, handleClose }) => {
   const theme = useTheme();
   const mode = theme.palette.mode;
 
@@ -177,4 +177,4 @@ const ShortcutsDiagram = ({ open, handleClose }) => {
   );
 };
 
-export default ShortcutsDiagram;
+export default ShortcutsDialog;

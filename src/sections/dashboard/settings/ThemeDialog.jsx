@@ -1,4 +1,4 @@
-import { forwardRef, useState, useEffect } from "react";
+import { forwardRef, useState } from "react";
 import {
   Button,
   Dialog,
@@ -17,7 +17,7 @@ const Transition = forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const ThemeDiagram = ({ open, handleClose }) => {
+const ThemeDialog = ({ open, handleClose }) => {
   const { onChangeMode, themeMode } = useSettings();
   const [selectedMode, setSelectedMode] = useState(themeMode);
 
@@ -87,4 +87,4 @@ const ThemeDiagram = ({ open, handleClose }) => {
   );
 };
 
-export default ThemeDiagram;
+export default ThemeDialog;

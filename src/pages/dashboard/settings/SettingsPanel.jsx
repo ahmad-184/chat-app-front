@@ -27,8 +27,8 @@ import {
 import { faker } from "@faker-js/faker";
 
 import { SimpleBarStyle } from "../../../components/Scrollbar";
-import ShortcutsDiagram from "../../../sections/dashboard/settings/ShortcutsDiagram";
-import ThemeDiagram from "../../../sections/dashboard/settings/ThemeDiagram";
+import ShortcutsDialog from "../../../sections/dashboard/settings/ShortcutsDialog";
+import ThemeDialog from "../../../sections/dashboard/settings/ThemeDialog";
 import SidebarContainer from "../SidebarContainer";
 
 const SettingsPanel = () => {
@@ -187,13 +187,13 @@ const SettingsPanel = () => {
         </SimpleBarStyle>
       </SidebarContainer>
       {openShortcutsDiagram && (
-        <ShortcutsDiagram
+        <ShortcutsDialog
           open={openShortcutsDiagram}
           handleClose={handleCloseShortcutsDiagram}
         />
       )}
       {openThemeDiagram && (
-        <ThemeDiagram
+        <ThemeDialog
           open={openThemeDiagram}
           handleClose={handleCloseThemeDiagram}
         />
