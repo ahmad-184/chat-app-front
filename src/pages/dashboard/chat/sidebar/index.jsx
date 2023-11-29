@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, memo } from "react";
 import { Typography, Stack, IconButton } from "@mui/material";
 import { CircleDashed, Users } from "phosphor-react";
 import * as _ from "lodash";
@@ -66,9 +66,9 @@ const Sidebar = () => {
             <IconButton onClick={handleOpenUserDialog}>
               <Users />
             </IconButton>
-            <IconButton>
+            {/* <IconButton>
               <CircleDashed />
-            </IconButton>
+            </IconButton> */}
           </Stack>
         </Stack>
         <SearchInput onChange={handleSearch} />

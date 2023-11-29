@@ -2,10 +2,12 @@ import {
   createSlice,
   createEntityAdapter,
   createAsyncThunk,
+  current,
 } from "@reduxjs/toolkit";
 import { enqueueSnackbar } from "notistack";
 
 import { fetchChatConversationsApi, fetchMessagesApi } from "../../services";
+import filterByDate from "../../utils/filterByDate";
 
 const conversationAdaptor = createEntityAdapter({
   selectId: (item) => item._id,
@@ -13,6 +15,10 @@ const conversationAdaptor = createEntityAdapter({
 
 const initialState = conversationAdaptor.getInitialState({
   loading: false,
+  error: false,
+  currentPage: 0,
+  nextPage: 1,
+  hasNextPage: true,
   conversations: [],
   current_conversation: null,
 });
@@ -31,6 +37,18 @@ export const fetchConversationsThunk = createAsyncThunk(
 
 export const fetchMessagesThunk = createAsyncThunk(
   "chat_conversation/fetchMessagesThunk",
+  async (data, { rejectWithValue }) => {
+    try {
+      const res = await fetchMessagesApi(data);
+      return res;
+    } catch (err) {
+      return rejectWithValue(err);
+    }
+  }
+);
+
+export const fetchMoreMessageThunk = createAsyncThunk(
+  "chat_conversation/fetchMoreMessageThunk",
   async (data, { rejectWithValue }) => {
     try {
       const res = await fetchMessagesApi(data);
@@ -65,6 +83,9 @@ const conversationSlice = createSlice({
       );
       state.current_conversation =
         state.conversations[currentConversationIndex];
+      state.currentPage = 0;
+      state.hasNextPage = true;
+      state.nextPage = 1;
     },
     addChatConversation(state, action) {
       const existing_conversation = state.conversations.find(
@@ -107,12 +128,6 @@ const conversationSlice = createSlice({
       const message = action.payload;
       conversationAdaptor.setOne(state, message);
     },
-    setMessageSeen(state, action) {
-      conversationAdaptor.upsertOne(state, {
-        _id: action.payload,
-        status: "Seen",
-      });
-    },
     addUnseenMsg(state, action) {
       const { msg_id, conv_id } = action.payload;
       const conversationIndex = state.conversations.findIndex(
@@ -120,14 +135,29 @@ const conversationSlice = createSlice({
       );
       state.conversations[conversationIndex].unseen.push(msg_id);
     },
-    removeUnseenMsg(state, action) {
+    changeMessageStatus(state, action) {
       const { msg_id, conv_id } = action.payload;
+      conversationAdaptor.upsertOne(state, {
+        _id: msg_id,
+        status: "Seen",
+      });
       const conversationIndex = state.conversations.findIndex(
         (item) => item._id === conv_id
       );
       state.conversations[conversationIndex].unseen = state.conversations[
         conversationIndex
-      ].unseen.filter((item) => item !== msg_id);
+      ].unseen.filter((id) => id !== msg_id);
+      if (state.current_conversation._id === conv_id) {
+        state.current_conversation.unseen =
+          state.conversations[conversationIndex].unseen;
+      }
+    },
+    setMessageSeen(state, action) {
+      const msg_id = action.payload;
+      conversationAdaptor.upsertOne(state, {
+        _id: msg_id,
+        status: "Seen",
+      });
     },
     addMessage(state, action) {
       const message = action.payload;
@@ -154,8 +184,6 @@ const conversationSlice = createSlice({
           array = [conv, ...array];
         } else array.push(conv);
       }
-      console.log(array);
-      console.log("array");
       state.conversations = array;
     },
   },
@@ -188,15 +216,54 @@ const conversationSlice = createSlice({
       state.loading = true;
     },
     [fetchMessagesThunk.fulfilled]: (state, action) => {
-      const { data, status, ordered_message_list } = action.payload.data;
+      const { data, status, currentPage, nextPage, hasNextPage } =
+        action.payload.data;
       state.loading = false;
       if (status === 200) {
-        conversationAdaptor.setAll(state, data);
+        if (state.error === true) state.error = false;
+        const msgs = [...data].reverse();
+
+        const items = filterByDate(msgs);
+
+        state.currentPage = currentPage;
+        state.nextPage = nextPage;
+        state.hasNextPage = hasNextPage;
+        conversationAdaptor.setAll(state, items);
       }
     },
     [fetchMessagesThunk.rejected]: (state, action) => {
       const { error, message } = action.payload;
       state.loading = false;
+      state.error = true;
+      if (error) {
+        enqueueSnackbar(message, { variant: "error" });
+      }
+    },
+    [fetchMoreMessageThunk.fulfilled]: (state, action) => {
+      const { data, status, currentPage, nextPage, hasNextPage } =
+        action.payload.data;
+      if (status === 200) {
+        if (state.error === true) state.error = false;
+        const msgs = [...data].reverse();
+
+        let oldMsgsArr = [];
+        for (let msg of Object.entries(current(state.entities))) {
+          if (msg[1].type !== "timeline") oldMsgsArr.push(msg[1]);
+        }
+
+        const mergedItems = [...msgs, ...oldMsgsArr];
+
+        const sortedItems = filterByDate(mergedItems);
+
+        state.currentPage = currentPage;
+        state.nextPage = nextPage;
+        state.hasNextPage = hasNextPage;
+        conversationAdaptor.setAll(state, sortedItems);
+      }
+    },
+    [fetchMoreMessageThunk.rejected]: (state, action) => {
+      const { error, message } = action.payload;
+      state.error = true;
       if (error) {
         enqueueSnackbar(message, { variant: "error" });
       }
@@ -215,10 +282,10 @@ export const {
   addMessage,
   changeLastMessage,
   setMessageDelivered,
-  setMessageSeen,
-  removeUnseenMsg,
   addUnseenMsg,
   changeToFirstConversation,
+  changeMessageStatus,
+  setMessageSeen,
 } = conversationSlice.actions;
 
 export const { selectAll: getAllMessages } = conversationAdaptor.getSelectors(

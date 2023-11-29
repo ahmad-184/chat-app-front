@@ -6,7 +6,7 @@ import { Check, Checks } from "phosphor-react";
 import ShowMsgTime from "./ShowMsgTime";
 import Menu from "./Menu";
 
-import MessageWrapper from "./MessageWrapper";
+import MessagesHOC from "../../../../HOC's/MessagesHOC";
 
 const TextMsg = forwardRef(
   ({ data, showMenu = true, showTime = true }, ref) => {
@@ -14,15 +14,14 @@ const TextMsg = forwardRef(
     const { userId } = useSelector((state) => state.auth);
 
     const mode = theme.palette.mode;
-
     const isOutgoing = Boolean(data?.sender === userId);
 
     return (
       <Stack
         direction="row"
-        ref={ref}
-        message_status={data?.status}
+        id={data?._id}
         justifyContent={!isOutgoing ? "start" : "end"}
+        ref={ref}
       >
         <Stack spacing={0.7}>
           <Box
@@ -68,13 +67,12 @@ const TextMsg = forwardRef(
               spacing={0.5}
               color="grey.500"
             >
-              {isOutgoing && data?.status === "Created" ? null : isOutgoing &&
-                data?.status === "Delivered" ? (
+              {isOutgoing && data?.status === "Delivered" ? (
                 <Check size={16} weight="bold" />
               ) : isOutgoing && data?.status === "Seen" ? (
                 <Checks size={16} weight="bold" />
               ) : null}
-              {showTime && data.createdAt && (
+              {showTime && data?.createdAt && (
                 <ShowMsgTime data={data} userId={userId} />
               )}
             </Stack>
@@ -85,4 +83,4 @@ const TextMsg = forwardRef(
   }
 );
 
-export default memo(MessageWrapper(TextMsg));
+export default memo(MessagesHOC(TextMsg));

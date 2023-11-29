@@ -50,13 +50,13 @@ const Footer = () => {
     setMessage({ ...message, text });
   };
 
-  const handleScrollDown = () => {
-    const chatView = document.querySelector("#chat_view");
-    chatView?.scroll({
-      top: chatView?.scrollHeight,
-      behavior: "smooth",
-    });
-  };
+  // const handleScrollDown = () => {
+  //   const chatView = document.querySelector("#chat_view");
+  //   chatView?.scroll({
+  //     top: chatView?.scrollHeight,
+  //     behavior: "smooth",
+  //   });
+  // };
 
   const handleAddEmoji = (emoji) =>
     setMessage({ ...message, text: `${message.text || ""}${emoji}` });
@@ -90,7 +90,7 @@ const Footer = () => {
       };
       startTransition(async () => {
         await dispatch(addMessage(data));
-        handleScrollDown();
+        // handleScrollDown();
         setMessageEmpty();
         socket.emit(
           "send_message",
@@ -129,7 +129,7 @@ const Footer = () => {
         user_id: userId,
         typing_status: false,
       });
-    }, 2000),
+    }, 1000),
     [room_id, status]
   );
 

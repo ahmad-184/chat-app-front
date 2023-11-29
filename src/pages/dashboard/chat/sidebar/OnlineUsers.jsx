@@ -14,7 +14,7 @@ import StyledBadge from "../../../../components/StyledBadge";
 
 import useResponsive from "../../../../hooks/useResponsive";
 
-const User = ({ user }) => {
+const User = memo(({ user }) => {
   const avatar = createAvatar(user?.name);
   const dispatch = useDispatch();
   const theme = useTheme();
@@ -94,7 +94,7 @@ const User = ({ user }) => {
         </Box>
       </Stack>
     );
-};
+});
 
 const OnlineUsers = () => {
   const conversations = useSelector(getChatConversations);
@@ -133,4 +133,4 @@ const OnlineUsers = () => {
   );
 };
 
-export default memo(OnlineUsers);
+export default OnlineUsers;

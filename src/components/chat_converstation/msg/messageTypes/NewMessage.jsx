@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { memo, useEffect, useRef } from "react";
 import { Divider, Stack, Typography, useTheme } from "@mui/material";
 
 const NewMessage = () => {
@@ -9,16 +9,12 @@ const NewMessage = () => {
 
   useEffect(() => {
     if (boxRef.current) {
-      const chatView = document
-        .querySelector("#chat_view")
-        .getAttribute("new_message");
-      console.log(chatView);
+      boxRef.current?.scrollIntoView({ block: "end" });
     }
-    // const d = document.getElementById('f').scrollIntoView({block: "start"})
   }, [boxRef]);
 
   return (
-    <Stack direction="row" width="100%" py={1.5} ref={boxRef} new_message>
+    <Stack direction="row" width="100%" py={1.5} ref={boxRef}>
       <Divider
         variant="fullWidth"
         textAlign="center"
@@ -49,4 +45,4 @@ const NewMessage = () => {
   );
 };
 
-export default NewMessage;
+export default memo(NewMessage);

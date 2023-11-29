@@ -1,7 +1,11 @@
-import { useState, useEffect, createContext } from "react";
+import { useState, useEffect, createContext, useCallback } from "react";
 import io from "socket.io-client";
-import { useSelector } from "react-redux";
-import * as _ from "lodash";
+import { useSelector, useDispatch } from "react-redux";
+
+import { logOutChatConv } from "../app/slices/chat_conversation";
+import { logOut } from "../app/slices/auth";
+import { appLogout } from "../app/slices/app";
+import { enqueueSnackbar } from "notistack";
 
 const lang = window.localStorage.getItem("lang");
 
@@ -18,7 +22,10 @@ const SocketProvider = ({ children }) => {
   const [connection, setConnection] = useState(false);
   const [ping, setPing] = useState(null);
 
+  const dispatch = useDispatch();
+
   const { isLoggedIn, token, userId } = useSelector((state) => state.auth);
+  const { room_id } = useSelector((state) => state.app);
 
   useEffect(() => {
     if (isLoggedIn) {
@@ -45,29 +52,52 @@ const SocketProvider = ({ children }) => {
     }
   }, [isLoggedIn]);
 
+  const handleLeaveApp = useCallback(async () => {
+    await dispatch(appLogout());
+    await dispatch(logOutChatConv());
+    await dispatch(logOut());
+    window.localStorage.removeItem("redux-root");
+    window.location = "/auth.login";
+    window.location.reload();
+  }, []);
+
   useEffect(() => {
     if (isLoggedIn && socket) {
       // socket.on("connection", () => {
       // });
+
       socket?.on("connect", () => {
         setConnection(true);
       });
+
       socket?.on("disconnect", () => {
         setConnection(false);
+      });
+
+      socket.on("error", (data) => {
+        enqueueSnackbar(data.message, { variant: "error" });
+      });
+
+      socket.on("auth_error", (message) => {
+        enqueueSnackbar(message, { variant: "error" });
+        setTimeout(handleLeaveApp, 4000);
       });
     }
     return () => {
       socket?.off("connect_error");
+      socket?.off("error");
+      socket?.off("auth_error");
     };
   }, [isLoggedIn, socket]);
 
   // useEffect(() => {
   //   let interval;
-  //   if (socket && socket.connected && !interval) {
+  //   if (isLoggedIn && socket && socket.connected && !interval) {
   //     interval = setInterval(() => {
   //       let start = Date.now();
   //       socket?.emit("ping", () => {
   //         const duration = Date.now() - start;
+  //         console.log(duration);
   //         setPing(duration);
   //       });
   //     }, 5000);
@@ -76,7 +106,7 @@ const SocketProvider = ({ children }) => {
   //     clearInterval(interval);
   //     interval = null;
   //   };
-  // }, [socket, connection]);
+  // }, [socket, connection, isLoggedIn]);
 
   return (
     <SocketContext.Provider

@@ -1,6 +1,15 @@
-import { useEffect, useRef, useCallback } from "react";
-import { Stack, Box, useTheme } from "@mui/material";
-import { useSelector } from "react-redux";
+import {
+  Fragment,
+  useEffect,
+  useRef,
+  useCallback,
+  useMemo,
+  useState,
+} from "react";
+import { Stack, Box, useTheme, Typography } from "@mui/material";
+import { useSelector, useDispatch } from "react-redux";
+
+import LoaderButton from "../../LoaderButton";
 
 import {
   TextMsg,
@@ -13,36 +22,93 @@ import {
 import {
   getAllMessages,
   getCurrentConversation,
+  fetchMoreMessageThunk,
 } from "../../../app/slices/chat_conversation";
 import { ArrowDown } from "phosphor-react";
 
 import NewMessage from "./messageTypes/NewMessage";
+import { getToken } from "../../../app/slices/auth";
+
+import { fDate } from "../../../utils/formatTime";
 
 const Msg = ({ showMenu = true, showTime = true }) => {
   const mode = useTheme().palette.mode;
   const msgs = useSelector(getAllMessages);
-  const isLoading = useSelector((state) => state.chat_conversation.loading);
-  const { unseen } = useSelector(getCurrentConversation);
+  const [getMoreMsgLoading, setGetMoreMsgLoading] = useState(false);
+  const {
+    loading: isLoading,
+    hasNextPage,
+    currentPage,
+  } = useSelector((state) => state.chat_conversation);
+  const dispatch = useDispatch();
+  const {
+    _id: room_id,
+    unseen,
+    createdAt,
+  } = useSelector(getCurrentConversation);
+  const token = useSelector(getToken);
   const boxRef = useRef(null);
   const scrollButtonRef = useRef(null);
 
-  const scrollToBottom = () => {
-    // const lastMessage = boxRef.current?.lastElementChild;
-    // lastMessage?.scrollIntoView({ behavior: "smooth" });
-  };
+  const firstUnseenMsg = useMemo(() => unseen[0], [room_id]);
 
-  const handleScrollDown = () => {
-    boxRef?.current?.scroll({
-      top: boxRef?.current?.scrollHeight,
-      behavior: "smooth",
+  const fetchMoreMessage = () => {
+    if (!hasNextPage) return;
+    setGetMoreMsgLoading(true);
+    const lastScroll = msgs[1];
+    dispatch(
+      fetchMoreMessageThunk({
+        token,
+        conversation_id: room_id,
+        page: currentPage,
+      })
+    ).then(() => {
+      setGetMoreMsgLoading(false);
+      boxRef.current
+        ?.querySelector(`[id='${lastScroll?._id}']`)
+        .scrollIntoView({
+          block: "center",
+        });
     });
   };
 
-  const handleActiveScrollButton = (event) => {
+  const handleScrollDown = ({
+    smooth = null,
+    whenLessThan200Return = false,
+  }) => {
+    const isLessThan200 = Boolean(
+      boxRef?.current?.scrollTop + boxRef?.current?.clientHeight >
+        boxRef?.current?.scrollHeight - 400
+    );
+
+    if (whenLessThan200Return && !isLessThan200) return;
+
+    boxRef?.current?.scroll({
+      top: boxRef?.current?.scrollHeight,
+      ...(smooth && { behavior: "smooth" }),
+    });
+  };
+
+  const infiniteScroll = useCallback(
+    (e) => {
+      if (!hasNextPage) return;
+      if (
+        e.target.scrollTop === 0 ||
+        (e.currentTarget.scrollTop === 0 && Object.entries(msgs))
+      ) {
+        console.log(e.target.scrollTop);
+        fetchMoreMessage();
+      }
+    },
+    [room_id, msgs]
+  );
+
+  const handleActiveScrollButton = useCallback((event) => {
     const elem = event?.target || boxRef?.current;
     const active = Boolean(
       elem.scrollTop + elem.clientHeight > elem.scrollHeight - 400
     );
+    if (!scrollButtonRef.current) return;
     if (!active) {
       scrollButtonRef.current.style.opacity = 1;
       scrollButtonRef.current.style.visibility = "visible";
@@ -50,24 +116,36 @@ const Msg = ({ showMenu = true, showTime = true }) => {
       scrollButtonRef.current.style.opacity = 0;
       scrollButtonRef.current.style.visibility = "hidden";
     }
-  };
+  }, []);
 
   useEffect(() => {
     if (!boxRef.current) return;
 
-    if (boxRef.current) handleActiveScrollButton();
+    handleActiveScrollButton();
 
-    boxRef.current?.addEventListener("scroll", handleActiveScrollButton);
-    return () => {
-      boxRef.current?.removeEventListener("scroll", handleActiveScrollButton);
+    const handler = (e) => {
+      handleActiveScrollButton(e);
+      infiniteScroll(e);
     };
-  }, [msgs, boxRef]);
+
+    boxRef.current?.addEventListener("scroll", handler);
+    return () => {
+      boxRef.current?.removeEventListener("scroll", handler);
+    };
+  }, [msgs, boxRef, scrollButtonRef]);
+
+  useEffect(() => {
+    if (unseen.length) {
+      return;
+    }
+    if (Object.keys(msgs).length && boxRef.current) {
+      handleScrollDown({});
+    }
+  }, [msgs, room_id]);
 
   if (isLoading) {
     return "loading...";
   }
-
-  const firstUnseenMsg = unseen[0];
 
   return (
     <Box width="100%" position="relative" height="100%">
@@ -86,7 +164,7 @@ const Msg = ({ showMenu = true, showTime = true }) => {
         lineHeight={0}
         zIndex={1}
         ref={scrollButtonRef}
-        onClick={handleScrollDown}
+        onClick={() => handleScrollDown({ smooth: true })}
         display={Object.keys(msgs).length ? "block" : "none"}
       >
         <ArrowDown size={22} />
@@ -116,6 +194,39 @@ const Msg = ({ showMenu = true, showTime = true }) => {
         ref={boxRef}
         id="chat_view"
       >
+        {hasNextPage ? (
+          <>
+            {getMoreMsgLoading ? (
+              <Typography variant="body1">loading...</Typography>
+            ) : (
+              <LoaderButton
+                variant="text"
+                fontSize="caption"
+                color="inherit"
+                loading={isLoading}
+                onClick={fetchMoreMessage}
+                sx={{
+                  color: mode === "dark" && "grey.400",
+                }}
+              >
+                loading more
+              </LoaderButton>
+            )}
+          </>
+        ) : (
+          <Stack>
+            <Typography
+              variant="caption"
+              sx={{ color: mode === "dark" && "grey.400" }}
+              textAlign={"center"}
+            >
+              Conversation created at{" "}
+              <span style={{ textDecoration: "underline" }}>
+                {fDate(createdAt || Date.now())}
+              </span>
+            </Typography>
+          </Stack>
+        )}
         {msgs?.map((item, index) => {
           const msgType = item?.type;
           switch (msgType) {
@@ -123,7 +234,7 @@ const Msg = ({ showMenu = true, showTime = true }) => {
               return (
                 <MediaMsg
                   data={item}
-                  key={index}
+                  key={index + item?._id}
                   showMenu={showMenu}
                   showTime={showTime}
                 />
@@ -133,7 +244,7 @@ const Msg = ({ showMenu = true, showTime = true }) => {
               return (
                 <LinkMsg
                   data={item}
-                  key={index}
+                  key={index + item?._id}
                   showMenu={showMenu}
                   showTime={showTime}
                 />
@@ -143,7 +254,7 @@ const Msg = ({ showMenu = true, showTime = true }) => {
               return (
                 <DocMsg
                   data={item}
-                  key={index}
+                  key={index + item?._id}
                   showMenu={showMenu}
                   showTime={showTime}
                 />
@@ -153,7 +264,7 @@ const Msg = ({ showMenu = true, showTime = true }) => {
               return (
                 <ReplyMsg
                   data={item}
-                  key={index}
+                  key={index + item?._id}
                   showMenu={showMenu}
                   showTime={showTime}
                 />
@@ -163,7 +274,7 @@ const Msg = ({ showMenu = true, showTime = true }) => {
               return (
                 <Timeline
                   data={item.date}
-                  key={index}
+                  key={index + item?._id}
                   showMenu={showMenu}
                   showTime={showTime}
                 />
@@ -171,17 +282,14 @@ const Msg = ({ showMenu = true, showTime = true }) => {
             }
             default: {
               return (
-                <>
-                  {unseen.length && firstUnseenMsg === item._id ? (
-                    <NewMessage />
-                  ) : null}
+                <Fragment key={index + item?._id}>
+                  {firstUnseenMsg === item?._id ? <NewMessage /> : null}
                   <TextMsg
                     data={item}
-                    key={index}
                     showMenu={showMenu}
                     showTime={showTime}
                   />
-                </>
+                </Fragment>
               );
             }
           }

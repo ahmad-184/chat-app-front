@@ -29,18 +29,18 @@ const ChatView = () => {
 
   useEffect(() => {
     if (chat_type === "dividual" && room_id) {
-      socket.emit("join_a_chat_conversation", { room_id }, ({ message }) => {
-        console.log(message);
-      });
+      socket.emit("join_a_chat_conversation", { room_id }, ({ message }) => {});
       dispatch(
         fetchMessagesThunk({ token, conversation_id: current_conversation._id })
       );
     }
     return () => {
       if (chat_type === "dividual" && room_id) {
-        socket.emit("leave_chat_conversation", { room_id }, ({ message }) => {
-          console.log(message);
-        });
+        socket.emit(
+          "leave_chat_conversation",
+          { room_id },
+          ({ message }) => {}
+        );
       }
     };
   }, [room_id]);

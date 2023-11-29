@@ -1,4 +1,4 @@
-import { Fragment, useEffect } from "react";
+import { Fragment, memo } from "react";
 import {
   Box,
   Stack,
@@ -7,32 +7,21 @@ import {
   IconButton,
   Avatar,
   Tooltip,
-  Button,
-  Typography,
 } from "@mui/material";
 import { useNavigate, useLocation } from "react-router-dom";
-import {
-  WifiHigh,
-  WifiSlash,
-  WifiMedium,
-  WifiLow,
-  WifiNone,
-} from "phosphor-react";
 
 import logo from "../../../assets/Images/logo.ico";
 import { Nav_Buttons } from "../../../data";
 
 import { SimpleBarStyle } from "../../../components/Scrollbar";
 import User from "./User";
-import useSocket from "../../../hooks/useSocket";
+import ConnectionStatus from "./ConnectionStatus";
 
 const Navbar = () => {
   const theme = useTheme();
   const mode = theme.palette.mode;
   const navigate = useNavigate();
   const { pathname } = useLocation();
-
-  const { connection, ping } = useSocket();
 
   return (
     <Box
@@ -75,21 +64,7 @@ const Navbar = () => {
                   alt="chat app logo picture"
                 />
               </Box>
-              <Stack
-                sx={{
-                  ...(connection && {
-                    color: mode === "light" ? "success.main" : "success.light",
-                  }),
-                  ...(!connection && {
-                    color: mode === "light" ? "error.main" : "error.light",
-                  }),
-                }}
-              >
-                {connection ? <WifiHigh size={25} /> : <WifiSlash size={25} />}
-              </Stack>
-              <Typography variant="caption" color="grey.500">
-                Ping: {connection && ping ? `${ping}ms` : "...."}
-              </Typography>
+              <ConnectionStatus />
             </Stack>
           </Stack>
           <Stack direction="column" spacing={2} alignItems="center">
@@ -136,4 +111,4 @@ const Navbar = () => {
   );
 };
 
-export default Navbar;
+export default memo(Navbar);

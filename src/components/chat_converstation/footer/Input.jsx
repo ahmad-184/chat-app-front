@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, memo } from "react";
 import {
   TextField,
   InputAdornment,
@@ -111,4 +111,4 @@ const Input = ({
   );
 };
 
-export default Input;
+export default memo(Input);
