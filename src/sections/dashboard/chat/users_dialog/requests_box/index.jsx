@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { Stack, Box, Typography, useTheme, Divider } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import { Trash, Check } from "phosphor-react";
 
 import {
   updateFriendRequestsThunk,
@@ -10,21 +9,21 @@ import {
   addFriend,
   removeUser,
   removeSentRequest,
+  getAppLoading,
 } from "../../../../../app/slices/app";
 import { getToken } from "../../../../../app/slices/auth";
 
 import { ReceivedFriendRequest, RequestsStatus } from "./Requests";
-import { enqueueSnackbar } from "notistack";
 
-import {
-  MotionContainer,
-  MotionViewport,
-} from "../../../../../components/animate";
 import useSocket from "../../../../../hooks/useSocket";
+import { successToast } from "../../../../../components/ToastProvider";
+
+import Loader from "../Loader";
 
 const FriendsBox = () => {
   const { received, sent } = useSelector(getFriendRequests);
   const token = useSelector(getToken);
+  const isLoading = useSelector(getAppLoading);
   const dispatch = useDispatch();
 
   const { socket } = useSocket();
@@ -44,7 +43,7 @@ const FriendsBox = () => {
         await dispatch(updateFriendRequestsThunk({ token })).then(() => {
           dispatch(addFriend(friend));
           dispatch(removeUser(friend._id));
-          enqueueSnackbar(message, { variant: "success" });
+          successToast({ message });
           setIsLoading(false);
         });
       }
@@ -57,7 +56,7 @@ const FriendsBox = () => {
       { request_id: id },
       async ({ request_id, message }) => {
         dispatch(removeReceivedRequest(request_id));
-        enqueueSnackbar(message, { variant: "success" });
+        successToast({ message });
         setIsLoading(false);
       }
     );
@@ -69,7 +68,7 @@ const FriendsBox = () => {
       { request_id: id },
       async ({ message, request_id }) => {
         dispatch(removeSentRequest(request_id));
-        enqueueSnackbar(message, { variant: "success" });
+        successToast({ message });
         setIsLoading(false);
       }
     );
@@ -88,7 +87,9 @@ const FriendsBox = () => {
           Friend requests
         </Typography>
         <Stack spacing={1.5}>
-          {received.length ? (
+          {isLoading ? (
+            <Loader />
+          ) : received.length ? (
             received.map((item, index) => (
               <ReceivedFriendRequest
                 item={item}
@@ -127,7 +128,9 @@ const FriendsBox = () => {
           Requests i sent
         </Typography>
         <Stack spacing={1.5}>
-          {sent.length ? (
+          {isLoading ? (
+            <Loader />
+          ) : sent.length ? (
             sent.map((item, index) => (
               <RequestsStatus
                 item={item}

@@ -2,10 +2,13 @@ import { useState, useEffect, createContext, useCallback } from "react";
 import io from "socket.io-client";
 import { useSelector, useDispatch } from "react-redux";
 
-import { logOutChatConv } from "../app/slices/chat_conversation";
+import {
+  logOutChatConv,
+  removeConversation,
+} from "../app/slices/chat_conversation";
 import { logOut } from "../app/slices/auth";
-import { appLogout } from "../app/slices/app";
-import { enqueueSnackbar } from "notistack";
+import { appLogout, selectConversation } from "../app/slices/app";
+import { errorToast } from "../components/ToastProvider";
 
 const lang = window.localStorage.getItem("lang");
 
@@ -75,11 +78,15 @@ const SocketProvider = ({ children }) => {
       });
 
       socket.on("error", (data) => {
-        enqueueSnackbar(data.message, { variant: "error" });
+        errorToast({ message: data.message });
+        if (data.code && data.code === "CONV_NOT_EXIST") {
+          dispatch(removeConversation(data.conv_id));
+          dispatch(selectConversation({ caht_type: "idle", room_id: "" }));
+        }
       });
 
       socket.on("auth_error", (message) => {
-        enqueueSnackbar(message, { variant: "error" });
+        errorToast({ message });
         setTimeout(handleLeaveApp, 4000);
       });
     }

@@ -9,10 +9,33 @@ import {
   alpha,
 } from "@mui/material";
 import { PaperPlaneRight } from "phosphor-react";
+import { useDispatch, useSelector } from "react-redux";
+import { updateFriendRequestsThunk } from "../../../../../app/slices/app";
+import { getToken, getUserId } from "../../../../../app/slices/auth";
+import useSocket from "../../../../../hooks/useSocket";
+import { successToast } from "../../../../../components/ToastProvider";
 
-const User = ({ item, handleSendFriendRequest }) => {
+const User = ({ item }) => {
+  const token = useSelector(getToken);
+  const userId = useSelector(getUserId);
+  const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
   const theme = useTheme();
+
+  const { socket } = useSocket();
+
+  const handleSendFriendRequest = () => {
+    setIsLoading(true);
+    socket.emit(
+      "friend_request",
+      { to: item._id, from: userId },
+      async (message) => {
+        await dispatch(updateFriendRequestsThunk({ token }))
+          .then(() => successToast({ message }))
+          .finally(() => setIsLoading(false));
+      }
+    );
+  };
 
   return (
     <Box
@@ -47,8 +70,7 @@ const User = ({ item, handleSendFriendRequest }) => {
             variant="text"
             color="info"
             onClick={() => {
-              handleSendFriendRequest(item._id, setIsLoading);
-              setIsLoading(true);
+              handleSendFriendRequest();
             }}
             endIcon={<PaperPlaneRight size={20} />}
             disabled={isLoading}

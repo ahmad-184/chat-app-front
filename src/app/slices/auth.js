@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { enqueueSnackbar } from "notistack";
+import { successToast } from "../../components/ToastProvider";
 
 import {
   forgotPasswordApi,
@@ -7,6 +7,7 @@ import {
   registerUserApi,
   resetPasswordApi,
   verifyUserApi,
+  verifyTokenApi,
 } from "../../services";
 
 const initialState = {
@@ -17,6 +18,18 @@ const initialState = {
   isLoading: false,
   email: "",
 };
+
+export const verifyTokenThunk = createAsyncThunk(
+  "auth/verifyTokenThunk",
+  async (data, { rejectWithValue }) => {
+    try {
+      const res = await verifyTokenApi(data);
+      return res;
+    } catch (err) {
+      return rejectWithValue(err);
+    }
+  }
+);
 
 export const loginUserThunk = createAsyncThunk(
   "auth/loginUserThunk",
@@ -102,25 +115,19 @@ const authSlice = createSlice({
         state.token = data.token;
         state.userId = data.userId;
         state.user = data.user;
-        enqueueSnackbar(data.message, {
-          variant: "success",
-        });
+        successToast({ message: data.message });
       }
     },
     [registerUserThunk.fulfilled]: (state, action) => {
       const { status, data } = action.payload;
       if (status === 200) {
-        enqueueSnackbar(data.message, {
-          variant: "success",
-        });
+        successToast({ message: data.message });
       }
     },
     [verifyUserThunk.fulfilled]: (state, action) => {
       const { status, data } = action.payload;
       if (status === 200) {
-        enqueueSnackbar(data.message, {
-          variant: "success",
-        });
+        successToast({ message: data.message });
       }
     },
   },

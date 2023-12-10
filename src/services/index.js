@@ -1,5 +1,11 @@
 import axios from "../utils/axios";
 
+// @Route http://localhost:9000/api/verify_token
+// @Desc POST verify user token
+export const verifyTokenApi = async (data) => {
+  return await axios.post("/auth/verify_token", { ...data });
+};
+
 // @Route http://localhost:9000/api/auth/login
 // @Desc POST login user
 export const loginUserApi = async (data) => {
@@ -79,6 +85,23 @@ export const fetchChatConversationsApi = async ({ token }) => {
 export const fetchMessagesApi = async ({ token, conversation_id, page }) => {
   return await axios.get(
     `/conversation/get_messages/${conversation_id}?page=${page}`,
+    {
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+};
+
+// @Route http://localhost:9000/api/conversation/create_message
+// @Method POST create a message
+export const createMessageApi = async ({ token, data }) => {
+  return await axios.post(
+    `/conversation/create_message`,
+    {
+      ...data,
+    },
     {
       headers: {
         Accept: "application/json",

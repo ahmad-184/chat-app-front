@@ -28,22 +28,29 @@ const ChatView = () => {
   const isSidebarOpen = Boolean(open);
 
   useEffect(() => {
-    if (chat_type === "dividual" && room_id) {
-      socket.emit("join_a_chat_conversation", { room_id }, ({ message }) => {});
+    if (chat_type === "dividual" && room_id && current_conversation?._id) {
+      socket?.emit(
+        "join_a_chat_conversation",
+        { room_id },
+        ({ message }) => {}
+      );
       dispatch(
-        fetchMessagesThunk({ token, conversation_id: current_conversation._id })
+        fetchMessagesThunk({
+          token,
+          conversation_id: current_conversation?._id,
+        })
       );
     }
     return () => {
-      if (chat_type === "dividual" && room_id) {
-        socket.emit(
+      if (chat_type === "dividual" && room_id && current_conversation?._id) {
+        socket?.emit(
           "leave_chat_conversation",
           { room_id },
           ({ message }) => {}
         );
       }
     };
-  }, [room_id]);
+  }, [room_id, current_conversation?._id]);
 
   return (
     <Box

@@ -1,4 +1,12 @@
-import { useState, useCallback, useEffect, useTransition } from "react";
+import {
+  useState,
+  useCallback,
+  useEffect,
+  useTransition,
+  Fragment,
+  useRef,
+  useDeferredValue,
+} from "react";
 import { Button, Stack, Box, useTheme, alpha, IconButton } from "@mui/material";
 import { Microphone, PaperPlaneRight, LinkSimple, Image } from "phosphor-react";
 import { useDispatch, useSelector } from "react-redux";
@@ -9,10 +17,12 @@ import {
   getCurrentConversation,
   addMessage,
   setMessageDelivered,
+  createMessageThunk,
 } from "../../../app/slices/chat_conversation";
 import Input from "./Input";
 import { fullDate } from "../../../utils/formatTime";
 import useSocket from "../../../hooks/useSocket";
+import FilesThumbnailes from "./FilesThumbnaile";
 
 const buttons = [
   {
@@ -31,56 +41,38 @@ const Footer = () => {
   const mode = theme.palette.mode;
   const dispatch = useDispatch();
   const { room_id } = useSelector((state) => state.app);
-  const userId = useSelector((state) => state.auth.userId);
+  const { userId, token } = useSelector((state) => state.auth);
   const { friend_id, _id, status } = useSelector(getCurrentConversation);
+  const [files, setFiles] = useState([]);
+  const [inputText, setInputText] = useState("");
+
+  const deferredFiles = useDeferredValue(files);
+
+  const ImageFileRef = useRef(null);
+  const DocFileRef = useRef(null);
 
   const { socket } = useSocket();
 
-  const [isPending, startTransition] = useTransition();
-
-  const [message, setMessage] = useState({
-    conversation_id: _id,
-    type: "Text",
-    text: "",
-    sender: userId,
-    receiver: friend_id,
-  });
+  const [__, startTransition] = useTransition();
 
   const handleChangeTextInput = (text) => {
-    setMessage({ ...message, text });
+    setInputText(`${text}`);
   };
 
-  // const handleScrollDown = () => {
-  //   const chatView = document.querySelector("#chat_view");
-  //   chatView?.scroll({
-  //     top: chatView?.scrollHeight,
-  //     behavior: "smooth",
-  //   });
-  // };
+  const handleAddEmoji = (emoji) => setInputText(`${inputText || ""}${emoji}`);
 
-  const handleAddEmoji = (emoji) =>
-    setMessage({ ...message, text: `${message.text || ""}${emoji}` });
+  const setInputTextEmpty = () => setInputText("");
 
-  const setMessageEmpty = () =>
-    setMessage({
-      conversation_id: "",
-      type: "",
-      text: "",
-      sender: "",
-      receiver: "",
-    });
-
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     try {
-      if (!message.text || !message.text.length || !message.text.trim().length)
-        return;
+      if (!inputText || !inputText.length || !inputText.trim().length) return;
 
       const newId = new ObjectId().toHexString();
       const data = {
         _id: newId,
         conversation_id: _id,
-        type: message.type || "Text",
-        text: message.text,
+        type: "Text",
+        text: inputText,
         sender: userId,
         receiver: friend_id,
         status: "Created",
@@ -88,17 +80,20 @@ const Footer = () => {
         createdAt_day: fullDate(Date.now()),
         createdAt: Date.now(),
       };
-      startTransition(async () => {
-        await dispatch(addMessage(data));
-        // handleScrollDown();
-        setMessageEmpty();
-        socket.emit(
-          "send_message",
-          { message: data, room_id },
-          ({ message }) => {
+      dispatch(addMessage(data));
+      await dispatch(createMessageThunk({ token, data })).then((response) => {
+        const { message_id, status, message } = response.payload.data;
+        if (status === "OK") {
+          startTransition(async () => {
+            setInputTextEmpty();
             dispatch(setMessageDelivered(message));
-          }
-        );
+            socket.emit("send_message", {
+              message_id,
+              room_id,
+              user_id: userId,
+            });
+          });
+        }
       });
     } catch (err) {
       console.log(err);
@@ -135,62 +130,124 @@ const Footer = () => {
 
   useEffect(() => {
     return () => {
-      setMessageEmpty();
+      setInputTextEmpty();
+      setFiles([]);
     };
   }, [room_id]);
 
+  const handleSelectFile = useCallback(
+    (e, index) => {
+      const files = e.target.files;
+      Object.values(files).forEach(async (file) => {
+        if (file.size >= 10000000) return;
+        const fileType = file.type.split("/")[0];
+        const reader = new FileReader();
+        await reader.readAsDataURL(file);
+        reader.onload = (f) => {
+          setFiles((prev) => [
+            ...prev,
+            {
+              file,
+              fileData: f.target.result,
+              type:
+                fileType === "image"
+                  ? "image"
+                  : fileType === "video"
+                  ? "video"
+                  : file.type.split("/")[1],
+            },
+          ]);
+        };
+      });
+    },
+    [room_id]
+  );
+
+  const removeFile = (fileName) => {
+    setFiles((prev) => prev.filter((item) => item.file.name !== fileName));
+  };
+
+  useEffect(() => {
+    console.log(files);
+  }, [files]);
+
   return (
-    <Box
-      p={2}
-      width="100%"
-      backgroundColor={mode === "light" ? "#F8FAFF" : "grey.800"}
-      borderTop="1px solid"
-      borderColor={
-        mode === "light" ? alpha(theme.palette.grey[300], 0.5) : "grey.800"
-      }
-    >
-      <Stack direction="row" spacing={2} alignItems="stretch" width="100%">
-        <Box display="flex" flexGrow={1}>
-          <Input
-            textInput={message.text}
-            handleChangeTextInput={handleChangeTextInput}
-            handleAddEmoji={handleAddEmoji}
-            handleSendMessage={handleSendMessage}
-            startTyping={startTyping}
-            stopTyping={stopTyping}
-          />
-        </Box>
-        <Stack direction="row" spacing={2} alignItems="center">
-          {buttons.map(({ icon }, index) => (
-            <IconButton
+    <Box backgroundColor={mode === "light" ? "grey.100" : "grey.800"}>
+      <FilesThumbnailes files={deferredFiles} removeFile={removeFile} />
+      <Box
+        p={2}
+        width="100%"
+        borderTop="1px solid"
+        position="relative"
+        borderColor={
+          mode === "light" ? alpha(theme.palette.grey[300], 0.5) : "grey.800"
+        }
+      >
+        <Stack direction="row" spacing={2} alignItems="stretch" width="100%">
+          <Box display="flex" flexGrow={1}>
+            <Input
+              textInput={inputText}
+              handleChangeTextInput={handleChangeTextInput}
+              handleAddEmoji={handleAddEmoji}
+              handleSendMessage={handleSendMessage}
+              startTyping={startTyping}
+              stopTyping={stopTyping}
+            />
+          </Box>
+          <Stack direction="row" spacing={2} alignItems="center">
+            {buttons.map(({ icon }, index) => (
+              <Fragment key={index}>
+                <IconButton
+                  sx={{
+                    color:
+                      mode === "light" ? "primary.light" : "primary.lighter",
+                  }}
+                  onClick={() => {
+                    if (index === 0) {
+                      ImageFileRef.current.click();
+                    } else if (index === 1) {
+                      DocFileRef.current.click();
+                    }
+                  }}
+                >
+                  {icon}
+                </IconButton>
+                <input
+                  hidden
+                  ref={
+                    index === 0 ? ImageFileRef : index === 1 ? DocFileRef : null
+                  }
+                  onChange={(e) => handleSelectFile(e, index)}
+                  multiple
+                  type="file"
+                  accept={
+                    index === 0
+                      ? "image/png,image/jpeg,image/gif,image/webp,video/mp4,video/mpeg,audio/mpeg"
+                      : "*"
+                  }
+                />
+              </Fragment>
+            ))}
+            <Button
+              color="primary"
               sx={{
+                height: "100%",
+                boxShadow: "none",
+                backgroundColor: alpha(theme.palette.primary.main, 0.2),
                 color: mode === "light" ? "primary.light" : "primary.lighter",
+                borderRadius: 1.5,
+                "&:hover": {
+                  backgroundColor: alpha(theme.palette.primary.main, 0.4),
+                },
               }}
-              key={index}
+              variant="contained"
+              onClick={handleSendMessage}
             >
-              {icon}
-            </IconButton>
-          ))}
-          <Button
-            color="primary"
-            sx={{
-              height: "100%",
-              boxShadow: "none",
-              backgroundColor: alpha(theme.palette.primary.main, 0.2),
-              color: mode === "light" ? "primary.light" : "primary.lighter",
-              borderRadius: 1.5,
-              "&:hover": {
-                backgroundColor: alpha(theme.palette.primary.main, 0.4),
-              },
-            }}
-            variant="contained"
-            // disabled={isLoading}
-            onClick={handleSendMessage}
-          >
-            <PaperPlaneRight size={23} weight="fill" />
-          </Button>
+              <PaperPlaneRight size={23} weight="fill" />
+            </Button>
+          </Stack>
         </Stack>
-      </Stack>
+      </Box>
     </Box>
   );
 };

@@ -16,12 +16,21 @@ import { Nav_Buttons } from "../../../data";
 import { SimpleBarStyle } from "../../../components/Scrollbar";
 import User from "./User";
 import ConnectionStatus from "./ConnectionStatus";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  getCurrentConversation,
+  clearCurrentConversation,
+} from "../../../app/slices/chat_conversation";
+import { selectConversation } from "../../../app/slices/app";
 
 const Navbar = () => {
   const theme = useTheme();
   const mode = theme.palette.mode;
   const navigate = useNavigate();
   const { pathname } = useLocation();
+  const dispatch = useDispatch();
+
+  const current_conversation = useSelector(getCurrentConversation);
 
   return (
     <Box
@@ -80,7 +89,15 @@ const Navbar = () => {
                         alpha(theme.palette.primary.main, 0.2),
                       cursor: "pointer",
                     }}
-                    onClick={() => navigate(item.to)}
+                    onClick={() => {
+                      navigate(item.to);
+                      if (current_conversation) {
+                        dispatch(clearCurrentConversation());
+                        dispatch(
+                          selectConversation({ chat_type: "idle", room_id: "" })
+                        );
+                      }
+                    }}
                   >
                     <IconButton
                       sx={{

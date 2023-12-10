@@ -1,52 +1,33 @@
 import { useEffect } from "react";
 import { Stack, Typography } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import { enqueueSnackbar } from "notistack";
 
 import {
   updateUsersThunk,
   getUsers,
-  updateFriendRequestsThunk,
+  getAppLoading,
 } from "../../../../../app/slices/app";
-import { getToken, getUserId } from "../../../../../app/slices/auth";
+import { getToken } from "../../../../../app/slices/auth";
 
 import User from "./User";
-import useSocket from "../../../../../hooks/useSocket";
+import Loader from "../Loader";
 
 const UserBox = () => {
   const users = useSelector(getUsers);
+  const isLoading = useSelector(getAppLoading);
   const token = useSelector(getToken);
-  const userId = useSelector(getUserId);
   const dispatch = useDispatch();
-
-  const { socket } = useSocket();
 
   useEffect(() => {
     dispatch(updateUsersThunk({ token }));
   }, []);
 
-  const handleSendFriendRequest = (user_id, setIsLoading) => {
-    socket.emit(
-      "friend_request",
-      { to: user_id, from: userId },
-      async (message) => {
-        await dispatch(updateFriendRequestsThunk({ token }))
-          .then(() => enqueueSnackbar(message, { variant: "success" }))
-          .finally(() => setIsLoading(false));
-      }
-    );
-  };
+  if (!users.length && isLoading) return <Loader />;
 
   return (
     <Stack px={1} py={1} spacing={1.5} width="100%">
       {users.length ? (
-        users.map((item, index) => (
-          <User
-            item={item}
-            key={index}
-            handleSendFriendRequest={handleSendFriendRequest}
-          />
-        ))
+        users.map((item, index) => <User item={item} key={index} />)
       ) : (
         <Typography
           variant="body2"

@@ -15,6 +15,7 @@ import {
   updateFriendsThunk,
   getFriends,
   selectConversation,
+  getAppLoading,
 } from "../../../../../app/slices/app";
 import { getToken, getUserId } from "../../../../../app/slices/auth";
 import {
@@ -27,8 +28,11 @@ import createAvatar from "../../../../../utils/createAvatar";
 import StyledBadge from "../../../../../components/StyledBadge";
 import useSocket from "../../../../../hooks/useSocket";
 
+import Loader from "../Loader";
+
 const FriendBox = ({ handleClose }) => {
   const friends = useSelector(getFriends);
+  const appLoading = useSelector(getAppLoading);
   const token = useSelector(getToken);
   const userId = useSelector(getUserId);
   const dispatch = useDispatch();
@@ -61,6 +65,8 @@ const FriendBox = ({ handleClose }) => {
       }
     );
   };
+
+  if (appLoading) return <Loader />;
 
   return (
     <Stack px={1} py={1} spacing={1.5} width="100%">

@@ -4,9 +4,13 @@ import {
   createAsyncThunk,
   current,
 } from "@reduxjs/toolkit";
-import { enqueueSnackbar } from "notistack";
+import { errorToast } from "../../components/ToastProvider";
 
-import { fetchChatConversationsApi, fetchMessagesApi } from "../../services";
+import {
+  createMessageApi,
+  fetchChatConversationsApi,
+  fetchMessagesApi,
+} from "../../services";
 import filterByDate from "../../utils/filterByDate";
 
 const conversationAdaptor = createEntityAdapter({
@@ -18,7 +22,7 @@ const initialState = conversationAdaptor.getInitialState({
   error: false,
   currentPage: 0,
   nextPage: 1,
-  hasNextPage: true,
+  hasNextPage: false,
   conversations: [],
   current_conversation: null,
 });
@@ -59,6 +63,18 @@ export const fetchMoreMessageThunk = createAsyncThunk(
   }
 );
 
+export const createMessageThunk = createAsyncThunk(
+  "chat_conversation/createMessageThunk",
+  async (data, { rejectWithValue }) => {
+    try {
+      const res = await createMessageApi(data);
+      return res;
+    } catch (err) {
+      return rejectWithValue(err);
+    }
+  }
+);
+
 const conversationSlice = createSlice({
   name: "chat_conversation",
   initialState,
@@ -87,6 +103,9 @@ const conversationSlice = createSlice({
       state.hasNextPage = true;
       state.nextPage = 1;
     },
+    clearCurrentConversation(state) {
+      state.current_conversation = null;
+    },
     addChatConversation(state, action) {
       const existing_conversation = state.conversations.find(
         (item) => item._id === action.payload._id
@@ -107,11 +126,13 @@ const conversationSlice = createSlice({
           lastSeen,
         };
         if (
+          state.current_conversation !== null &&
           state.current_conversation &&
           state.current_conversation.friend_id === friend_id
-        )
-          state.current_conversation.status = friend_status;
-        state.current_conversation.lastSeen = lastSeen;
+        ) {
+          state.current_conversation.status = friend_status || "Offline";
+          state.current_conversation.lastSeen = lastSeen || "..:..";
+        }
       }
     },
     updateTypingStatus(state, action) {
@@ -119,8 +140,9 @@ const conversationSlice = createSlice({
       const conversationIndex = state.conversations.findIndex(
         (item) => item._id === conversation_id
       );
+      if (!state.conversations[conversationIndex]) return;
       state.conversations[conversationIndex].typing = typing_status;
-      if (state.current_conversation._id === conversation_id) {
+      if (state.current_conversation?._id === conversation_id) {
         state.current_conversation.typing = typing_status;
       }
     },
@@ -186,6 +208,13 @@ const conversationSlice = createSlice({
       }
       state.conversations = array;
     },
+    removeConversation(state, action) {
+      const conv_id = action.payload;
+      state.conversations = state.conversations?.filter(
+        (item) => item._id !== conv_id
+      );
+      state.current_conversation = null;
+    },
   },
   extraReducers: {
     [fetchConversationsThunk.pending]: (state) => {
@@ -209,7 +238,7 @@ const conversationSlice = createSlice({
       const { error, message } = action.payload;
       state.loading = false;
       if (error) {
-        enqueueSnackbar(message, { variant: "error" });
+        errorToast(message);
       }
     },
     [fetchMessagesThunk.pending]: (state) => {
@@ -236,7 +265,7 @@ const conversationSlice = createSlice({
       state.loading = false;
       state.error = true;
       if (error) {
-        enqueueSnackbar(message, { variant: "error" });
+        errorToast(message);
       }
     },
     [fetchMoreMessageThunk.fulfilled]: (state, action) => {
@@ -265,7 +294,7 @@ const conversationSlice = createSlice({
       const { error, message } = action.payload;
       state.error = true;
       if (error) {
-        enqueueSnackbar(message, { variant: "error" });
+        errorToast(message);
       }
     },
   },
@@ -275,6 +304,7 @@ export const {
   logOut: logOutChatConv,
   startNewChatConversation,
   updateChatConversations,
+  clearCurrentConversation,
   addChatConversation,
   startChatConversation,
   updateChatConversationsStatus,
@@ -286,6 +316,7 @@ export const {
   changeToFirstConversation,
   changeMessageStatus,
   setMessageSeen,
+  removeConversation,
 } = conversationSlice.actions;
 
 export const { selectAll: getAllMessages } = conversationAdaptor.getSelectors(

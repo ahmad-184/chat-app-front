@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { enqueueSnackbar } from "notistack";
+
+import { errorToast } from "../../components/ToastProvider";
 
 import {
   getAllFriendsApi,
@@ -136,7 +137,7 @@ const appSlice = createSlice({
       const { error, message } = action.payload;
       state.loading = false;
       if (error) {
-        enqueueSnackbar(message, { variant: "error" });
+        errorToast({ message });
       }
     },
     [updateFriendsThunk.pending]: (state) => {
@@ -153,7 +154,7 @@ const appSlice = createSlice({
       const { error, message } = action.payload;
       state.loading = false;
       if (error) {
-        enqueueSnackbar(message, { variant: "error" });
+        errorToast({ message });
       }
     },
     [updateFriendRequestsThunk.pending]: (state) => {
@@ -170,7 +171,7 @@ const appSlice = createSlice({
       const { error, message } = action.payload;
       state.loading = false;
       if (error) {
-        enqueueSnackbar(message, { variant: "error" });
+        errorToast({ message });
       }
     },
   },

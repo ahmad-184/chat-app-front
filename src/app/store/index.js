@@ -37,7 +37,7 @@ const store = configureStore({
       serializableCheck: false,
       immutableCheck: false,
     }),
-  devTools: true,
+  // devTools: true,
 });
 
 const persistedStore = persistStore(store);

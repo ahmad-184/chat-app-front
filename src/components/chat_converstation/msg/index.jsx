@@ -8,6 +8,7 @@ import {
 } from "react";
 import { Stack, Box, useTheme, Typography } from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
+import useInfiniteScroll from "react-infinite-scroll-hook";
 
 import LoaderButton from "../../LoaderButton";
 
@@ -30,15 +31,18 @@ import NewMessage from "./messageTypes/NewMessage";
 import { getToken } from "../../../app/slices/auth";
 
 import { fDate } from "../../../utils/formatTime";
+import LoadingSvg from "../../../assets/Illustration/LoaderSvg";
 
 const Msg = ({ showMenu = true, showTime = true }) => {
-  const mode = useTheme().palette.mode;
+  const theme = useTheme();
+  const mode = theme.palette.mode;
   const msgs = useSelector(getAllMessages);
   const [getMoreMsgLoading, setGetMoreMsgLoading] = useState(false);
   const {
     loading: isLoading,
     hasNextPage,
     currentPage,
+    error,
   } = useSelector((state) => state.chat_conversation);
   const dispatch = useDispatch();
   const {
@@ -50,7 +54,9 @@ const Msg = ({ showMenu = true, showTime = true }) => {
   const boxRef = useRef(null);
   const scrollButtonRef = useRef(null);
 
-  const firstUnseenMsg = useMemo(() => unseen[0], [room_id]);
+  const firstUnseenMsg = useMemo(() => {
+    if (unseen) return unseen[0];
+  }, [room_id]);
 
   const fetchMoreMessage = () => {
     if (!hasNextPage) return;
@@ -72,6 +78,14 @@ const Msg = ({ showMenu = true, showTime = true }) => {
     });
   };
 
+  const [sentryRef, { rootRef }] = useInfiniteScroll({
+    loading: getMoreMsgLoading,
+    hasNextPage,
+    onLoadMore: fetchMoreMessage,
+    disabled: !!error,
+    rootMargin: "0px 0px 200px 0px",
+  });
+
   const handleScrollDown = ({
     smooth = null,
     whenLessThan200Return = false,
@@ -88,20 +102,6 @@ const Msg = ({ showMenu = true, showTime = true }) => {
       ...(smooth && { behavior: "smooth" }),
     });
   };
-
-  const infiniteScroll = useCallback(
-    (e) => {
-      if (!hasNextPage) return;
-      if (
-        e.target.scrollTop === 0 ||
-        (e.currentTarget.scrollTop === 0 && Object.entries(msgs))
-      ) {
-        console.log(e.target.scrollTop);
-        fetchMoreMessage();
-      }
-    },
-    [room_id, msgs]
-  );
 
   const handleActiveScrollButton = useCallback((event) => {
     const elem = event?.target || boxRef?.current;
@@ -125,7 +125,6 @@ const Msg = ({ showMenu = true, showTime = true }) => {
 
     const handler = (e) => {
       handleActiveScrollButton(e);
-      infiniteScroll(e);
     };
 
     boxRef.current?.addEventListener("scroll", handler);
@@ -135,10 +134,10 @@ const Msg = ({ showMenu = true, showTime = true }) => {
   }, [msgs, boxRef, scrollButtonRef]);
 
   useEffect(() => {
-    if (unseen.length) {
+    if (unseen?.length) {
       return;
     }
-    if (Object.keys(msgs).length && boxRef.current) {
+    if (Object.keys(msgs)?.length && boxRef?.current) {
       handleScrollDown({});
     }
   }, [msgs, room_id]);
@@ -165,7 +164,7 @@ const Msg = ({ showMenu = true, showTime = true }) => {
         zIndex={1}
         ref={scrollButtonRef}
         onClick={() => handleScrollDown({ smooth: true })}
-        display={Object.keys(msgs).length ? "block" : "none"}
+        display={Object.keys(msgs)?.length ? "block" : "none"}
       >
         <ArrowDown size={22} />
       </Box>
@@ -191,13 +190,19 @@ const Msg = ({ showMenu = true, showTime = true }) => {
         pt={2}
         pb={2}
         px={{ xs: 2, md: 4 }}
-        ref={boxRef}
+        ref={(el) => {
+          boxRef.current = el;
+          rootRef.current = el;
+        }}
         id="chat_view"
       >
+        <Box ref={sentryRef}></Box>
         {hasNextPage ? (
           <>
             {getMoreMsgLoading ? (
-              <Typography variant="body1">loading...</Typography>
+              <Stack justifyContent="center" direction="row" width="100%">
+                <LoadingSvg color={theme.palette.grey[600]} />
+              </Stack>
             ) : (
               <LoaderButton
                 variant="text"

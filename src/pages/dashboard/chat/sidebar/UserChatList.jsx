@@ -103,12 +103,14 @@ const UserChatList = ({ data }) => {
   const theme = useTheme();
   const dispatch = useDispatch();
   const currentChat = useSelector(getCurrentConversation);
+  const { room_id } = useSelector((state) => state.app);
 
   const mode = theme.palette.mode;
 
   const avatar = createAvatar(data.name);
 
   const handleSelectConversation = async () => {
+    if (data?._id === room_id) return;
     dispatch(selectConversation({ chat_type: "dividual", room_id: data?._id }));
     dispatch(startChatConversation(data?._id));
   };

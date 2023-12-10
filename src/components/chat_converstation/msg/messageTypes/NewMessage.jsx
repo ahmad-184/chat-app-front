@@ -9,7 +9,7 @@ const NewMessage = () => {
 
   useEffect(() => {
     if (boxRef.current) {
-      boxRef.current?.scrollIntoView({ block: "end" });
+      boxRef.current?.scrollIntoView({ block: "center" });
     }
   }, [boxRef]);
 

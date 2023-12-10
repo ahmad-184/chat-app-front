@@ -1,4 +1,3 @@
-import { useCallback } from "react";
 import { useInView } from "react-intersection-observer";
 import { useSelector, useDispatch } from "react-redux";
 
