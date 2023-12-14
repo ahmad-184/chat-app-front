@@ -11,7 +11,6 @@ const Header = () => {
     <Box
       backgroundColor={mode === "light" ? "#F8FAFF" : "grey.800"}
       width="100%"
-      // py={1}
       px={{
         xs: 1,
         md: 4,

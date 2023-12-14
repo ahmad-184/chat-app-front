@@ -12,6 +12,7 @@ import { Microphone, PaperPlaneRight, LinkSimple, Image } from "phosphor-react";
 import { useDispatch, useSelector } from "react-redux";
 import * as _ from "lodash";
 import ObjectId from "bson-objectid";
+import { toast } from "sonner";
 
 import {
   getCurrentConversation,
@@ -24,6 +25,10 @@ import { fullDate } from "../../../utils/formatTime";
 import useSocket from "../../../hooks/useSocket";
 import FilesThumbnailes from "./FilesThumbnaile";
 
+import uploader from "../../../utils/uploader";
+
+import LoaderButton from "../../LoaderButton";
+
 const buttons = [
   {
     icon: <Image size={23} weight="regular" />,
@@ -31,9 +36,9 @@ const buttons = [
   {
     icon: <LinkSimple size={23} weight="regular" />,
   },
-  {
-    icon: <Microphone size={23} weight="regular" />,
-  },
+  // {
+  // icon: <Microphone size={23} weight="regular" />,
+  // },
 ];
 
 const Footer = () => {
@@ -45,6 +50,7 @@ const Footer = () => {
   const { friend_id, _id, status } = useSelector(getCurrentConversation);
   const [files, setFiles] = useState([]);
   const [inputText, setInputText] = useState("");
+  const [uploadLoading, setUploadLoading] = useState(false);
 
   const deferredFiles = useDeferredValue(files);
 
@@ -65,14 +71,23 @@ const Footer = () => {
 
   const handleSendMessage = async () => {
     try {
-      if (!inputText || !inputText.length || !inputText.trim().length) return;
+      const isInputEmpty = Boolean(
+        !inputText || !inputText.length || !inputText.trim().length
+      );
+      if (isInputEmpty && !files.length) return;
+
+      setUploadLoading(true);
+      const filesData = await uploader(files).finally(() => {
+        setUploadLoading(false);
+        setFiles([]);
+      });
 
       const newId = new ObjectId().toHexString();
       const data = {
         _id: newId,
         conversation_id: _id,
-        type: "Text",
-        text: inputText,
+        text: inputText || "",
+        files: filesData,
         sender: userId,
         receiver: friend_id,
         status: "Created",
@@ -86,6 +101,7 @@ const Footer = () => {
         if (status === "OK") {
           startTransition(async () => {
             setInputTextEmpty();
+
             dispatch(setMessageDelivered(message));
             socket.emit("send_message", {
               message_id,
@@ -139,7 +155,8 @@ const Footer = () => {
     (e, index) => {
       const files = e.target.files;
       Object.values(files).forEach(async (file) => {
-        if (file.size >= 10000000) return;
+        if (file.size >= 10000000)
+          return toast.warning("File size must be less than 10mb");
         const fileType = file.type.split("/")[0];
         const reader = new FileReader();
         await reader.readAsDataURL(file);
@@ -172,13 +189,16 @@ const Footer = () => {
   }, [files]);
 
   return (
-    <Box backgroundColor={mode === "light" ? "grey.100" : "grey.800"}>
+    <Box>
       <FilesThumbnailes files={deferredFiles} removeFile={removeFile} />
       <Box
         p={2}
         width="100%"
         borderTop="1px solid"
         position="relative"
+        sx={{
+          backgroundColor: mode === "light" ? "grey.100" : "grey.800",
+        }}
         borderColor={
           mode === "light" ? alpha(theme.palette.grey[300], 0.5) : "grey.800"
         }
@@ -228,7 +248,7 @@ const Footer = () => {
                 />
               </Fragment>
             ))}
-            <Button
+            <LoaderButton
               color="primary"
               sx={{
                 height: "100%",
@@ -240,11 +260,12 @@ const Footer = () => {
                   backgroundColor: alpha(theme.palette.primary.main, 0.4),
                 },
               }}
+              loading={uploadLoading}
               variant="contained"
               onClick={handleSendMessage}
             >
               <PaperPlaneRight size={23} weight="fill" />
-            </Button>
+            </LoaderButton>
           </Stack>
         </Stack>
       </Box>

@@ -35,6 +35,7 @@ import {
   errorToast,
   successToast,
   infoToast,
+  newFriendRequestToast,
 } from "../../components/ToastProvider";
 import { toast } from "sonner";
 
@@ -49,9 +50,9 @@ const DashboardLayout = () => {
 
   useEffect(() => {
     if (isLoggedIn) {
-      socket.on("new_friend_request", async ({ message }) => {
+      socket.on("new_friend_request", async ({ user_name }) => {
         await dispatch(updateFriendRequestsThunk({ token }));
-        infoToast({ message });
+        newFriendRequestToast({ user_name, position: "top-left" });
       });
 
       socket.on("request_not_exist", async ({ message, request_id }) => {
@@ -67,12 +68,12 @@ const DashboardLayout = () => {
           );
           dispatch(addFriend(friend));
           dispatch(removeUser(friend._id));
-          successToast({ message });
+          successToast({ message, position: "top-left" });
         }
       );
 
       socket.on("your_request_rejected", async ({ message, request_id }) => {
-        errorToast({ message });
+        errorToast({ message, position: "top-left" });
         dispatch(
           updateRequest({ request: "sent", request_id, status: "Rejected" })
         );
@@ -101,7 +102,9 @@ const DashboardLayout = () => {
         } else {
           if (!conversation) return;
           dispatch(changeLastMessage(message));
-          toast(`A message received from ${conversation?.name}`);
+          toast(`New message received from ${conversation?.name}`, {
+            position: "top-left",
+          });
         }
         if (!conversation) return;
         dispatch(changeToFirstConversation(conversation_id));
@@ -164,6 +167,7 @@ const DashboardLayout = () => {
           setTimeout(handleLeaveApp, 4000);
           return `${message}`;
         },
+        position: "top-right",
       });
     }
   }, [isLoggedIn]);

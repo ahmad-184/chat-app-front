@@ -1,7 +1,12 @@
 import React from "react";
+import { ProgressBar } from "./ProgressBar";
 
 const LoadingScreen = () => {
-  return <>Loading...</>;
+  return (
+    <div>
+      <ProgressBar />
+    </div>
+  );
 };
 
 export default LoadingScreen;

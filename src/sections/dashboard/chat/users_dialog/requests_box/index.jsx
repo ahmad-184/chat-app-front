@@ -39,11 +39,11 @@ const FriendsBox = () => {
     socket.emit(
       "accept_friend_request",
       { request_id: id },
-      async ({ message, friend }) => {
+      async ({ user_name, friend }) => {
         await dispatch(updateFriendRequestsThunk({ token })).then(() => {
           dispatch(addFriend(friend));
           dispatch(removeUser(friend._id));
-          successToast({ message });
+          successToast({ message: `${user_name} added to your friends list` });
           setIsLoading(false);
         });
       }

@@ -1,10 +1,17 @@
 import { useState, memo } from "react";
-import { Box, Stack, Typography, useTheme } from "@mui/material";
+import {
+  Box,
+  Stack,
+  Typography,
+  alpha,
+  useTheme,
+  IconButton,
+} from "@mui/material";
 import { File as FileIcon, X } from "phosphor-react";
 import VideoThumbnail from "react-video-thumbnail";
 
 import { SimpleBarStyle } from "../../Scrollbar";
-import Lightbox from "../../LightBox";
+import Lightbox, { filterFiles } from "../../LightBox";
 
 const File = ({ item, removeFile, selectIndex, openLightbox }) => {
   const theme = useTheme();
@@ -31,7 +38,7 @@ const File = ({ item, removeFile, selectIndex, openLightbox }) => {
         className="file_box"
         position={"absolute"}
         top={15}
-        right={10}
+        right={5}
         sx={{
           cursor: "pointer",
           opacity: {
@@ -114,7 +121,7 @@ const File = ({ item, removeFile, selectIndex, openLightbox }) => {
             textAlign="center"
             sx={{ color: mode === "light" ? "grey.600" : "grey.400" }}
           >
-            .{splitedName[splitedName.length - 1]}
+            .{splitedName.at(-1)}
           </Typography>
         </Stack>
       )}
@@ -150,7 +157,8 @@ const FilesThumbnailes = ({ files, removeFile }) => {
         "& .simplebar-scrollbar::before": {
           height: "5px",
         },
-        backgroundColor: mode === "light" ? "grey.200" : "grey.800",
+        backgroundColor:
+          mode === "light" ? "grey.200" : alpha(theme.palette.grey[800], 0.8),
         borderTop: "1px solid",
         borderColor: mode === "light" ? "grey.300" : "grey.700",
       }}
@@ -166,23 +174,7 @@ const FilesThumbnailes = ({ files, removeFile }) => {
             open={lightboxOpen}
             close={closeLightbox}
             index={index}
-            slides={files
-              .filter((item) => item.type === "image" || item.type === "video")
-              .map((file) => {
-                const fileType = file.type;
-                if (fileType !== "image" && fileType !== "video") return;
-                if (fileType === "image") return { src: file.fileData };
-                if (fileType === "video")
-                  return {
-                    type: file.type,
-                    sources: [
-                      {
-                        src: file.fileData,
-                        type: file.file.type,
-                      },
-                    ],
-                  };
-              })}
+            slides={filterFiles(files)}
           />
         ) : null}
         {files.map((item, index) => (

@@ -8,9 +8,13 @@ export const API_BASE_URL = "http://localhost:9000/api";
 
 export const SECRET_KEY = "1v%nPCJG%dJtx3E'VQL@W^-85=DV!4";
 
-export const CLOUD_SECRET_KEY = "ZUetiwl_NLkvBatoktVvDCJycd4";
+export const CLOUD_SECRET = "ZUetiwl_NLkvBatoktVvDCJycd4";
+
+export const CLOUD_PRESET_NAME = "m6tpa2jf";
 
 export const CLOUD_NAME = "dnlnbcbt0";
+
+export const UPLOAD_FOLDER = "Tawk";
 
 export const defaultSettings = {
   themeMode: "light",

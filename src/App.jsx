@@ -20,6 +20,8 @@ import "swiper/css";
 import "swiper/css/free-mode";
 // lightbox css styles
 import "yet-another-react-lightbox/styles.css";
+// react-lazy-load-image-component css file styles
+import "react-lazy-load-image-component/src/effects/blur.css";
 
 const AppFallback = () => {
   return (

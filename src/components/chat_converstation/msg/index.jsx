@@ -9,17 +9,11 @@ import {
 import { Stack, Box, useTheme, Typography } from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
 import useInfiniteScroll from "react-infinite-scroll-hook";
+import * as _ from "lodash";
 
 import LoaderButton from "../../LoaderButton";
 
-import {
-  TextMsg,
-  MediaMsg,
-  ReplyMsg,
-  LinkMsg,
-  DocMsg,
-  Timeline,
-} from "./messageTypes";
+import { Timeline, NewMessage, Message } from "./messageTypes";
 import {
   getAllMessages,
   getCurrentConversation,
@@ -27,11 +21,12 @@ import {
 } from "../../../app/slices/chat_conversation";
 import { ArrowDown } from "phosphor-react";
 
-import NewMessage from "./messageTypes/NewMessage";
 import { getToken } from "../../../app/slices/auth";
 
 import { fDate } from "../../../utils/formatTime";
 import LoadingSvg from "../../../assets/Illustration/LoaderSvg";
+
+import LightBox, { filterFiles } from "../../LightBox";
 
 const Msg = ({ showMenu = true, showTime = true }) => {
   const theme = useTheme();
@@ -53,6 +48,30 @@ const Msg = ({ showMenu = true, showTime = true }) => {
   const token = useSelector(getToken);
   const boxRef = useRef(null);
   const scrollButtonRef = useRef(null);
+
+  const getImagesAndVideos = useMemo(() => {
+    const messagesWithFiles = Object.values(msgs)
+      .filter((item) => item?.files?.length)
+      .map((item) => item?.files)
+      .map((item) => item);
+
+    const filtered = filterFiles(_.flattenDeep(messagesWithFiles));
+    return filtered;
+  }, [room_id, msgs]);
+
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
+
+  const closeLightbox = () => setLightboxOpen(false);
+  const openLightbox = () => setLightboxOpen(true);
+  const changeLightboxIndex = (url) => {
+    setLightboxIndex(() => {
+      const findIndex = getImagesAndVideos.findIndex(
+        (item) => item.src === url
+      );
+      return findIndex;
+    });
+  };
 
   const firstUnseenMsg = useMemo(() => {
     if (unseen) return unseen[0];
@@ -134,13 +153,13 @@ const Msg = ({ showMenu = true, showTime = true }) => {
   }, [msgs, boxRef, scrollButtonRef]);
 
   useEffect(() => {
-    if (unseen?.length) {
-      return;
-    }
+    if (unseen?.length) return;
     if (Object.keys(msgs)?.length && boxRef?.current) {
       handleScrollDown({});
     }
   }, [msgs, room_id]);
+
+  useEffect(() => console.log(lightboxIndex), [lightboxIndex]);
 
   if (isLoading) {
     return "loading...";
@@ -233,72 +252,36 @@ const Msg = ({ showMenu = true, showTime = true }) => {
           </Stack>
         )}
         {msgs?.map((item, index) => {
-          const msgType = item?.type;
-          switch (msgType) {
-            case "Image": {
-              return (
-                <MediaMsg
-                  data={item}
-                  key={index + item?._id}
-                  showMenu={showMenu}
-                  showTime={showTime}
-                />
-              );
-            }
-            case "Link": {
-              return (
-                <LinkMsg
-                  data={item}
-                  key={index + item?._id}
-                  showMenu={showMenu}
-                  showTime={showTime}
-                />
-              );
-            }
-            case "Doc": {
-              return (
-                <DocMsg
-                  data={item}
-                  key={index + item?._id}
-                  showMenu={showMenu}
-                  showTime={showTime}
-                />
-              );
-            }
-            case "Replay": {
-              return (
-                <ReplyMsg
-                  data={item}
-                  key={index + item?._id}
-                  showMenu={showMenu}
-                  showTime={showTime}
-                />
-              );
-            }
-            case "timeline": {
-              return (
-                <Timeline
-                  data={item.date}
-                  key={index + item?._id}
-                  showMenu={showMenu}
-                  showTime={showTime}
-                />
-              );
-            }
-            default: {
-              return (
-                <Fragment key={index + item?._id}>
-                  {firstUnseenMsg === item?._id ? <NewMessage /> : null}
-                  <TextMsg
-                    data={item}
-                    showMenu={showMenu}
-                    showTime={showTime}
-                  />
-                </Fragment>
-              );
-            }
-          }
+          if (item?.type === "timeline")
+            return (
+              <Timeline
+                data={item.date}
+                key={index + item?._id}
+                showMenu={showMenu}
+                showTime={showTime}
+              />
+            );
+          return (
+            <Fragment key={index + item?._id}>
+              {firstUnseenMsg === item?._id ? <NewMessage /> : null}
+              <Message
+                data={item}
+                showMenu={showMenu}
+                showTime={showTime}
+                openLightbox={openLightbox}
+                changeLightboxIndex={changeLightboxIndex}
+              />
+            </Fragment>
+          );
         })}
+        {lightboxOpen ? (
+          <LightBox
+            open={lightboxOpen}
+            close={closeLightbox}
+            index={lightboxIndex}
+            slides={getImagesAndVideos}
+          />
+        ) : null}
       </Stack>
     </Box>
   );
