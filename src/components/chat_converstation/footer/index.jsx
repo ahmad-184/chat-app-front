@@ -28,6 +28,7 @@ import FilesThumbnailes from "./FilesThumbnaile";
 import uploader from "../../../utils/uploader";
 
 import LoaderButton from "../../LoaderButton";
+import CircularProgressWithLabel from "../../CircularProgressWithLabel";
 
 const buttons = [
   {
@@ -51,6 +52,7 @@ const Footer = () => {
   const [files, setFiles] = useState([]);
   const [inputText, setInputText] = useState("");
   const [uploadLoading, setUploadLoading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
 
   const deferredFiles = useDeferredValue(files);
 
@@ -77,7 +79,7 @@ const Footer = () => {
       if (isInputEmpty && !files.length) return;
 
       setUploadLoading(true);
-      const filesData = await uploader(files).finally(() => {
+      const filesData = await uploader(files, setUploadProgress).finally(() => {
         setUploadLoading(false);
         setFiles([]);
       });
@@ -158,6 +160,10 @@ const Footer = () => {
         if (file.size >= 10000000)
           return toast.warning("File size must be less than 10mb");
         const fileType = file.type.split("/")[0];
+        const isExe = Boolean(file.name.split(".").at(-1) === "exe");
+        if (isExe)
+          return toast.error("Unfortunately exe file type not supported");
+        console.log(file);
         const reader = new FileReader();
         await reader.readAsDataURL(file);
         reader.onload = (f) => {
@@ -171,6 +177,8 @@ const Footer = () => {
                   ? "image"
                   : fileType === "video"
                   ? "video"
+                  : fileType === "audio"
+                  ? "audio"
                   : file.type.split("/")[1],
             },
           ]);
@@ -183,10 +191,6 @@ const Footer = () => {
   const removeFile = (fileName) => {
     setFiles((prev) => prev.filter((item) => item.file.name !== fileName));
   };
-
-  useEffect(() => {
-    console.log(files);
-  }, [files]);
 
   return (
     <Box>
@@ -260,11 +264,22 @@ const Footer = () => {
                   backgroundColor: alpha(theme.palette.primary.main, 0.4),
                 },
               }}
-              loading={uploadLoading}
+              disabled={uploadLoading}
               variant="contained"
               onClick={handleSendMessage}
             >
-              <PaperPlaneRight size={23} weight="fill" />
+              {!uploadLoading && <PaperPlaneRight size={23} weight="fill" />}
+              {uploadLoading && (
+                <CircularProgressWithLabel
+                  value={uploadProgress}
+                  sx={{
+                    "& .MuiCircularProgress-circle": {
+                      color:
+                        mode === "light" ? "primary.main" : "primary.light",
+                    },
+                  }}
+                />
+              )}
             </LoaderButton>
           </Stack>
         </Stack>

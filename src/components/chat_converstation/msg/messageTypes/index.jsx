@@ -4,3 +4,6 @@ export { default as MsgContainer } from "./MsgContainer";
 export { default as Message } from "./Message";
 export { default as NewMessage } from "./NewMessage";
 export { default as ImageMessage } from "./ImageMessage";
+export { default as VideoMessage } from "./VideoMessage";
+export { default as AudioMessage } from "./AudioMessage";
+export { default as FileMessage } from "./FileMessage";

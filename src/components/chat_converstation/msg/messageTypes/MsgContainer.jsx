@@ -1,4 +1,4 @@
-import { Stack, Box, useTheme } from "@mui/material";
+import { Stack, Box, useTheme, alpha } from "@mui/material";
 import { useSelector } from "react-redux";
 import { Check, Checks } from "phosphor-react";
 
@@ -18,12 +18,16 @@ const MsgContainer = ({ data, showMenu = true, showTime = true, children }) => {
         sx={{
           ...(mode === "dark"
             ? {
-                backgroundColor: !isOutgoing ? "primary.dark" : "grey.700",
+                backgroundColor: !isOutgoing
+                  ? alpha(theme.palette.primary.light, 0.2)
+                  : "grey.700",
               }
             : {
-                backgroundColor: !isOutgoing ? "primary.main" : "grey.800",
+                backgroundColor: !isOutgoing
+                  ? alpha(theme.palette.primary.light, 0.2)
+                  : "grey.800",
               }),
-          borderRadius: 1.4,
+          borderRadius: 1.2,
           p: 1,
           px: 2,
           position: "relative",

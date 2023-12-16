@@ -12,7 +12,12 @@ export const filterFiles = (files) => {
     const fileType = file.type;
     if (fileType !== "image" && fileType !== "video") return;
     if (fileType === "image")
-      return { src: file.fileData || file.file.url, type: file.type };
+      return {
+        src:
+          file.fileData ||
+          file.file.url.replace("upload", "upload/q_40,dpr_1.0"),
+        type: file.type,
+      };
     if (fileType === "video")
       return {
         type: file.type,
@@ -22,7 +27,7 @@ export const filterFiles = (files) => {
             type: file.fileData ? file.file.type : "video/mp4",
           },
         ],
-        download: file.fileData,
+        download: file.fileData || file.file.url,
       };
   });
 

@@ -66,8 +66,8 @@ const Msg = ({ showMenu = true, showTime = true }) => {
   const openLightbox = () => setLightboxOpen(true);
   const changeLightboxIndex = (url) => {
     setLightboxIndex(() => {
-      const findIndex = getImagesAndVideos.findIndex(
-        (item) => item.src === url
+      const findIndex = getImagesAndVideos.findIndex((item) =>
+        item.type === "image" ? item.src === url : item.sources[0].src === url
       );
       return findIndex;
     });

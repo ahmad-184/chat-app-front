@@ -10,6 +10,7 @@ import {
   alpha,
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
+import { Image, VideoCamera, File, Microphone } from "phosphor-react";
 
 import StyledBadge from "../../../../components/StyledBadge";
 import {
@@ -20,14 +21,7 @@ import { selectConversation } from "../../../../app/slices/app";
 
 import createAvatar from "../../../../utils/createAvatar";
 
-import {
-  format,
-  isThisMonth,
-  isThisWeek,
-  isThisYear,
-  isToday,
-  isYesterday,
-} from "date-fns";
+import { format, isThisWeek, isThisYear, isToday } from "date-fns";
 import { fTimestamp } from "../../../../utils/formatTime";
 
 const time = (data) => {
@@ -99,6 +93,29 @@ const UserBoxSkeleton = () => {
   );
 };
 
+const FileIcon = ({ fileType, showName }) => {
+  const isImage = Boolean(fileType && fileType === "image");
+  const isVideo = Boolean(fileType && fileType === "video");
+  const isAudio = Boolean(fileType && fileType === "audio");
+
+  const styles = {
+    fontSize: "17px",
+  };
+
+  return (
+    <>
+      {showName && isImage ? "image" : ""}
+      {showName && isVideo ? "video" : ""}
+      {showName && isAudio ? "audio" : ""}
+      {showName && !isImage && !isVideo && !isAudio ? "file" : ""}
+      {isImage && <Image style={styles} />}
+      {isVideo && <VideoCamera style={styles} />}
+      {isAudio && <Microphone style={styles} />}
+      {!isImage && !isVideo && !isAudio && <File style={styles} />}
+    </>
+  );
+};
+
 const UserChatList = ({ data }) => {
   const theme = useTheme();
   const dispatch = useDispatch();
@@ -114,6 +131,12 @@ const UserChatList = ({ data }) => {
     dispatch(selectConversation({ chat_type: "dividual", room_id: data?._id }));
     dispatch(startChatConversation(data?._id));
   };
+
+  const fileType = data?.last_message?.files?.length
+    ? data?.last_message?.files?.at(-1).type
+    : [];
+
+  const text = data?.last_message?.text ? data?.last_message?.text : "";
 
   if (!data) {
     return <UserBoxSkeleton />;
@@ -160,7 +183,7 @@ const UserChatList = ({ data }) => {
               {avatar?.name}
             </Avatar>
           )}
-          <Stack direction="column" spacing={0.5} sx={{ minWidth: "0px" }}>
+          <Stack direction="column" spacing={0.2} sx={{ minWidth: "0px" }}>
             <Typography
               variant="body2"
               fontSize={15}
@@ -171,20 +194,24 @@ const UserChatList = ({ data }) => {
               {data?.name}
             </Typography>
             <Typography
-              variant="body2"
+              variant="caption"
               color={mode === "light" ? "grey.600" : "grey.400"}
               noWrap
+              sx={{
+                alignItems: "center",
+                display: "flex",
+              }}
             >
-              {data.typing
-                ? "Typing..."
-                : data?.last_message.text
-                ? data?.last_message.text
-                : "..."}
+              {data.typing && "Typing..."}
+              {!data.typing && text ? text : ""}
+              {fileType.length && !data.typing ? (
+                <FileIcon fileType={fileType} showName={!text} />
+              ) : null}
             </Typography>
           </Stack>
         </Stack>
         <Stack direction="column" sx={{ minWidth: "0px", maxWidth: "25%" }}>
-          <Typography variant="caption" fontSize="12px" noWrap title>
+          <Typography variant="caption" fontSize="12px" noWrap>
             {data?.lastSeen && time(data)}
           </Typography>
           <Box display="flex" justifyContent="end" position="relative">

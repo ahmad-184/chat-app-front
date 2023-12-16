@@ -3,7 +3,14 @@ import { useSelector } from "react-redux";
 import { Stack } from "@mui/material";
 
 import MessagesHOC from "../../../../HOC's/MessagesHOC";
-import { TextMsg, MsgContainer, ImageMessage } from "./";
+import {
+  TextMsg,
+  MsgContainer,
+  ImageMessage,
+  VideoMessage,
+  AudioMessage,
+  FileMessage,
+} from "./";
 
 const Message = forwardRef(
   ({ data, showMenu, showTime, openLightbox, changeLightboxIndex }, ref) => {
@@ -31,6 +38,22 @@ const Message = forwardRef(
                       changeLightboxIndex={changeLightboxIndex}
                     />
                   );
+                }
+                case "video": {
+                  return (
+                    <VideoMessage
+                      key={index}
+                      data={file}
+                      openLightbox={openLightbox}
+                      changeLightboxIndex={changeLightboxIndex}
+                    />
+                  );
+                }
+                case "audio": {
+                  return <AudioMessage key={index} data={file} />;
+                }
+                default: {
+                  return <FileMessage key={index} data={file} />;
                 }
               }
             })}

@@ -12,10 +12,11 @@ const ImageMessage = ({ data, openLightbox, changeLightboxIndex }) => {
   );
 
   return (
-    <Stack>
+    <Stack py={1}>
       <Box
-        py={1}
         sx={{
+          cursor: "pointer",
+          lineHeight: 0,
           "& img": {
             width: "100%",
             height: "100%",
@@ -24,19 +25,17 @@ const ImageMessage = ({ data, openLightbox, changeLightboxIndex }) => {
           },
         }}
         onClick={() => {
-          changeLightboxIndex(data.file.url);
+          changeLightboxIndex(image);
           openLightbox();
         }}
       >
         <LazyLoadImage
           alt={data.original_name}
-          // src={data.file.secure_url}
           src={image}
           placeholderSrc={placeholder}
           effect="blur"
           width={350}
           height={240}
-          // useIntersectionObserver={false}
         />
       </Box>
     </Stack>
