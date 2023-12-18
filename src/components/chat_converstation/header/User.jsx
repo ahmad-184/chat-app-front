@@ -1,8 +1,10 @@
-import { Typography, Stack, Avatar } from "@mui/material";
+import { Typography, Stack } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 
 import { toggleSidebar } from "../../../app/slices/app";
 import { getCurrentConversation } from "../../../app/slices/chat_conversation";
+import { Avatar } from "../../image";
+import getPhotoUrl from "../../../utils/getPhotoUrl";
 
 import createAvatar from "../../../utils/createAvatar";
 
@@ -13,6 +15,13 @@ const User = () => {
   const current_conversation = useSelector(getCurrentConversation);
 
   const avatar = createAvatar(current_conversation.name);
+  const imgData = getPhotoUrl(
+    current_conversation?.avatar,
+    "300",
+    "10",
+    "",
+    "10"
+  );
 
   return (
     <Stack
@@ -25,7 +34,8 @@ const User = () => {
     >
       <Avatar
         onClick={handleToggleSidebar}
-        src={current_conversation.avatar}
+        src={imgData.url}
+        placeholder={imgData.placeholder}
         alt="user profile picture"
         sx={{
           cursor: "pointer",

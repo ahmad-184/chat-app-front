@@ -4,7 +4,6 @@ import {
   styled,
   Switch,
   useTheme,
-  Avatar,
   Menu,
   MenuItem,
   ListItemIcon,
@@ -17,6 +16,9 @@ import { Profile_Menu } from "../../../data";
 import { logOut } from "../../../app/slices/auth";
 import { appLogout } from "../../../app/slices/app";
 import { logOutChatConv } from "../../../app/slices/chat_conversation";
+import { Avatar } from "../../../components/image";
+import getPhotoUrl from "../../../utils/getPhotoUrl";
+import createAvatar from "../../../utils/createAvatar";
 
 const ThemeSwitch = styled(Switch)(({ theme }) => ({
   width: 60,
@@ -85,6 +87,9 @@ const User = () => {
 
   const mode = theme.palette.mode;
 
+  const imgData = getPhotoUrl(user?.avatar, "300", "10", "", "10");
+  const avatar = createAvatar(user?.name);
+
   const handleLeaveApp = async () => {
     await dispatch(appLogout());
     await dispatch(logOutChatConv());
@@ -108,10 +113,13 @@ const User = () => {
       />
       <Avatar
         onClick={handleClick}
-        src={user?.avatar}
+        src={imgData.url}
+        placeholder={imgData.placeholder}
         alt="user avatar"
         sx={{ cursor: "pointer" }}
-      />
+      >
+        {avatar.name}
+      </Avatar>
       <Menu
         id="basic-menu"
         anchorEl={anchorEl}

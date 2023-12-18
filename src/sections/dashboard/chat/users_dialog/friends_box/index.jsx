@@ -1,15 +1,6 @@
 import { useEffect, useState } from "react";
-import {
-  Stack,
-  Box,
-  Typography,
-  Avatar,
-  useTheme,
-  alpha,
-  IconButton,
-} from "@mui/material";
+import { Stack, Typography } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import { ChatTeardropDots } from "phosphor-react";
 
 import {
   updateFriendsThunk,
@@ -22,15 +13,11 @@ import {
   startNewChatConversation,
   addChatConversation,
 } from "../../../../../app/slices/chat_conversation";
-
-import createAvatar from "../../../../../utils/createAvatar";
-
-import StyledBadge from "../../../../../components/StyledBadge";
 import useSocket from "../../../../../hooks/useSocket";
-
 import Loader from "../Loader";
+import FriendBox from "./FriendBox";
 
-const FriendBox = ({ handleClose }) => {
+const Friend = ({ handleClose }) => {
   const friends = useSelector(getFriends);
   const appLoading = useSelector(getAppLoading);
   const token = useSelector(getToken);
@@ -40,8 +27,6 @@ const FriendBox = ({ handleClose }) => {
   const { socket } = useSocket();
 
   const [isLoading, setIsLoading] = useState(false);
-
-  const theme = useTheme();
 
   useEffect(() => {
     dispatch(updateFriendsThunk({ token }));
@@ -70,71 +55,16 @@ const FriendBox = ({ handleClose }) => {
 
   return (
     <Stack px={1} py={1} spacing={1.5} width="100%">
-      {friends.length ? (
-        friends.map((item, index) => {
-          const avatar = createAvatar(item.firstname);
-
-          return (
-            <Box
-              sx={{
-                p: 1,
-                borderRadius: 1,
-                cursor: "pointer",
-                backgroundColor:
-                  theme.palette.mode === "light"
-                    ? "grey.200"
-                    : alpha(theme.palette.grey[900], 0.4),
-              }}
-              key={index}
-            >
-              <Stack direction="row" spacing={1} alignItems="center">
-                <Box p={0.5}>
-                  {item.status === "Online" ? (
-                    <StyledBadge
-                      overlap="circular"
-                      anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-                      variant="dot"
-                    >
-                      <Avatar
-                        alt={`${item.firstname} ${item.lastname}`}
-                        src={item.avatar}
-                      >
-                        {avatar.name}
-                      </Avatar>
-                    </StyledBadge>
-                  ) : (
-                    <Avatar
-                      alt={`${item.firstname} ${item.lastname}`}
-                      src={item.avatar}
-                    >
-                      {avatar.name}
-                    </Avatar>
-                  )}
-                </Box>
-                <Stack sx={{ minWidth: 0, maxWidth: "45%" }}>
-                  <Typography
-                    noWrap
-                    variant="body1"
-                  >{`${item.firstname} ${item.lastname}`}</Typography>
-                  <Typography noWrap variant="body2">
-                    {item.email}
-                  </Typography>
-                </Stack>
-                <Box display="flex" flexGrow={1} justifyContent="end">
-                  <IconButton
-                    disabled={isLoading}
-                    onClick={() => {
-                      handleStartConversation(item._id);
-                      setIsLoading(true);
-                    }}
-                  >
-                    <ChatTeardropDots size={33} />
-                  </IconButton>
-                </Box>
-              </Stack>
-            </Box>
-          );
-        })
+      {friends?.length ? (
+        friends?.map((item, index) => (
+          <FriendBox
+            item={item}
+            key={index}
+            isLoading={isLoading}
+            handleStartConversation={handleStartConversation}
+            setIsLoading={setIsLoading}
+          />
+        ))
       ) : (
         <Typography
           variant="body2"
@@ -150,4 +80,4 @@ const FriendBox = ({ handleClose }) => {
   );
 };
 
-export default FriendBox;
+export default Friend;

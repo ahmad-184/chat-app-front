@@ -125,8 +125,8 @@ const ShortcutsDialog = ({ open, handleClose }) => {
         <DialogTitle sx={{ pb: 3 }}>Keyboard shortcuts</DialogTitle>
         <DialogContent>
           <Grid container spacing={3}>
-            {list.map((item) => (
-              <Grid xs={12} sm={6} key={item.key}>
+            {list.map((item, index) => (
+              <Grid xs={12} sm={6} key={index}>
                 <Stack
                   direction="row"
                   justifyContent="space-between"

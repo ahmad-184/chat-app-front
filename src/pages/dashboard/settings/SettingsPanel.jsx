@@ -5,7 +5,6 @@ import {
   IconButton,
   Box,
   useTheme,
-  Avatar,
   List,
   ListItemButton,
   ListItemIcon,
@@ -25,15 +24,23 @@ import {
   Info,
 } from "phosphor-react";
 import { faker } from "@faker-js/faker";
+import { useSelector } from "react-redux";
 
 import { SimpleBarStyle } from "../../../components/Scrollbar";
 import ShortcutsDialog from "../../../sections/dashboard/settings/ShortcutsDialog";
 import ThemeDialog from "../../../sections/dashboard/settings/ThemeDialog";
 import SidebarContainer from "../SidebarContainer";
+import { Avatar } from "../../../components/image";
+import createAvatar from "../../../utils/createAvatar";
+import getPhotoUrl from "../../../utils/getPhotoUrl";
 
 const SettingsPanel = () => {
   const theme = useTheme();
   const mode = theme.palette.mode;
+  const user = useSelector((state) => state.auth.user);
+
+  const imgData = getPhotoUrl(user?.avatar, "350", "30", "", "10");
+  const avatar = createAvatar(user?.name);
 
   const [openShortcutsDiagram, setOpenShortcutsDiagram] = useState(false);
   const [openThemeDiagram, setOpenThemeDiagram] = useState(false);
@@ -117,33 +124,56 @@ const SettingsPanel = () => {
                 Settings
               </Typography>
             </Stack>
-            <Stack direction="row" spacing={3} alignItems="center">
+            <Stack spacing={2} alignItems="center">
               <Avatar
-                sx={{ width: 80, height: 80 }}
-                src={faker.image.avatar()}
-                alt={faker.person.fullName()}
-              />
-              <Stack direction="column" spacing={1} minWidth={0}>
+                src={imgData?.url}
+                placeholder={imgData?.placeholder}
+                width={115}
+                height={115}
+              >
+                {avatar?.name}
+              </Avatar>
+              <Stack
+                direction="column"
+                spacing={2}
+                minWidth={0}
+                width="100%"
+                px={2}
+              >
                 <Typography
-                  variant="body1"
+                  variant="h4"
+                  textAlign="center"
                   fontWeight={mode === "light" ? "700" : "600"}
                   sx={{
                     color: mode === "light" ? "grey.800" : "grey.200",
                   }}
                   noWrap
+                  textTransform="capitalize"
                 >
-                  Ahmadreza Foroozanpoor
+                  {user?.name}
                 </Typography>
-                <Typography
-                  variant="body2"
-                  fontWeight={mode === "light" ? "600" : "500"}
-                  sx={{
-                    color: mode === "light" ? "grey.700" : "grey.300",
-                  }}
-                  noWrap
-                >
-                  Exploring
-                </Typography>
+                <Stack spacing={1} width="100%">
+                  <Typography
+                    variant="body2"
+                    fontWeight={mode === "light" ? "600" : "500"}
+                    sx={{
+                      color: mode === "light" ? "grey.600" : "grey.500",
+                    }}
+                    noWrap
+                  >
+                    About
+                  </Typography>
+
+                  <Typography
+                    variant="body1"
+                    fontWeight={mode === "light" ? "600" : "500"}
+                    sx={{
+                      color: mode === "light" ? "grey.700" : "grey.300",
+                    }}
+                  >
+                    {user?.about}
+                  </Typography>
+                </Stack>
               </Stack>
             </Stack>
             <Box

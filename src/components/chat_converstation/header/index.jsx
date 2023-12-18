@@ -17,7 +17,6 @@ const Header = () => {
       }}
       display="flex"
       alignItems="center"
-      height={80}
       sx={{
         ...(mode === "light" && {
           borderBottom: "1px solid",
@@ -25,7 +24,7 @@ const Header = () => {
         }),
       }}
     >
-      <Stack direction="row" alignItems="center" width="100%">
+      <Stack direction="row" height={80} alignItems="center" width="100%">
         <IconButton
           sx={{
             display: {

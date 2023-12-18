@@ -25,7 +25,7 @@ import { getToken } from "../../../app/slices/auth";
 
 import { fDate } from "../../../utils/formatTime";
 import LoadingSvg from "../../../assets/Illustration/LoaderSvg";
-
+import Spinner from "../../Spinner";
 import LightBox, { filterFiles } from "../../LightBox";
 
 const Msg = ({ showMenu = true, showTime = true }) => {
@@ -162,7 +162,17 @@ const Msg = ({ showMenu = true, showTime = true }) => {
   useEffect(() => console.log(lightboxIndex), [lightboxIndex]);
 
   if (isLoading) {
-    return "loading...";
+    return (
+      <Stack
+        alignItems="center"
+        justifyContent="center"
+        width="100%"
+        position="relative"
+        height="100%"
+      >
+        <Spinner />
+      </Stack>
+    );
   }
 
   return (

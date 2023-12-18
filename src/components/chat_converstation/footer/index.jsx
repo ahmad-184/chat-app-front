@@ -98,12 +98,11 @@ const Footer = () => {
         createdAt: Date.now(),
       };
       dispatch(addMessage(data));
+      setInputTextEmpty();
       await dispatch(createMessageThunk({ token, data })).then((response) => {
         const { message_id, status, message } = response.payload.data;
         if (status === "OK") {
           startTransition(async () => {
-            setInputTextEmpty();
-
             dispatch(setMessageDelivered(message));
             socket.emit("send_message", {
               message_id,

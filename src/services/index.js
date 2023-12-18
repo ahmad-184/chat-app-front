@@ -110,3 +110,18 @@ export const createMessageApi = async ({ token, data }) => {
     }
   );
 };
+
+export const updateUserApi = async ({ token, data }) => {
+  return await axios.post(
+    `/user/update_me`,
+    {
+      ...data,
+    },
+    {
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+};

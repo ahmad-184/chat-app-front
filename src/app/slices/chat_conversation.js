@@ -3,6 +3,7 @@ import {
   createEntityAdapter,
   createAsyncThunk,
   current,
+  createSelector,
 } from "@reduxjs/toolkit";
 import { errorToast } from "../../components/ToastProvider";
 
@@ -327,5 +328,13 @@ export const getChatConversations = (state) =>
   state.chat_conversation.conversations;
 export const getCurrentConversation = (state) =>
   state.chat_conversation.current_conversation;
+export const getConversations = (state) =>
+  state.chat_conversation.conversations;
+export const getAConversation = createSelector(
+  [(convos) => convos, (_, convoId) => convoId],
+  (convos, convoId) => {
+    return convos.find((item) => item._id === convoId);
+  }
+);
 
 export default conversationSlice.reducer;

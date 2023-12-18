@@ -1,9 +1,8 @@
-import { useState } from "react";
+import { useState, memo } from "react";
 import {
   Stack,
   Box,
   Typography,
-  Avatar,
   useTheme,
   Button,
   alpha,
@@ -12,9 +11,11 @@ import {
 } from "@mui/material";
 import { Trash, Check } from "phosphor-react";
 
+import getPhotoUrl from "../../../../../utils/getPhotoUrl";
 import createAvatar from "../../../../../utils/createAvatar";
+import { Avatar } from "../../../../../components/image";
 
-export const ReceivedFriendRequest = ({
+const ReceivedFriendRequest = ({
   item: { sender, _id },
   handleAcceptFriendRequest,
   handleRejectFriendRequest,
@@ -23,7 +24,8 @@ export const ReceivedFriendRequest = ({
   const theme = useTheme();
   const mode = theme.palette.mode;
 
-  const avatar = createAvatar(sender.firstname);
+  const imgData = getPhotoUrl(sender?.avatar, "300", "10", "", "10");
+  const avatar = createAvatar(sender?.name);
 
   return (
     <Box
@@ -37,18 +39,19 @@ export const ReceivedFriendRequest = ({
     >
       <Stack direction="row" spacing={1} alignItems="center">
         <Box p={0.5}>
-          <Avatar
-            alt={`${sender.firstname} ${sender.lastname}`}
-            src={sender.avatar}
-          >
-            {avatar.name}
+          <Avatar src={imgData?.url} placeholder={imgData?.placeholder}>
+            {avatar?.name}
           </Avatar>
         </Box>
         <Stack sx={{ minWidth: 0, maxWidth: "50%" }}>
           <Typography
             noWrap
+            textTransform="capitalize"
+            fontWeight={600}
             variant="body1"
-          >{`${sender.firstname} ${sender.lastname}`}</Typography>
+          >
+            {sender.name}
+          </Typography>
           <Typography noWrap variant="body2">
             {sender.email}
           </Typography>
@@ -90,7 +93,7 @@ export const ReceivedFriendRequest = ({
   );
 };
 
-export const RequestsStatus = ({
+const RequestsStatus = ({
   item: { reciver, _id, status },
   handleDeleteFriendRequest,
 }) => {
@@ -98,7 +101,8 @@ export const RequestsStatus = ({
   const theme = useTheme();
   const mode = theme.palette.mode;
 
-  const avatar = createAvatar(reciver.firstname);
+  const imgData = getPhotoUrl(reciver?.avatar, "300", "10", "", "10");
+  const avatar = createAvatar(reciver?.name);
 
   return (
     <Box
@@ -112,18 +116,19 @@ export const RequestsStatus = ({
     >
       <Stack direction="row" spacing={1} alignItems="center">
         <Box p={0.5}>
-          <Avatar
-            alt={`${reciver.firstname} ${reciver.lastname}`}
-            src={reciver.avatar}
-          >
-            {avatar.name}
+          <Avatar src={imgData?.url} placeholder={imgData?.placeholder}>
+            {avatar?.name}
           </Avatar>
         </Box>
         <Stack sx={{ minWidth: 0, maxWidth: "50%" }}>
           <Typography
             noWrap
+            textTransform="capitalize"
+            fontWeight={600}
             variant="body1"
-          >{`${reciver.firstname} ${reciver.lastname}`}</Typography>
+          >
+            {reciver.name}
+          </Typography>
           <Typography noWrap variant="body2">
             {reciver.email}
           </Typography>
@@ -181,4 +186,9 @@ export const RequestsStatus = ({
       </Stack>
     </Box>
   );
+};
+
+export default {
+  RequestsStatus: memo(RequestsStatus),
+  ReceivedFriendRequest: memo(ReceivedFriendRequest),
 };

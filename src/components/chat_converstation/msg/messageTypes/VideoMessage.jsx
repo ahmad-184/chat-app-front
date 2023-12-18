@@ -2,20 +2,25 @@ import { useState } from "react";
 import { Box, IconButton, Stack, alpha, useTheme } from "@mui/material";
 import VideoThumbnail from "react-video-thumbnail";
 import { Play } from "phosphor-react";
-import { LazyLoadImage } from "react-lazy-load-image-component";
 
-import imagePlaceholder from "../../../../assets/Images/placeholder.png";
+import { Image } from "../../../image";
+import useResponsive from "../../../../hooks/useResponsive";
 
 const VideoMessage = ({ data, openLightbox, changeLightboxIndex }) => {
   const theme = useTheme();
   const [thumb, setThumb] = useState("");
 
+  const imgUrl = thumb.replace("upload", "upload/q_40,dpr_1.0") || "";
+  const placeholder = thumb.replace("upload", "upload/q_10,dpr_1.0,w_50") || "";
+
+  const isLg = useResponsive("up", "lg");
+  const isMd = useResponsive("up", "md");
+  const isXs = useResponsive("up", "xs");
+
   return (
     <Stack py={1}>
       <Box
         sx={{
-          width: 350,
-          height: 240,
           lineHeight: 0,
           position: "relative",
           borderRadius: 1,
@@ -23,11 +28,6 @@ const VideoMessage = ({ data, openLightbox, changeLightboxIndex }) => {
           overflow: "hidden",
           "& .react-thumbnail-generator": {
             display: "none",
-          },
-          "& img": {
-            width: "100%",
-            height: "100%",
-            objectFit: "cover",
           },
         }}
         onClick={() => {
@@ -51,13 +51,20 @@ const VideoMessage = ({ data, openLightbox, changeLightboxIndex }) => {
             <Play size={80} weight="light" />
           </IconButton>
         </Stack>
-        <LazyLoadImage
-          alt={data?.original_name}
-          src={thumb}
-          placeholderSrc={imagePlaceholder}
-          effect="blur"
-          width={350}
-          height={240}
+        <Image
+          src={imgUrl}
+          placeholder={placeholder}
+          sx={{
+            maxWidth: {
+              // lg: "550px",
+              // md: "450px",
+              // xs: "300px",
+            },
+            // maxHeight: "50vh",
+            borderRadius: 1,
+          }}
+          width={isLg ? 400 : isMd ? 350 : isXs ? 300 : "100%"}
+          height={isLg ? 370 : isMd ? 330 : isXs ? 270 : "100%"}
         />
         <VideoThumbnail
           videoUrl={data?.file?.url}

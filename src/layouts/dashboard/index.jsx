@@ -135,7 +135,7 @@ const DashboardLayout = () => {
     };
   }, [socket, isLoggedIn, room_id]);
 
-  const handleLeaveApp = useCallback(async () => {
+  const handleLogOut = useCallback(async () => {
     await dispatch(appLogout());
     await dispatch(logOutChatConv());
     await dispatch(logOut());
@@ -164,7 +164,7 @@ const DashboardLayout = () => {
         loading: "Verifying user...",
         success: "User verifyed successfully",
         error: (message) => {
-          setTimeout(handleLeaveApp, 4000);
+          setTimeout(handleLogOut, 4000);
           return `${message}`;
         },
         position: "top-right",

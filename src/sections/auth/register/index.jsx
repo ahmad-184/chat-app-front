@@ -35,8 +35,7 @@ const Register = () => {
   const { translate } = useLocales();
 
   const defaultValues = {
-    firstname: "",
-    lastname: "",
+    name: "",
     email: "",
     password: "",
     confirmPassword: "",
@@ -97,15 +96,9 @@ const Register = () => {
         >
           <TextField
             type="text"
-            name="firstname"
-            label={translate("Firstname")}
-            helperText={null}
-          />
-          <TextField
-            type="text"
-            name="lastname"
-            label={translate("Lastname")}
-            helperText={null}
+            name="name"
+            label={translate("Name")}
+            helperText={"This name is visible to your contacts."}
           />
         </Stack>
         <TextField

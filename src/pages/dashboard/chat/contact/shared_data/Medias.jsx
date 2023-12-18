@@ -22,7 +22,7 @@ const Image = ({ num }) => {
               objectFit: "cover",
             }}
             src={faker.image.avatar()}
-            alt={faker.name.fullName}
+            alt={faker.name.fullName()}
           />
         </Box>
       ))}

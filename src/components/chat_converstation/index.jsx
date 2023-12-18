@@ -1,22 +1,3 @@
-import { Box, Stack } from "@mui/material";
-
-import Header from "./header";
-import Messages from "./msg";
-import Footer from "./footer";
-
-const Converstation = ({ isGroup }) => {
-  return (
-    <Stack direction="column" width="100%" height="100vh">
-      <Box backgroundColor="black">{!isGroup && <Header />}</Box>
-      <Box display="flex" flexGrow={1} sx={{ overflow: "hidden" }}>
-        {/* {Object.keys(msgs) && <Messages />} */}
-        <Messages />
-      </Box>
-      <Box>
-        <Footer />
-      </Box>
-    </Stack>
-  );
-};
-
-export default Converstation;
+export { default as Footer } from "./footer";
+export { default as Header } from "./header";
+export { default as MessageBox } from "./msg";

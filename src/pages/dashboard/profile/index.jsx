@@ -1,13 +1,13 @@
 import { Stack } from "@mui/material";
 
-import ProfilePanel from "./ProfilePanel";
-import RightPanel from "./RightPanel";
+import Profile from "./Profile";
+import NoChatView from "../../../components/NoChatView";
 
 const Settings = () => {
   return (
     <Stack width="100%" direction="row">
-      <ProfilePanel />
-      <RightPanel />
+      <Profile />
+      <NoChatView />
     </Stack>
   );
 };

@@ -13,7 +13,7 @@ import {
 } from "../../../../../app/slices/app";
 import { getToken } from "../../../../../app/slices/auth";
 
-import { ReceivedFriendRequest, RequestsStatus } from "./Requests";
+import Request from "./Requests";
 
 import useSocket from "../../../../../hooks/useSocket";
 import { successToast } from "../../../../../components/ToastProvider";
@@ -91,7 +91,7 @@ const FriendsBox = () => {
             <Loader />
           ) : received.length ? (
             received.map((item, index) => (
-              <ReceivedFriendRequest
+              <Request.ReceivedFriendRequest
                 item={item}
                 key={index}
                 handleAcceptFriendRequest={handleAcceptFriendRequest}
@@ -132,7 +132,7 @@ const FriendsBox = () => {
             <Loader />
           ) : sent.length ? (
             sent.map((item, index) => (
-              <RequestsStatus
+              <Request.RequestsStatus
                 item={item}
                 key={index}
                 handleDeleteFriendRequest={handleDeleteFriendRequest}

@@ -15,13 +15,9 @@ export const loginValidation = (translate) =>
 export const registerValidation = (translate) =>
   z
     .object({
-      firstname: z
+      name: z
         .string()
-        .min(1, { message: translate("First name is required") })
-        .max(50, { message: translate("Wtf man?") }),
-      lastname: z
-        .string()
-        .min(1, { message: translate("Last name is required") })
+        .min(1, { message: translate("name is required") })
         .max(50, { message: translate("Wtf man?") }),
       email: z
         .string()
@@ -82,7 +78,7 @@ export const createNewGroupValidator = z.object({
 export const profileValidation = z.object({
   name: z.string().min(1, "name is required.").max(50, { message: "wtf man?" }),
   about: z.string().max(100, { message: "is too high" }),
-  avatarUrl: z.string().optional(),
+  avatar: z.string().optional(),
 });
 
 export const verifyCodeValidation = z.object({

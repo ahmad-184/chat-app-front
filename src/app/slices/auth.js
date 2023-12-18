@@ -8,6 +8,7 @@ import {
   resetPasswordApi,
   verifyUserApi,
   verifyTokenApi,
+  updateUserApi,
 } from "../../services";
 
 const initialState = {
@@ -91,6 +92,18 @@ export const verifyUserThunk = createAsyncThunk(
   }
 );
 
+export const updateUserThunk = createAsyncThunk(
+  "auth/updateUserThunk",
+  async (data, { rejectWithValue }) => {
+    try {
+      const res = await updateUserApi(data);
+      return res;
+    } catch (err) {
+      return rejectWithValue(err);
+    }
+  }
+);
+
 const authSlice = createSlice({
   name: "auth",
   initialState,
@@ -118,16 +131,26 @@ const authSlice = createSlice({
         successToast({ message: data.message });
       }
     },
-    [registerUserThunk.fulfilled]: (state, action) => {
+    [registerUserThunk.fulfilled]: (_, action) => {
       const { status, data } = action.payload;
       if (status === 200) {
         successToast({ message: data.message });
       }
     },
-    [verifyUserThunk.fulfilled]: (state, action) => {
+    [verifyUserThunk.fulfilled]: (_, action) => {
       const { status, data } = action.payload;
       if (status === 200) {
         successToast({ message: data.message });
+      }
+    },
+    [updateUserThunk.fulfilled]: (state, action) => {
+      const { status, user, message } = action.payload.data;
+      console.log(action.payload.data);
+      if (status === 200) {
+        successToast({ message });
+        state.user.name = user.name;
+        state.user.avatar = user.avatar;
+        state.user.about = user.about;
       }
     },
   },

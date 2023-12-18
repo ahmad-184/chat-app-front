@@ -1,19 +1,14 @@
 import { useState } from "react";
-import {
-  Stack,
-  Box,
-  Typography,
-  Avatar,
-  Button,
-  useTheme,
-  alpha,
-} from "@mui/material";
+import { Stack, Box, Typography, Button, useTheme, alpha } from "@mui/material";
 import { PaperPlaneRight } from "phosphor-react";
 import { useDispatch, useSelector } from "react-redux";
 import { updateFriendRequestsThunk } from "../../../../../app/slices/app";
 import { getToken, getUserId } from "../../../../../app/slices/auth";
 import useSocket from "../../../../../hooks/useSocket";
+import getPhotoUrl from "../../../../../utils/getPhotoUrl";
+import createAvatar from "../../../../../utils/createAvatar";
 import { successToast } from "../../../../../components/ToastProvider";
+import { Avatar } from "../../../../../components/image";
 
 const User = ({ item }) => {
   const token = useSelector(getToken);
@@ -37,6 +32,9 @@ const User = ({ item }) => {
     );
   };
 
+  const imgData = getPhotoUrl(item?.avatar, "300", "10", "", "10");
+  const avatar = createAvatar(item?.name);
+
   return (
     <Box
       sx={{
@@ -51,18 +49,21 @@ const User = ({ item }) => {
     >
       <Stack direction="row" spacing={1} alignItems="center">
         <Box p={0.5}>
-          <Avatar
-            alt={`${item.firstname} ${item.lastname}`}
-            src={item.avatar}
-          />
+          <Avatar src={imgData.url} placeholder={imgData.placeholder}>
+            {avatar.name}
+          </Avatar>
         </Box>
         <Stack sx={{ minWidth: 0, maxWidth: "45%" }}>
           <Typography
             noWrap
+            textTransform="capitalize"
+            fontWeight={600}
             variant="body1"
-          >{`${item.firstname} ${item.lastname}`}</Typography>
+          >
+            {item?.name}
+          </Typography>
           <Typography noWrap variant="body2">
-            {item.email}
+            {item?.email}
           </Typography>
         </Stack>
         <Box display="flex" flexGrow={1} justifyContent="end">

@@ -1,12 +1,12 @@
-import { useState, useEffect, memo } from "react";
+import { useState, useEffect } from "react";
 import { Typography, Stack, IconButton } from "@mui/material";
 import { CircleDashed, Users } from "phosphor-react";
 import * as _ from "lodash";
 import { useDispatch, useSelector } from "react-redux";
 
 import { SimpleBarStyle } from "../../../../components/Scrollbar";
-import UserChatList from "./UserChatList";
-import OnlineUsers from "./OnlineUsers";
+import UserChatList from "./user_list";
+import OnlineUsers from "./online_users";
 import SearchInput from "../../../../components/SearchInput";
 import SidebarContainer from "../../SidebarContainer";
 import UsersDialog from "../../../../sections/dashboard/chat/users_dialog";
