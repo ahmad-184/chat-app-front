@@ -10,18 +10,22 @@ import {
 } from "../../../../../app/slices/app";
 import { getToken, getUserId } from "../../../../../app/slices/auth";
 import {
-  startNewChatConversation,
-  addChatConversation,
-} from "../../../../../app/slices/chat_conversation";
+  startNewConversation,
+  addConversation,
+  getConversations,
+  startConversation,
+} from "../../../../../app/slices/conversation";
 import useSocket from "../../../../../hooks/useSocket";
 import Loader from "../Loader";
 import FriendBox from "./FriendBox";
+import { resetMessagePage } from "../../../../../app/slices/message";
 
 const Friend = ({ handleClose }) => {
   const friends = useSelector(getFriends);
   const appLoading = useSelector(getAppLoading);
   const token = useSelector(getToken);
   const userId = useSelector(getUserId);
+  const conversations = useSelector(getConversations);
   const dispatch = useDispatch();
 
   const { socket } = useSocket();
@@ -33,22 +37,40 @@ const Friend = ({ handleClose }) => {
   }, []);
 
   const handleStartConversation = async (friendId) => {
-    socket.emit(
-      "start_conversation",
-      { friend_id: friendId, user_id: userId },
-      ({ conversation, messages }) => {
-        dispatch(addChatConversation(conversation));
-        dispatch(startNewChatConversation({ conversation, messages }));
-        setIsLoading(false);
-        handleClose(false);
-        dispatch(
-          selectConversation({
-            chat_type: "dividual",
-            room_id: conversation._id,
-          })
-        );
+    try {
+      for (const conv of conversations) {
+        if (conv?.friend_id === friendId) {
+          dispatch(
+            selectConversation({
+              chat_type: "dividual",
+              room_id: conv?._id,
+            })
+          );
+          dispatch(startConversation(conv?._id));
+          dispatch(resetMessagePage());
+          handleClose(false);
+          return;
+        }
       }
-    );
+      socket.emit(
+        "start_conversation",
+        { friend_id: friendId, user_id: userId },
+        ({ conversation }) => {
+          dispatch(addConversation(conversation));
+          dispatch(startNewConversation({ conversation }));
+          setIsLoading(false);
+          handleClose(false);
+          dispatch(
+            selectConversation({
+              chat_type: "dividual",
+              room_id: conversation._id,
+            })
+          );
+        }
+      );
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   if (appLoading) return <Loader />;

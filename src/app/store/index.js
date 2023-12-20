@@ -6,7 +6,8 @@ import { encryptTransform } from "redux-persist-transform-encrypt";
 
 import appReducer from "../slices/app";
 import authReducer from "../slices/auth";
-import chatConversationReducer from "../slices/chat_conversation";
+import conversationReducer from "../slices/conversation";
+import messageReducer from "../slices/message";
 
 import { SECRET_KEY } from "../../config";
 
@@ -22,12 +23,14 @@ const rootPersistConfig = {
       },
     }),
   ],
+  blacklist: ["message"],
 };
 
 const compinedReducers = combineReducers({
   app: appReducer,
   auth: authReducer,
-  chat_conversation: chatConversationReducer,
+  conversation: conversationReducer,
+  message: messageReducer,
 });
 
 const store = configureStore({

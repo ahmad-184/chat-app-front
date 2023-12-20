@@ -84,7 +84,7 @@ export const fetchChatConversationsApi = async ({ token }) => {
 // @Desc GET get conversation messages
 export const fetchMessagesApi = async ({ token, conversation_id, page }) => {
   return await axios.get(
-    `/conversation/get_messages/${conversation_id}?page=${page}`,
+    `/message/get_messages/${conversation_id}?page=${page}`,
     {
       headers: {
         Accept: "application/json",
@@ -98,7 +98,7 @@ export const fetchMessagesApi = async ({ token, conversation_id, page }) => {
 // @Method POST create a message
 export const createMessageApi = async ({ token, data }) => {
   return await axios.post(
-    `/conversation/create_message`,
+    `/message/create_message`,
     {
       ...data,
     },
@@ -111,9 +111,28 @@ export const createMessageApi = async ({ token, data }) => {
   );
 };
 
+// @Route http://localhost:9000/api/user/update_me
+// @Method POST update user info
 export const updateUserApi = async ({ token, data }) => {
   return await axios.post(
     `/user/update_me`,
+    {
+      ...data,
+    },
+    {
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+};
+
+// @Route http://localhost:9000/api/message/delete_message
+// @Method POST update user info
+export const deleteMessageApi = async ({ token, ...data }) => {
+  return await axios.post(
+    `/message/delete_message`,
     {
       ...data,
     },

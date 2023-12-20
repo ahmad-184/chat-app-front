@@ -2,7 +2,8 @@ import { useInView } from "react-intersection-observer";
 import { useSelector, useDispatch } from "react-redux";
 
 import { getUserId } from "../app/slices/auth";
-import { changeMessageStatus } from "../app/slices/chat_conversation";
+import { changeMessageStatus } from "../app/slices/message";
+import { changeConversationUnseenMessage } from "../app/slices/conversation";
 import useSocket from "../hooks/useSocket";
 
 const MessagesHOC = (Wrapper) => (props) => {
@@ -18,6 +19,12 @@ const MessagesHOC = (Wrapper) => (props) => {
       });
       dispatch(
         changeMessageStatus({
+          msg_id: data?._id,
+          conv_id: data?.conversation_id,
+        })
+      );
+      dispatch(
+        changeConversationUnseenMessage({
           msg_id: data?._id,
           conv_id: data?.conversation_id,
         })

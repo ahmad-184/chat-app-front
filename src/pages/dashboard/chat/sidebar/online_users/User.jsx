@@ -1,12 +1,9 @@
-import { memo, useEffect, useMemo } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { memo, useMemo } from "react";
+import { useDispatch } from "react-redux";
 import { Stack, Typography, Box, useTheme, alpha } from "@mui/material";
 
-import {
-  startChatConversation,
-  getAConversation,
-  getConversations,
-} from "../../../../../app/slices/chat_conversation";
+import { startConversation } from "../../../../../app/slices/conversation";
+import { resetMessagePage } from "../../../../../app/slices/message";
 import createAvatar from "../../../../../utils/createAvatar";
 import { selectConversation } from "../../../../../app/slices/app";
 import StyledBadge from "../../../../../components/StyledBadge";
@@ -24,7 +21,8 @@ const User = ({ id, name, avatar }) => {
 
   const handleSelectConversation = async () => {
     dispatch(selectConversation({ chat_type: "dividual", room_id: id }));
-    dispatch(startChatConversation(id));
+    dispatch(startConversation(id));
+    dispatch(resetMessagePage());
   };
 
   return (

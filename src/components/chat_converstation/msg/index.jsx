@@ -14,11 +14,11 @@ import * as _ from "lodash";
 import LoaderButton from "../../LoaderButton";
 
 import { Timeline, NewMessage, Message } from "./messageTypes";
+import { getCurrentConversation } from "../../../app/slices/conversation";
 import {
   getAllMessages,
-  getCurrentConversation,
   fetchMoreMessageThunk,
-} from "../../../app/slices/chat_conversation";
+} from "../../../app/slices/message";
 import { ArrowDown } from "phosphor-react";
 
 import { getToken } from "../../../app/slices/auth";
@@ -38,7 +38,7 @@ const Msg = ({ showMenu = true, showTime = true }) => {
     hasNextPage,
     currentPage,
     error,
-  } = useSelector((state) => state.chat_conversation);
+  } = useSelector((state) => state.message);
   const dispatch = useDispatch();
   const {
     _id: room_id,
@@ -158,8 +158,6 @@ const Msg = ({ showMenu = true, showTime = true }) => {
       handleScrollDown({});
     }
   }, [msgs, room_id]);
-
-  useEffect(() => console.log(lightboxIndex), [lightboxIndex]);
 
   if (isLoading) {
     return (

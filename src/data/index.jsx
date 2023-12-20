@@ -358,21 +358,27 @@ export const SHARED_docs = [
 
 const Message_options = [
   {
+    id: 0,
     title: "Reply",
   },
   {
+    id: 1,
+    title: "Edit Message",
+  },
+  {
+    id: 2,
     title: "React to message",
   },
   {
+    id: 3,
     title: "Forward message",
   },
   {
+    id: 4,
     title: "Star message",
   },
   {
-    title: "Report",
-  },
-  {
+    id: 5,
     title: "Delete Message",
   },
 ];

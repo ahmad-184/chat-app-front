@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from "react";
+import { useEffect } from "react";
 import { Outlet } from "react-router-dom";
 import { Stack } from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
@@ -13,22 +13,24 @@ import {
   removeUser,
   updateFriendRequestsThunk,
   updateFriendsStatus,
-  appLogout,
 } from "../../app/slices/app";
-import { logOut, verifyTokenThunk } from "../../app/slices/auth";
+import { verifyTokenThunk } from "../../app/slices/auth";
 
 import {
-  addMessage,
-  getChatConversations,
-  updateChatConversationsStatus,
+  updateConversationStatus,
   updateTypingStatus,
   changeLastMessage,
-  addUnseenMsg,
   changeToFirstConversation,
-  setMessageSeen,
   fetchConversationsThunk,
-  logOutChatConv,
-} from "../../app/slices/chat_conversation";
+  addUnseenMsg,
+  getConversations,
+  deleteConversationsLastMessage,
+} from "../../app/slices/conversation";
+import {
+  addMessage,
+  setMessageSeen,
+  deleteMessage,
+} from "../../app/slices/message";
 
 import useSocket from "../../hooks/useSocket";
 import {
@@ -42,11 +44,11 @@ import { toast } from "sonner";
 const DashboardLayout = () => {
   const { isLoggedIn, token } = useSelector((state) => state.auth);
   const { room_id } = useSelector((state) => state.app);
-  const conversations = useSelector(getChatConversations);
+  const conversations = useSelector(getConversations);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const { socket } = useSocket();
+  const { socket, logout } = useSocket();
 
   useEffect(() => {
     if (isLoggedIn) {
@@ -80,7 +82,7 @@ const DashboardLayout = () => {
       });
 
       socket.on("update_friends_status", (data) => {
-        dispatch(updateChatConversationsStatus(data));
+        dispatch(updateConversationStatus(data));
         dispatch(updateFriendsStatus(data));
       });
 
@@ -99,27 +101,34 @@ const DashboardLayout = () => {
 
         if (conversation_id === room_id) {
           dispatch(addMessage(message));
+          dispatch(changeLastMessage(message));
         } else {
           if (!conversation) return;
           dispatch(changeLastMessage(message));
           toast(`New message received from ${conversation?.name}`, {
             position: "top-left",
           });
+          dispatch(
+            addUnseenMsg({
+              msg_id: message._id,
+              conv_id: conversation_id,
+            })
+          );
         }
         if (!conversation) return;
         dispatch(changeToFirstConversation(conversation_id));
-        dispatch(
-          addUnseenMsg({
-            msg_id: message._id,
-            conv_id: conversation_id,
-          })
-        );
       });
 
       socket.on("message_status_changed", ({ message_id, conv_id }) => {
-        console.log("yess");
         if (room_id === conv_id) {
           dispatch(setMessageSeen(message_id));
+        }
+      });
+
+      socket.on("delete_message", ({ message_id, conv_id }) => {
+        if (room_id === conv_id) {
+          dispatch(deleteMessage(message_id));
+          dispatch(deleteConversationsLastMessage(message_id));
         }
       });
     }
@@ -134,15 +143,6 @@ const DashboardLayout = () => {
       socket?.off("message_status_changed");
     };
   }, [socket, isLoggedIn, room_id]);
-
-  const handleLogOut = useCallback(async () => {
-    await dispatch(appLogout());
-    await dispatch(logOutChatConv());
-    await dispatch(logOut());
-    window.localStorage.removeItem("redux-root");
-    window.location = "/auth.login";
-    window.location.reload();
-  }, []);
 
   useEffect(() => {
     if (isLoggedIn) {
@@ -164,7 +164,7 @@ const DashboardLayout = () => {
         loading: "Verifying user...",
         success: "User verifyed successfully",
         error: (message) => {
-          setTimeout(handleLogOut, 4000);
+          setTimeout(logout, 4000);
           return `${message}`;
         },
         position: "top-right",

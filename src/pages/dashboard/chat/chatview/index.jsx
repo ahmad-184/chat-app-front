@@ -5,10 +5,8 @@ import { useDispatch, useSelector } from "react-redux";
 import ConversationView from "../../../../sections/dashboard/chat/conversation_view";
 
 import NoChat from "../../../../assets/Illustration/NoChat";
-import {
-  getCurrentConversation,
-  fetchMessagesThunk,
-} from "../../../../app/slices/chat_conversation";
+import { getCurrentConversation } from "../../../../app/slices/conversation";
+import { fetchMessagesThunk } from "../../../../app/slices/message";
 import { getToken } from "../../../../app/slices/auth";
 
 import useSocket from "../../../../hooks/useSocket";

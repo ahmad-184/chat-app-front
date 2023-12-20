@@ -11,8 +11,9 @@ import {
 import StyledBadge from "../../../../../components/StyledBadge";
 import {
   getCurrentConversation,
-  startChatConversation,
-} from "../../../../../app/slices/chat_conversation";
+  startConversation,
+} from "../../../../../app/slices/conversation";
+import { resetMessagePage } from "../../../../../app/slices/message";
 import { selectConversation } from "../../../../../app/slices/app";
 
 import createAvatar from "../../../../../utils/createAvatar";
@@ -95,7 +96,8 @@ const UserChatList = ({ data }) => {
   const handleSelectConversation = async () => {
     if (data?._id === room_id) return;
     dispatch(selectConversation({ chat_type: "dividual", room_id: data?._id }));
-    dispatch(startChatConversation(data?._id));
+    dispatch(startConversation(data?._id));
+    dispatch(resetMessagePage());
   };
 
   const fileType = data?.last_message?.files?.length
@@ -103,6 +105,8 @@ const UserChatList = ({ data }) => {
     : [];
 
   const text = data?.last_message?.text ? data?.last_message?.text : "";
+
+  const isMessageDeleted = Boolean(data?.last_message?.deleted);
 
   const imgData = getPhotoUrl(data?.avatar, "300", "10", "", "10");
 
@@ -170,16 +174,25 @@ const UserChatList = ({ data }) => {
             </Typography>
             <Typography
               variant="caption"
-              color={mode === "light" ? "grey.600" : "grey.400"}
+              color={
+                isMessageDeleted
+                  ? mode === "light"
+                    ? "error.dark"
+                    : "error.light"
+                  : mode === "light"
+                  ? "grey.600"
+                  : "grey.400"
+              }
               noWrap
               sx={{
                 alignItems: "center",
                 display: "flex",
               }}
             >
+              {isMessageDeleted && "This message is deleted"}
               {data.typing && "Typing..."}
-              {!data.typing && text ? text : ""}
-              {fileType.length && !data.typing ? (
+              {!isMessageDeleted && !data.typing && text ? text : ""}
+              {!isMessageDeleted && fileType.length && !data.typing ? (
                 <FileIcon fileType={fileType} showName={!text} />
               ) : null}
             </Typography>

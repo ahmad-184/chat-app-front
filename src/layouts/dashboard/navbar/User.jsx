@@ -15,7 +15,7 @@ import useSettings from "../../../hooks/useSettings";
 import { Profile_Menu } from "../../../data";
 import { logOut } from "../../../app/slices/auth";
 import { appLogout } from "../../../app/slices/app";
-import { logOutChatConv } from "../../../app/slices/chat_conversation";
+import { logOutChatConv } from "../../../app/slices/conversation";
 import { Avatar } from "../../../components/image";
 import getPhotoUrl from "../../../utils/getPhotoUrl";
 import createAvatar from "../../../utils/createAvatar";

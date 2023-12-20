@@ -12,9 +12,9 @@ import SidebarContainer from "../../SidebarContainer";
 import UsersDialog from "../../../../sections/dashboard/chat/users_dialog";
 
 import {
-  getChatConversations,
+  getConversations,
   fetchConversationsThunk,
-} from "../../../../app/slices/chat_conversation";
+} from "../../../../app/slices/conversation";
 import { getToken } from "../../../../app/slices/auth";
 
 const Sidebar = () => {
@@ -25,7 +25,7 @@ const Sidebar = () => {
   const closeUserDialog = () => setOpenUsersDialog(false);
   const handleOpenUserDialog = () => setOpenUsersDialog(true);
 
-  const chats = useSelector(getChatConversations);
+  const chats = useSelector(getConversations);
 
   const [filteredData, setFilteredData] = useState([]);
   const [value, setValue] = useState("");

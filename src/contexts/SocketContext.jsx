@@ -2,10 +2,8 @@ import { useState, useEffect, createContext, useCallback } from "react";
 import io from "socket.io-client";
 import { useSelector, useDispatch } from "react-redux";
 
-import {
-  logOutChatConv,
-  removeConversation,
-} from "../app/slices/chat_conversation";
+import { logOutChatConv, removeConversation } from "../app/slices/conversation";
+import { clearMessages } from "../app/slices/message";
 import { logOut } from "../app/slices/auth";
 import { appLogout, selectConversation } from "../app/slices/app";
 import { errorToast } from "../components/ToastProvider";
@@ -16,6 +14,7 @@ const initial = {
   socket: null,
   connection: false,
   ping: null,
+  logout: () => {},
 };
 
 const SocketContext = createContext(initial);
@@ -28,7 +27,6 @@ const SocketProvider = ({ children }) => {
   const dispatch = useDispatch();
 
   const { isLoggedIn, token, userId } = useSelector((state) => state.auth);
-  const { room_id } = useSelector((state) => state.app);
 
   useEffect(() => {
     if (isLoggedIn) {
@@ -59,8 +57,9 @@ const SocketProvider = ({ children }) => {
     await dispatch(appLogout());
     await dispatch(logOutChatConv());
     await dispatch(logOut());
+    await dispatch(clearMessages());
     window.localStorage.removeItem("redux-root");
-    window.location = "/auth.login";
+    window.location = "/auth/login";
     window.location.reload();
   }, []);
 
@@ -121,6 +120,7 @@ const SocketProvider = ({ children }) => {
         socket,
         connection,
         ping,
+        logout: handleLeaveApp,
       }}
     >
       {children}

@@ -2,7 +2,7 @@ import { Typography, Stack } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 
 import { toggleSidebar } from "../../../app/slices/app";
-import { getCurrentConversation } from "../../../app/slices/chat_conversation";
+import { getCurrentConversation } from "../../../app/slices/conversation";
 import { Avatar } from "../../image";
 import getPhotoUrl from "../../../utils/getPhotoUrl";
 

@@ -1,4 +1,4 @@
-import { Stack, Box, useTheme, alpha } from "@mui/material";
+import { Stack, Box, useTheme, alpha, Typography } from "@mui/material";
 import { useSelector } from "react-redux";
 import { Check, Checks } from "phosphor-react";
 
@@ -9,6 +9,8 @@ const MsgContainer = ({ data, showMenu = true, showTime = true, children }) => {
   const theme = useTheme();
   const { userId } = useSelector((state) => state.auth);
 
+  const isDeleted = Boolean(data?.deleted);
+
   const mode = theme.palette.mode;
   const isOutgoing = Boolean(data?.sender === userId);
 
@@ -18,12 +20,16 @@ const MsgContainer = ({ data, showMenu = true, showTime = true, children }) => {
         sx={{
           ...(mode === "dark"
             ? {
-                backgroundColor: !isOutgoing
+                backgroundColor: isDeleted
+                  ? "error.darker"
+                  : !isOutgoing
                   ? alpha(theme.palette.primary.light, 0.2)
                   : "grey.700",
               }
             : {
-                backgroundColor: !isOutgoing
+                backgroundColor: isDeleted
+                  ? "error.lighter"
+                  : !isOutgoing
                   ? alpha(theme.palette.primary.light, 0.2)
                   : "grey.800",
               }),
@@ -33,8 +39,30 @@ const MsgContainer = ({ data, showMenu = true, showTime = true, children }) => {
           position: "relative",
         }}
       >
-        {showMenu && <Menu data={data} userId={userId} />}
-        {children}
+        {showMenu && !isDeleted && <Menu data={data} userId={userId} />}
+        {isDeleted ? (
+          <Typography
+            variant="body2"
+            sx={{
+              ...(mode === "dark"
+                ? {
+                    color: !isOutgoing ? "grey.200" : "grey.200",
+                  }
+                : {
+                    color: isDeleted
+                      ? "grey.900"
+                      : !isOutgoing
+                      ? "grey.900"
+                      : "grey.200",
+                  }),
+              fontWeight: "500",
+            }}
+          >
+            This message is deleted
+          </Typography>
+        ) : (
+          children
+        )}
       </Box>
       <Stack direction="row" justifyContent={isOutgoing && "end"} width="100%">
         <Stack

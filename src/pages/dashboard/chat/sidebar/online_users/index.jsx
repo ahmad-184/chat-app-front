@@ -1,17 +1,16 @@
-import { useMemo } from "react";
 import { useSelector } from "react-redux";
 import { Stack } from "@mui/material";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { FreeMode } from "swiper/modules";
 
-import { getChatConversations } from "../../../../../app/slices/chat_conversation";
+import { getConversations } from "../../../../../app/slices/conversation";
 
 import useResponsive from "../../../../../hooks/useResponsive";
 
 import User from "./User";
 
 const OnlineUsers = () => {
-  const conversations = useSelector(getChatConversations);
+  const conversations = useSelector(getConversations);
 
   const upMdSize = useResponsive("up", "md");
   const upLgSize = useResponsive("up", "lg");

@@ -20,7 +20,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   getCurrentConversation,
   clearCurrentConversation,
-} from "../../../app/slices/chat_conversation";
+} from "../../../app/slices/conversation";
 import { selectConversation } from "../../../app/slices/app";
 
 const Navbar = () => {

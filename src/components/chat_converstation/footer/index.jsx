@@ -7,7 +7,7 @@ import {
   useRef,
   useDeferredValue,
 } from "react";
-import { Button, Stack, Box, useTheme, alpha, IconButton } from "@mui/material";
+import { Stack, Box, useTheme, alpha, IconButton } from "@mui/material";
 import { Microphone, PaperPlaneRight, LinkSimple, Image } from "phosphor-react";
 import { useDispatch, useSelector } from "react-redux";
 import * as _ from "lodash";
@@ -16,10 +16,13 @@ import { toast } from "sonner";
 
 import {
   getCurrentConversation,
+  changeLastMessage,
+} from "../../../app/slices/conversation";
+import {
   addMessage,
   setMessageDelivered,
   createMessageThunk,
-} from "../../../app/slices/chat_conversation";
+} from "../../../app/slices/message";
 import Input from "./Input";
 import { fullDate } from "../../../utils/formatTime";
 import useSocket from "../../../hooks/useSocket";
@@ -94,6 +97,8 @@ const Footer = () => {
         receiver: friend_id,
         status: "Created",
         edited: false,
+        // replay: {},
+        // deleted: false,
         createdAt_day: fullDate(Date.now()),
         createdAt: Date.now(),
       };
@@ -104,6 +109,7 @@ const Footer = () => {
         if (status === "OK") {
           startTransition(async () => {
             dispatch(setMessageDelivered(message));
+            dispatch(changeLastMessage(message));
             socket.emit("send_message", {
               message_id,
               room_id,
