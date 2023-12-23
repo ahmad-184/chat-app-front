@@ -1,7 +1,9 @@
-import { forwardRef, useMemo } from "react";
+import { forwardRef, useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { Stack, Typography } from "@mui/material";
+
+import noImage from "../../assets/Images/no-image.png";
 
 const AvatarImage = forwardRef(
   (
@@ -15,10 +17,30 @@ const AvatarImage = forwardRef(
       height,
       onClick,
       children,
+      alt,
       ...other
     },
     ref
   ) => {
+    const [error, setError] = useState(false);
+
+    useEffect(() => {
+      const fetchUrl = async () => {
+        if (src.startsWith("blob")) return setError(false);
+        const http = new XMLHttpRequest();
+        http.open("HEAD", src, false);
+        http.send();
+        if (http.status === 404) {
+          if (error === true) return;
+          else setError(true);
+        } else if (http.status === 200) {
+          if (error === false) return;
+          else setError(false);
+        }
+      };
+      fetchUrl();
+    }, [src]);
+
     return (
       <Stack
         ref={ref}
@@ -27,11 +49,14 @@ const AvatarImage = forwardRef(
           width: width || "40px",
           height: height || "40px",
           position: "relative",
-          alingItems: "center",
+          alignItems: "center",
           justifyContent: "center",
           overflow: "hidden",
           userSelect: "none",
           borderRadius: "50%",
+          ...(error && {
+            backgroundColor: "grey.600",
+          }),
           "& .wrapper": {
             overflow: "hidden",
           },
@@ -49,9 +74,10 @@ const AvatarImage = forwardRef(
             effect={disabledEffect ? undefined : effect}
             placeholderSrc={placeholder ? placeholder : undefined}
             wrapperClassName="wrapper"
-            width={width || 40}
-            height={height || 40}
-            src={src}
+            width={error ? 30 : width || 40}
+            height={error ? 30 : height || 40}
+            src={error ? noImage : src}
+            alt={alt}
             {...other}
           />
         )}

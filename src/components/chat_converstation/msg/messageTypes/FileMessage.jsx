@@ -61,7 +61,7 @@ const FileMessage = ({ data }) => {
               variant="body2"
               color={mode === "light" ? "grey.800" : "grey.400"}
             >
-              {data?.file?.original_filename}
+              {data?.file?.public_id.split("/")[1]}
             </Typography>
             <Box
               fontSize={30}

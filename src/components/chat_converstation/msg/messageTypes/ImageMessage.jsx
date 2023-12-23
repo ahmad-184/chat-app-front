@@ -3,13 +3,10 @@ import { trackWindowScroll } from "react-lazy-load-image-component";
 
 import { Image } from "../../../image";
 import useResponsive from "../../../../hooks/useResponsive";
+import getPhotoUrl from "../../../../utils/getPhotoUrl";
 
 const ImageMessage = ({ data, openLightbox, changeLightboxIndex }) => {
-  const imgUrl = data.file.url.replace("upload", "upload/q_40,dpr_1.0");
-  const placeholder = data.file.url.replace(
-    "upload",
-    "upload/q_10,dpr_1.0,w_50"
-  );
+  const image = getPhotoUrl(data.file.url, null, "40", "50", "10");
 
   const isLg = useResponsive("up", "lg");
   const isMd = useResponsive("up", "md");
@@ -29,17 +26,16 @@ const ImageMessage = ({ data, openLightbox, changeLightboxIndex }) => {
           },
         }}
         onClick={() => {
-          changeLightboxIndex(imgUrl);
+          changeLightboxIndex(image.url);
           openLightbox();
         }}
       >
         <Image
-          src={imgUrl}
-          placeholder={placeholder}
+          src={image.url}
+          placeholder={image.placeholder}
           sx={{
             borderRadius: 1,
           }}
-          maxHeight={"50vh"}
           width={isLg ? 400 : isMd ? 350 : isXs ? 300 : "100%"}
           height={isLg ? 370 : isMd ? 330 : isXs ? 270 : "100%"}
         />

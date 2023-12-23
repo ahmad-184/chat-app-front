@@ -7,7 +7,7 @@ const uploader = async (data, setUploadProgress) => {
   const files = data;
   let uploaded = [];
 
-  if (!files.length) return;
+  if (!files.length) return [];
 
   for (let file of files) {
     const formData = new FormData();
@@ -21,6 +21,7 @@ const uploader = async (data, setUploadProgress) => {
     formData.append("upload_preset", CLOUD_PRESET_NAME);
     formData.append("cloud_name", CLOUD_NAME);
     formData.append("folder", UPLOAD_FOLDER);
+    formData.append("public_id", file.file.name);
     if (isPdf) {
       formData.append("tags", "fl_attachment");
     }

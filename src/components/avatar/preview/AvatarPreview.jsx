@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import { Image } from "../../image/index";
+import { Image } from "../../image";
 
 const AvatarPreview = ({ file, ...other }) => {
   if (!file) {

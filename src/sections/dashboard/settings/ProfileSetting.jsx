@@ -31,6 +31,7 @@ const ProfileSetting = () => {
   const methods = useForm({
     defaultValues,
     resolver: zodResolver(profileValidation),
+    mode: "onChange",
   });
 
   const {

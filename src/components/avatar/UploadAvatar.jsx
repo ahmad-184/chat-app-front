@@ -5,6 +5,8 @@ import { styled, alpha } from "@mui/material/styles";
 import AvatarPreview from "./preview/AvatarPreview";
 import { Image } from "phosphor-react";
 
+import getPhotoUrl from "../../utils/getPhotoUrl";
+
 const StyledDropZone = styled("div")(({ theme }) => ({
   width: 144,
   height: 144,
@@ -61,6 +63,8 @@ const UploadAvatar = ({
 
   const isError = isDragReject || !!error;
 
+  const image = getPhotoUrl(file, null, "30", "50", "10");
+
   return (
     <>
       <StyledDropZone
@@ -92,10 +96,7 @@ const UploadAvatar = ({
         <input {...getInputProps()} />
 
         {hasFile && (
-          <AvatarPreview
-            file={file.replace("upload", "upload/q_30,dpr_1.0")}
-            placeholder={file.replace("upload", "upload/q_10,dpr_1.0,w_50")}
-          />
+          <AvatarPreview file={image.url} placeholder={image.placeholder} />
         )}
 
         <StyledPlaceholder

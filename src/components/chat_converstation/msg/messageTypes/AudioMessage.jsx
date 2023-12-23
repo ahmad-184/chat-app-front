@@ -8,9 +8,8 @@ const AudioMessage = ({ data }) => {
       <Box
         sx={{
           cursor: "pointer",
-          maxWidth: 350,
           "& audio": {
-            width: "100%",
+            width: 300,
           },
         }}
       >

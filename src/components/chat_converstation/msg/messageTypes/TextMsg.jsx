@@ -21,6 +21,7 @@ const TextMsg = forwardRef(({ data }, ref) => {
               color: !isOutgoing ? "grey.900" : "grey.200",
             }),
         fontWeight: "500",
+        wordBreak: "break-word",
       }}
     >
       {data?.text}

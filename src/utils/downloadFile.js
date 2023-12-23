@@ -1,4 +1,5 @@
 import axios from "./axios";
+import { errorToast } from "../components/ToastProvider";
 
 const axiosDownloadFile = (
   url,
@@ -23,7 +24,6 @@ const axiosDownloadFile = (
     },
   })
     .then((response) => {
-      console.log(response);
       const href = window.URL.createObjectURL(response.data);
 
       const anchorElement = document.createElement("a");
@@ -39,6 +39,9 @@ const axiosDownloadFile = (
     })
     .catch((error) => {
       console.log("error: ", error);
+      errorToast({
+        message: "File does not exist or Can't download this file",
+      });
     })
     .finally(() => setDisableButton(false));
 };

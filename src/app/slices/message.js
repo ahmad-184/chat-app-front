@@ -24,7 +24,7 @@ const initialState = messageAdaptor.getInitialState({
   nextPage: 1,
   hasNextPage: false,
   files: [],
-  replay: [],
+  replay: {},
 });
 
 export const fetchMessagesThunk = createAsyncThunk(
@@ -116,6 +116,23 @@ const messageSlice = createSlice({
       state.hasNextPage = true;
       state.nextPage = 1;
     },
+    addFile(state, action) {
+      state.files = [...state.files, action.payload];
+    },
+    removeFile(state, action) {
+      state.files = state.files.filter(
+        (item) => item.file.name !== action.payload
+      );
+    },
+    clearFiles(state) {
+      state.files = [];
+    },
+    addReplay(state, action) {
+      state.replay = action.payload;
+    },
+    clearReplay(state) {
+      state.replay = {};
+    },
   },
   extraReducers: {
     [fetchMessagesThunk.pending]: (state) => {
@@ -192,6 +209,11 @@ export const {
   setMessageSeen,
   deleteMessage,
   resetMessagePage,
+  addFile,
+  clearFiles,
+  addReplay,
+  clearReplay,
+  removeFile,
 } = messageSlice.actions;
 
 export const { selectAll: getAllMessages } = messageAdaptor.getSelectors(

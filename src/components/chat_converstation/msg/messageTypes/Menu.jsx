@@ -8,6 +8,7 @@ import { Message_options } from "../../../../data";
 import {
   deleteMessageThunk,
   deleteMessage,
+  addReplay,
 } from "../../../../app/slices/message";
 import useSocket from "../../../../hooks/useSocket";
 import { deleteConversationsLastMessage } from "../../../../app/slices/conversation";
@@ -56,6 +57,10 @@ const Menu = ({ data, userId }) => {
     }
   };
 
+  const handleSelectReplay = () => {
+    dispatch(addReplay(data));
+  };
+
   return (
     <Box>
       <Box
@@ -99,8 +104,11 @@ const Menu = ({ data, userId }) => {
                 onClick={() => {
                   handleClose();
                   switch (item.id) {
+                    case 0: {
+                      return handleSelectReplay();
+                    }
                     case 5: {
-                      handleDeleteMessage();
+                      return handleDeleteMessage();
                     }
                   }
                 }}

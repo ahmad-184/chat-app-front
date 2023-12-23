@@ -15,7 +15,7 @@ const MsgContainer = ({ data, showMenu = true, showTime = true, children }) => {
   const isOutgoing = Boolean(data?.sender === userId);
 
   return (
-    <Stack spacing={0.7}>
+    <Stack spacing={0.7} maxWidth={"100%"} minWidth={0}>
       <Box
         sx={{
           ...(mode === "dark"
@@ -33,10 +33,13 @@ const MsgContainer = ({ data, showMenu = true, showTime = true, children }) => {
                   ? alpha(theme.palette.primary.light, 0.2)
                   : "grey.800",
               }),
-          borderRadius: 1.2,
+          borderRadius: isOutgoing
+            ? "10px 10px 0px 10px"
+            : "10px 10px 10px 0px",
           p: 1,
-          px: 2,
+          px: 1,
           position: "relative",
+          minWidth: 0,
         }}
       >
         {showMenu && !isDeleted && <Menu data={data} userId={userId} />}

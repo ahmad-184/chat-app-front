@@ -5,7 +5,6 @@ import {
   useTransition,
   Fragment,
   useRef,
-  useDeferredValue,
 } from "react";
 import { Stack, Box, useTheme, alpha, IconButton } from "@mui/material";
 import { Microphone, PaperPlaneRight, LinkSimple, Image } from "phosphor-react";
@@ -22,6 +21,9 @@ import {
   addMessage,
   setMessageDelivered,
   createMessageThunk,
+  addFile,
+  clearFiles,
+  clearReplay,
 } from "../../../app/slices/message";
 import Input from "./Input";
 import { fullDate } from "../../../utils/formatTime";
@@ -32,6 +34,7 @@ import uploader from "../../../utils/uploader";
 
 import LoaderButton from "../../LoaderButton";
 import CircularProgressWithLabel from "../../CircularProgressWithLabel";
+import Replay from "./replay";
 
 const buttons = [
   {
@@ -52,12 +55,12 @@ const Footer = () => {
   const { room_id } = useSelector((state) => state.app);
   const { userId, token } = useSelector((state) => state.auth);
   const { friend_id, _id, status } = useSelector(getCurrentConversation);
-  const [files, setFiles] = useState([]);
+  const files = useSelector((state) => state.message.files);
+  const replay = useSelector((state) => state.message.replay);
   const [inputText, setInputText] = useState("");
   const [uploadLoading, setUploadLoading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
-
-  const deferredFiles = useDeferredValue(files);
+  const inputRef = useRef(null);
 
   const ImageFileRef = useRef(null);
   const DocFileRef = useRef(null);
@@ -84,11 +87,11 @@ const Footer = () => {
       setUploadLoading(true);
       const filesData = await uploader(files, setUploadProgress).finally(() => {
         setUploadLoading(false);
-        setFiles([]);
+        dispatch(clearFiles());
       });
 
       const newId = new ObjectId().toHexString();
-      const data = {
+      const initialData = {
         _id: newId,
         conversation_id: _id,
         text: inputText || "",
@@ -97,14 +100,26 @@ const Footer = () => {
         receiver: friend_id,
         status: "Created",
         edited: false,
-        // replay: {},
-        // deleted: false,
         createdAt_day: fullDate(Date.now()),
         createdAt: Date.now(),
       };
-      dispatch(addMessage(data));
+      await dispatch(
+        addMessage({
+          ...initialData,
+          ...(Object.entries(replay).length ? { replay } : null),
+        })
+      );
+      dispatch(clearReplay());
       setInputTextEmpty();
-      await dispatch(createMessageThunk({ token, data })).then((response) => {
+      await dispatch(
+        createMessageThunk({
+          token,
+          data: {
+            ...initialData,
+            ...(Object.entries(replay).length ? { replay: replay?._id } : null),
+          },
+        })
+      ).then((response) => {
         const { message_id, status, message } = response.payload.data;
         if (status === "OK") {
           startTransition(async () => {
@@ -154,7 +169,7 @@ const Footer = () => {
   useEffect(() => {
     return () => {
       setInputTextEmpty();
-      setFiles([]);
+      dispatch(clearReplay());
     };
   }, [room_id]);
 
@@ -167,14 +182,12 @@ const Footer = () => {
         const fileType = file.type.split("/")[0];
         const isExe = Boolean(file.name.split(".").at(-1) === "exe");
         if (isExe)
-          return toast.error("Unfortunately exe file type not supported");
-        console.log(file);
+          return toast.error("Unfortunately .exe file type not supported");
         const reader = new FileReader();
         await reader.readAsDataURL(file);
         reader.onload = (f) => {
-          setFiles((prev) => [
-            ...prev,
-            {
+          dispatch(
+            addFile({
               file,
               fileData: f.target.result,
               type:
@@ -185,21 +198,18 @@ const Footer = () => {
                   : fileType === "audio"
                   ? "audio"
                   : file.type.split("/")[1],
-            },
-          ]);
+            })
+          );
         };
       });
     },
     [room_id]
   );
 
-  const removeFile = (fileName) => {
-    setFiles((prev) => prev.filter((item) => item.file.name !== fileName));
-  };
-
   return (
     <Box>
-      <FilesThumbnailes files={deferredFiles} removeFile={removeFile} />
+      <FilesThumbnailes />
+      <Replay textInputRef={inputRef} />
       <Box
         p={2}
         width="100%"
@@ -221,6 +231,8 @@ const Footer = () => {
               handleSendMessage={handleSendMessage}
               startTyping={startTyping}
               stopTyping={stopTyping}
+              uploadLoading={uploadLoading}
+              ref={inputRef}
             />
           </Box>
           <Stack direction="row" spacing={2} alignItems="center">
@@ -231,6 +243,7 @@ const Footer = () => {
                     color:
                       mode === "light" ? "primary.light" : "primary.lighter",
                   }}
+                  disabled={uploadLoading}
                   onClick={() => {
                     if (index === 0) {
                       ImageFileRef.current.click();

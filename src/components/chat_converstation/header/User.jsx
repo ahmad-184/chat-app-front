@@ -49,7 +49,16 @@ const User = () => {
           minWidth: "0px",
         }}
       >
-        <Typography variant="subtitle1" noWrap>
+        <Typography
+          variant="body1"
+          fontWeight={600}
+          noWrap
+          sx={{
+            textTransform: "capitalize",
+            // color: (theme) =>
+            // theme.palette.mode === "light" ? "grey.800" : "red",
+          }}
+        >
           {current_conversation.name}
         </Typography>
         <Typography

@@ -110,7 +110,7 @@ const Sidebar = () => {
                       color: "inherit",
                       fontWeight: "700",
                       "&.MuiTypography-root": {
-                        marginLeft: "-7px",
+                        marginLeft: "0px",
                       },
                     }}
                   >

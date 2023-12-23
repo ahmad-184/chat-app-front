@@ -1,21 +1,17 @@
-import { useState, memo } from "react";
-import {
-  Box,
-  Stack,
-  Typography,
-  alpha,
-  useTheme,
-  IconButton,
-} from "@mui/material";
+import { useState } from "react";
+import { Box, Stack, Typography, alpha, useTheme } from "@mui/material";
 import { File as FileIcon, X } from "phosphor-react";
 import VideoThumbnail from "react-video-thumbnail";
+import { useSelector, useDispatch } from "react-redux";
 
 import { SimpleBarStyle } from "../../Scrollbar";
 import Lightbox, { filterFiles } from "../../LightBox";
+import { removeFile } from "../../../app/slices/message";
 
-const File = ({ item, removeFile, selectIndex, openLightbox }) => {
+const File = ({ item, selectIndex, openLightbox }) => {
   const theme = useTheme();
   const mode = theme.palette.mode;
+  const dispatch = useDispatch();
 
   const splitedName = item.file.name.split(".");
 
@@ -50,7 +46,7 @@ const File = ({ item, removeFile, selectIndex, openLightbox }) => {
           transition: "all .5s ease",
           color: "error.main",
         }}
-        onClick={() => removeFile(item.file.name)}
+        onClick={() => dispatch(removeFile(item.file.name))}
       >
         <X size={19} weight={"bold"} />
       </Box>
@@ -134,9 +130,10 @@ const File = ({ item, removeFile, selectIndex, openLightbox }) => {
   );
 };
 
-const FilesThumbnailes = ({ files, removeFile }) => {
+const FilesThumbnailes = () => {
   const theme = useTheme();
   const mode = theme.palette.mode;
+  const files = useSelector((state) => state.message.files);
 
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [index, setIndex] = useState(0);
@@ -182,7 +179,6 @@ const FilesThumbnailes = ({ files, removeFile }) => {
             key={index}
             item={item}
             selectIndex={() => setIndex(index)}
-            removeFile={removeFile}
             openLightbox={openLightbox}
           />
         ))}

@@ -10,9 +10,6 @@ const VideoMessage = ({ data, openLightbox, changeLightboxIndex }) => {
   const theme = useTheme();
   const [thumb, setThumb] = useState("");
 
-  const imgUrl = thumb.replace("upload", "upload/q_40,dpr_1.0") || "";
-  const placeholder = thumb.replace("upload", "upload/q_10,dpr_1.0,w_50") || "";
-
   const isLg = useResponsive("up", "lg");
   const isMd = useResponsive("up", "md");
   const isXs = useResponsive("up", "xs");
@@ -44,23 +41,23 @@ const VideoMessage = ({ data, openLightbox, changeLightboxIndex }) => {
           zIndex={1}
           sx={{
             inset: 0,
-            backgroundColor: alpha(theme.palette.grey[900], 0.5),
+            backgroundColor: alpha(theme.palette.grey[900], 0.6),
           }}
         >
-          <IconButton sx={{ color: "grey.400" }}>
+          <IconButton
+            sx={{
+              color: "grey.400",
+              backgroundColor: alpha(theme.palette.grey[800], 0.4),
+            }}
+          >
             <Play size={80} weight="light" />
           </IconButton>
         </Stack>
         <Image
-          src={imgUrl}
-          placeholder={placeholder}
+          src={thumb}
+          placeholder={thumb}
           sx={{
-            maxWidth: {
-              // lg: "550px",
-              // md: "450px",
-              // xs: "300px",
-            },
-            // maxHeight: "50vh",
+            maxWidth: {},
             borderRadius: 1,
           }}
           width={isLg ? 400 : isMd ? 350 : isXs ? 300 : "100%"}
