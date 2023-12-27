@@ -1,6 +1,11 @@
 import { Fragment } from "react";
 import { IconButton, Stack, Box, Divider, useTheme } from "@mui/material";
-import { VideoCamera, Phone, MagnifyingGlass, CaretDown } from "phosphor-react";
+import {
+  VideoCamera,
+  Phone,
+  MagnifyingGlass,
+  CaretDown,
+} from "@phosphor-icons/react";
 
 const icons = [
   {

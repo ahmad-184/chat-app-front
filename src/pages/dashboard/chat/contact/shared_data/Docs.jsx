@@ -8,7 +8,7 @@ import {
   MicrosoftExcelLogo,
   MicrosoftPowerpointLogo,
   DownloadSimple,
-} from "phosphor-react";
+} from "@phosphor-icons/react";
 
 import { SHARED_docs } from "../../../../../data";
 

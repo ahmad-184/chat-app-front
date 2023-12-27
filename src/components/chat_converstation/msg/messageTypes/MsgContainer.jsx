@@ -1,6 +1,6 @@
 import { Stack, Box, useTheme, alpha, Typography } from "@mui/material";
 import { useSelector } from "react-redux";
-import { Check, Checks } from "phosphor-react";
+import { Check, Checks } from "@phosphor-icons/react";
 
 import ShowMsgTime from "./ShowMsgTime";
 import Menu from "./Menu";
@@ -24,7 +24,7 @@ const MsgContainer = ({ data, showMenu = true, showTime = true, children }) => {
                   ? "error.darker"
                   : !isOutgoing
                   ? alpha(theme.palette.primary.light, 0.2)
-                  : "grey.700",
+                  : alpha(theme.palette.grey[700], 0.4),
               }
             : {
                 backgroundColor: isDeleted

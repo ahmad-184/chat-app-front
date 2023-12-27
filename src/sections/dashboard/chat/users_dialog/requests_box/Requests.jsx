@@ -9,7 +9,7 @@ import {
   Chip,
   IconButton,
 } from "@mui/material";
-import { Trash, Check } from "phosphor-react";
+import { Trash, Check } from "@phosphor-icons/react";
 
 import getPhotoUrl from "../../../../../utils/getPhotoUrl";
 import createAvatar from "../../../../../utils/createAvatar";

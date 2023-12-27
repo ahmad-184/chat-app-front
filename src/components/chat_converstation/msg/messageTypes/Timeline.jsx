@@ -44,7 +44,7 @@ const Timeline = ({ data }) => {
   const mode = theme.palette.mode;
 
   return (
-    <Stack direction="row" width="100%" py={1.5}>
+    <Stack direction="row" width="100%" pb="10px">
       <Divider
         variant="fullWidth"
         textAlign="center"
@@ -63,7 +63,7 @@ const Timeline = ({ data }) => {
         <Typography
           variant="caption"
           sx={{
-            borderRadius: 2,
+            borderRadius: 3,
             color: mode === "light" ? "grey.500" : "grey.600",
             fontSize: "13px",
             backgroundColor: mode === "light" ? "grey.300" : "grey.800",

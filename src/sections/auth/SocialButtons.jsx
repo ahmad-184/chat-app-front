@@ -1,5 +1,5 @@
 import { Stack, Divider, IconButton, useTheme } from "@mui/material";
-import { GoogleLogo, GithubLogo, TwitterLogo } from "phosphor-react";
+import { GoogleLogo, GithubLogo, TwitterLogo } from "@phosphor-icons/react";
 
 import useLocales from "../../hooks/useLocales";
 

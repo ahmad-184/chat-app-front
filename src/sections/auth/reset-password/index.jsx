@@ -9,7 +9,7 @@ import {
   Alert,
   Typography,
 } from "@mui/material";
-import { Eye, EyeSlash } from "phosphor-react";
+import { Eye, EyeSlash } from "@phosphor-icons/react";
 import { useDispatch } from "react-redux";
 import { useNavigate, useSearchParams } from "react-router-dom";
 

@@ -3,7 +3,7 @@ import { useDropzone } from "react-dropzone";
 import { Typography } from "@mui/material";
 import { styled, alpha } from "@mui/material/styles";
 import AvatarPreview from "./preview/AvatarPreview";
-import { Image } from "phosphor-react";
+import { Image } from "@phosphor-icons/react";
 
 import getPhotoUrl from "../../utils/getPhotoUrl";
 

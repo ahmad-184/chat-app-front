@@ -6,7 +6,7 @@ import {
   useMemo,
   useState,
 } from "react";
-import { Stack, Box, useTheme, Typography } from "@mui/material";
+import { Stack, Box, useTheme, Typography, alpha } from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
 import useInfiniteScroll from "react-infinite-scroll-hook";
 import * as _ from "lodash";
@@ -19,7 +19,7 @@ import {
   getAllMessages,
   fetchMoreMessageThunk,
 } from "../../../app/slices/message";
-import { ArrowDown } from "phosphor-react";
+import { ArrowDown } from "@phosphor-icons/react";
 
 import { getToken } from "../../../app/slices/auth";
 
@@ -32,12 +32,12 @@ const Msg = ({ showMenu = true, showTime = true }) => {
   const theme = useTheme();
   const mode = theme.palette.mode;
   const msgs = useSelector(getAllMessages);
-  const [getMoreMsgLoading, setGetMoreMsgLoading] = useState(false);
   const {
     loading: isLoading,
     hasNextPage,
     currentPage,
     error,
+    fetchMoreLoading,
   } = useSelector((state) => state.message);
   const dispatch = useDispatch();
   const {
@@ -48,6 +48,7 @@ const Msg = ({ showMenu = true, showTime = true }) => {
   const token = useSelector(getToken);
   const boxRef = useRef(null);
   const scrollButtonRef = useRef(null);
+  const [secondLoading, setSecondLoading] = useState(false);
 
   const getImagesAndVideos = useMemo(() => {
     const messagesWithFiles = Object.values(msgs)
@@ -79,7 +80,10 @@ const Msg = ({ showMenu = true, showTime = true }) => {
 
   const fetchMoreMessage = () => {
     if (!hasNextPage) return;
-    setGetMoreMsgLoading(true);
+    if (fetchMoreLoading) return;
+    if (secondLoading) return;
+    setSecondLoading(true);
+    console.log("fetch more message");
     const lastScroll = msgs[1];
     dispatch(
       fetchMoreMessageThunk({
@@ -88,7 +92,7 @@ const Msg = ({ showMenu = true, showTime = true }) => {
         page: currentPage,
       })
     ).then(() => {
-      setGetMoreMsgLoading(false);
+      setSecondLoading(false);
       boxRef.current
         ?.querySelector(`[id='${lastScroll?._id}']`)
         .scrollIntoView({
@@ -98,11 +102,12 @@ const Msg = ({ showMenu = true, showTime = true }) => {
   };
 
   const [sentryRef, { rootRef }] = useInfiniteScroll({
-    loading: getMoreMsgLoading,
+    loading: secondLoading || fetchMoreLoading,
     hasNextPage,
     onLoadMore: fetchMoreMessage,
     disabled: !!error,
-    rootMargin: "0px 0px 200px 0px",
+    rootMargin: "0px 0px 0px 0px",
+    delayInMs: 100,
   });
 
   const handleScrollDown = ({
@@ -175,6 +180,30 @@ const Msg = ({ showMenu = true, showTime = true }) => {
 
   return (
     <Box width="100%" position="relative" height="100%">
+      {Boolean(fetchMoreLoading || secondLoading) && (
+        <Stack
+          justifyContent="center"
+          direction="row"
+          width="100%"
+          position="absolute"
+          sx={{
+            inset: 0,
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            height: "100%",
+            backgroundColor:
+              mode === "light"
+                ? alpha(theme.palette.grey[50], 0.6)
+                : alpha(theme.palette.grey[800], 0.8),
+            alignItems: "center",
+            zIndex: 3,
+          }}
+        >
+          <LoadingSvg color={theme.palette.grey[600]} />
+        </Stack>
+      )}
       <Box
         position="absolute"
         sx={{
@@ -226,11 +255,7 @@ const Msg = ({ showMenu = true, showTime = true }) => {
         <Box ref={sentryRef}></Box>
         {hasNextPage ? (
           <>
-            {getMoreMsgLoading ? (
-              <Stack justifyContent="center" direction="row" width="100%">
-                <LoadingSvg color={theme.palette.grey[600]} />
-              </Stack>
-            ) : (
+            {Boolean(!fetchMoreLoading && !secondLoading) ? (
               <LoaderButton
                 variant="text"
                 fontSize="caption"
@@ -243,7 +268,7 @@ const Msg = ({ showMenu = true, showTime = true }) => {
               >
                 loading more
               </LoaderButton>
-            )}
+            ) : null}
           </>
         ) : (
           <Stack>

@@ -7,7 +7,12 @@ import {
   useRef,
 } from "react";
 import { Stack, Box, useTheme, alpha, IconButton } from "@mui/material";
-import { Microphone, PaperPlaneRight, LinkSimple, Image } from "phosphor-react";
+import {
+  Microphone,
+  PaperPlaneRight,
+  LinkSimple,
+  Image,
+} from "@phosphor-icons/react";
 import { useDispatch, useSelector } from "react-redux";
 import * as _ from "lodash";
 import ObjectId from "bson-objectid";

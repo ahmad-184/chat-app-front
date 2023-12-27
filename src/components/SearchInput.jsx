@@ -1,5 +1,5 @@
 import { Box, useTheme, InputBase } from "@mui/material";
-import { MagnifyingGlass } from "phosphor-react";
+import { MagnifyingGlass } from "@phosphor-icons/react";
 
 const SearchInput = ({ ...props }) => {
   const theme = useTheme();

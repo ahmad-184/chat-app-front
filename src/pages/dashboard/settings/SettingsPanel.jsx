@@ -22,7 +22,7 @@ import {
   Note,
   Keyboard,
   Info,
-} from "phosphor-react";
+} from "@phosphor-icons/react";
 import { faker } from "@faker-js/faker";
 import { useSelector } from "react-redux";
 

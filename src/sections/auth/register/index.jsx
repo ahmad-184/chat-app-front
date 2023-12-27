@@ -9,7 +9,7 @@ import {
   IconButton,
   Alert,
 } from "@mui/material";
-import { Eye, EyeSlash } from "phosphor-react";
+import { Eye, EyeSlash } from "@phosphor-icons/react";
 import { useDispatch } from "react-redux";
 
 import TextField from "../../../components/hook-form/TextField";

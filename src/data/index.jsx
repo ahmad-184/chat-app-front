@@ -7,7 +7,7 @@ import {
   SignOut,
   User,
   Users,
-} from "phosphor-react";
+} from "@phosphor-icons/react";
 
 const Profile_Menu = [
   {

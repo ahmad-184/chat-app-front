@@ -1,6 +1,14 @@
-import { useState, useRef } from "react";
-import { Box, IconButton, Stack, Typography, useTheme } from "@mui/material";
-import { File, DownloadSimple } from "phosphor-react";
+import { useState } from "react";
+import { filesize } from "filesize";
+import {
+  Box,
+  IconButton,
+  Stack,
+  Typography,
+  alpha,
+  useTheme,
+} from "@mui/material";
+import { DownloadSimple } from "@phosphor-icons/react";
 
 import downloadFile from "../../../../utils/downloadFile";
 import CircularProgress from "../../../CircularProgressWithLabel";
@@ -25,7 +33,10 @@ const FileMessage = ({ data }) => {
     <Stack py={0.5}>
       <Box
         sx={{
-          backgroundColor: mode === "light" ? "grey.200" : "grey.900",
+          backgroundColor:
+            mode === "light"
+              ? alpha(theme.palette.primary.lighter, 0.0)
+              : "grey.900",
           borderRadius: 1,
           width: "100%",
           lineHeight: 0,
@@ -35,9 +46,9 @@ const FileMessage = ({ data }) => {
       >
         <Stack
           direction="row"
-          justifyContent="space-between"
+          // justifyContent="space-between"
           alignItems="center"
-          spacing={2.5}
+          spacing={1.5}
         >
           <Box
             sx={{
@@ -46,31 +57,30 @@ const FileMessage = ({ data }) => {
           >
             <IconButton
               sx={{
-                backgroundColor: mode === "light" ? "grey.300" : "grey.800",
-                color: mode === "light" ? "grey.700" : "grey.400",
+                backgroundColor: mode === "light" ? "grey.700" : "grey.800",
+                color: mode === "light" ? "grey.300" : "grey.400",
               }}
               onClick={handleDownloadFile}
               disabled={disableButton}
             >
-              {!disableButton && <DownloadSimple size={30} />}
+              {!disableButton && <DownloadSimple size={25} />}
               {disableButton && <CircularProgress value={downloadProgress} />}
+              {/* <CircularProgress value={"50"} fontColor={"grey.300"} /> */}
             </IconButton>
           </Box>
-          <Stack direction="row" spacing={1} alignItems="center">
+          <Stack direction="column" spacing={0}>
             <Typography
               variant="body2"
-              color={mode === "light" ? "grey.800" : "grey.400"}
+              color={mode === "light" ? "grey.300" : "grey.400"}
             >
               {data?.file?.public_id.split("/")[1]}
             </Typography>
-            <Box
-              fontSize={30}
-              sx={{
-                color: mode === "light" ? "grey.700" : "grey.400",
-              }}
+            <Typography
+              variant="body2"
+              color={mode === "light" ? "grey.500" : "grey.400"}
             >
-              <File />
-            </Box>
+              {filesize(data?.file?.bytes, { standard: "jedec" })}
+            </Typography>
           </Stack>
         </Stack>
       </Box>

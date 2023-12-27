@@ -1,6 +1,6 @@
 import proptypes from "prop-types";
 import { Stack, Typography } from "@mui/material";
-import { WarningOctagon } from "phosphor-react";
+import { WarningOctagon } from "@phosphor-icons/react";
 
 export default function ErrorText({ message }) {
   return (

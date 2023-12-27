@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Typography, Stack, IconButton } from "@mui/material";
-import { CircleDashed, Users } from "phosphor-react";
+import { CircleDashed, Users } from "@phosphor-icons/react";
 import * as _ from "lodash";
 import { useDispatch, useSelector } from "react-redux";
 

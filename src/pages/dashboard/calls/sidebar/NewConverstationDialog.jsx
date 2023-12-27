@@ -8,7 +8,7 @@ import {
   useTheme,
   DialogContent,
 } from "@mui/material";
-import { X } from "phosphor-react";
+import { X } from "@phosphor-icons/react";
 import * as _ from "lodash";
 
 import SearchInput from "../../../../components/SearchInput";

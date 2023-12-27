@@ -1,5 +1,5 @@
 import { Stack, Typography, IconButton, useTheme } from "@mui/material";
-import { CaretLeft } from "phosphor-react";
+import { CaretLeft } from "@phosphor-icons/react";
 import { useDispatch } from "react-redux";
 
 import { updateSidebarType } from "../../../../../app/slices/app";

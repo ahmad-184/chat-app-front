@@ -1,5 +1,5 @@
 import { Stack, Typography, IconButton, useTheme } from "@mui/material";
-import { CaretLeft } from "phosphor-react";
+import { CaretLeft } from "@phosphor-icons/react";
 
 import { SimpleBarStyle } from "../../../components/Scrollbar";
 import SidebarContainer from "../SidebarContainer";

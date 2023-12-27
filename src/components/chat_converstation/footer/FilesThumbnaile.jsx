@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Box, Stack, Typography, alpha, useTheme } from "@mui/material";
-import { File as FileIcon, X } from "phosphor-react";
+import { File as FileIcon, X } from "@phosphor-icons/react";
 import VideoThumbnail from "react-video-thumbnail";
 import { useSelector, useDispatch } from "react-redux";
 

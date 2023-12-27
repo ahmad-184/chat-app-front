@@ -7,7 +7,7 @@ import {
   IconButton,
 } from "@mui/material";
 import { faker } from "@faker-js/faker";
-import { Phone, VideoCamera } from "phosphor-react";
+import { Phone, VideoCamera } from "@phosphor-icons/react";
 
 const CallLogElement = ({ data }) => {
   const theme = useTheme();

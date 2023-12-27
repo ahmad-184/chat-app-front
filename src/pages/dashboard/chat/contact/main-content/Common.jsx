@@ -1,6 +1,6 @@
 import { Button, useTheme, Stack, Typography, Avatar } from "@mui/material";
 import { faker } from "@faker-js/faker";
-import { Prohibit, Trash } from "phosphor-react";
+import { Prohibit, Trash } from "@phosphor-icons/react";
 
 const Common = ({ handleOpenBlockDiagram, handleOpenDeleteDiagram }) => {
   const theme = useTheme();

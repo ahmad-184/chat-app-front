@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Stack, Typography, useTheme, Box, Divider } from "@mui/material";
-import { BellRinging } from "phosphor-react";
+import { BellRinging } from "@phosphor-icons/react";
 
 import AntSwitch from "../../../../../components/AntSwitch";
 

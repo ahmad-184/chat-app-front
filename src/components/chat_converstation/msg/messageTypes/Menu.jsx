@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Box, Menu as MUIMenu, MenuItem, Stack } from "@mui/material";
-import { DotsThreeVertical } from "phosphor-react";
+import { DotsThreeVertical } from "@phosphor-icons/react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
 

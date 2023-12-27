@@ -8,7 +8,7 @@ import {
   Divider,
 } from "@mui/material";
 import { faker } from "@faker-js/faker";
-import { VideoCamera, Phone } from "phosphor-react";
+import { VideoCamera, Phone } from "@phosphor-icons/react";
 
 const data = [
   {

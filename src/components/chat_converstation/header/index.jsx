@@ -1,5 +1,5 @@
 import { Stack, Box, useTheme, IconButton, alpha } from "@mui/material";
-import { ArrowLeft } from "phosphor-react";
+import { ArrowLeft } from "@phosphor-icons/react";
 
 import User from "./User";
 import Buttons from "./Buttons";

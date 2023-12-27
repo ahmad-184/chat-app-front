@@ -6,12 +6,16 @@ import {
   MessageBox,
 } from "../../../../components/chat_converstation";
 
-const Converstation = ({ isGroup }) => {
+const Converstation = () => {
   return (
     <Stack direction="column" width="100%" height="100vh">
       <Header />
-      <Box display="flex" flexGrow={1} sx={{ overflow: "hidden" }}>
-        {/* {Object.keys(msgs) && <Messages />} */}
+      <Box
+        display="flex"
+        position={"relative"}
+        flexGrow={1}
+        sx={{ overflow: "hidden" }}
+      >
         <MessageBox />
       </Box>
       <Box>

@@ -8,7 +8,7 @@ import {
   Typography,
   Tooltip,
 } from "@mui/material";
-import { Translate, SunDim, Moon } from "phosphor-react";
+import { Translate, SunDim, Moon } from "@phosphor-icons/react";
 
 import useLocales from "../../hooks/useLocales";
 import useSettings from "../../hooks/useSettings";

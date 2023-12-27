@@ -5,7 +5,7 @@ import {
   useTheme,
   Link as MUILink,
 } from "@mui/material";
-import { LinkSimple } from "phosphor-react";
+import { LinkSimple } from "@phosphor-icons/react";
 
 import { SHARED_links } from "../../../../../data";
 

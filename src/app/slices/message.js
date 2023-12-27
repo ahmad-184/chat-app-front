@@ -10,6 +10,7 @@ import {
   createMessageApi,
   deleteMessageApi,
   fetchMessagesApi,
+  findReplayedMessageApi,
 } from "../../services";
 import filterByDate from "../../utils/filterByDate";
 
@@ -19,6 +20,7 @@ const messageAdaptor = createEntityAdapter({
 
 const initialState = messageAdaptor.getInitialState({
   loading: false,
+  fetchMoreLoading: false,
   error: false,
   currentPage: 0,
   nextPage: 1,
@@ -44,6 +46,18 @@ export const fetchMoreMessageThunk = createAsyncThunk(
   async (data, { rejectWithValue }) => {
     try {
       const res = await fetchMessagesApi(data);
+      return res;
+    } catch (err) {
+      return rejectWithValue(err);
+    }
+  }
+);
+
+export const findReplayedMessageThunk = createAsyncThunk(
+  "message/findReplayedMessageThunk",
+  async (data, { rejectWithValue }) => {
+    try {
+      const res = await findReplayedMessageApi(data);
       return res;
     } catch (err) {
       return rejectWithValue(err);
@@ -141,7 +155,7 @@ const messageSlice = createSlice({
     [fetchMessagesThunk.fulfilled]: (state, action) => {
       const { data, status, currentPage, nextPage, hasNextPage } =
         action.payload.data;
-      state.loading = false;
+
       if (status === 200) {
         if (state.error === true) state.error = false;
         const msgs = [...data].reverse();
@@ -152,6 +166,7 @@ const messageSlice = createSlice({
         state.nextPage = nextPage;
         state.hasNextPage = hasNextPage;
         messageAdaptor.setAll(state, items);
+        state.loading = false;
       }
     },
     [fetchMessagesThunk.rejected]: (state, action) => {
@@ -162,9 +177,13 @@ const messageSlice = createSlice({
         errorToast({ message });
       }
     },
+    [fetchMoreMessageThunk.pending]: (state) => {
+      state.fetchMoreLoading = true;
+    },
     [fetchMoreMessageThunk.fulfilled]: (state, action) => {
       const { data, status, currentPage, nextPage, hasNextPage } =
         action.payload.data;
+
       if (status === 200) {
         if (state.error === true) state.error = false;
         const msgs = [...data].reverse();
@@ -182,10 +201,40 @@ const messageSlice = createSlice({
         state.nextPage = nextPage;
         state.hasNextPage = hasNextPage;
         messageAdaptor.setAll(state, sortedItems);
+        state.fetchMoreLoading = false;
       }
     },
     [fetchMoreMessageThunk.rejected]: (state, action) => {
       const { error, message } = action.payload;
+      state.fetchMoreLoading = false;
+      state.error = true;
+      if (error) {
+        errorToast({ message });
+      }
+    },
+    [findReplayedMessageThunk.pending]: (state) => {
+      state.fetchMoreLoading = true;
+    },
+    [findReplayedMessageThunk.fulfilled]: (state, action) => {
+      const { data, status, currentPage, nextPage, hasNextPage } =
+        action.payload.data;
+
+      if (status === 200) {
+        if (state.error === true) state.error = false;
+        const msgs = [...data].reverse();
+
+        const sortedItems = filterByDate(msgs);
+
+        state.currentPage = currentPage;
+        state.nextPage = nextPage;
+        state.hasNextPage = hasNextPage;
+        messageAdaptor.setAll(state, sortedItems);
+        state.fetchMoreLoading = false;
+      }
+    },
+    [findReplayedMessageThunk.rejected]: (state, action) => {
+      const { error, message } = action.payload;
+      state.fetchMoreLoading = false;
       state.error = true;
       if (error) {
         errorToast({ message });

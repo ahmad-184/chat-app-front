@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Stack, Box, Typography, Button, useTheme, alpha } from "@mui/material";
-import { PaperPlaneRight } from "phosphor-react";
+import { PaperPlaneRight } from "@phosphor-icons/react";
 import { useDispatch, useSelector } from "react-redux";
 import { updateFriendRequestsThunk } from "../../../../../app/slices/app";
 import { getToken, getUserId } from "../../../../../app/slices/auth";

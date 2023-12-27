@@ -7,7 +7,7 @@ import {
   Divider,
   Box,
 } from "@mui/material";
-import { Phone } from "phosphor-react";
+import { Phone } from "@phosphor-icons/react";
 import * as _ from "lodash";
 
 import { SimpleBarStyle } from "../../../../components/Scrollbar";

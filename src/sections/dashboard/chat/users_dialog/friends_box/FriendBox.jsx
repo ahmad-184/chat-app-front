@@ -7,7 +7,7 @@ import {
   alpha,
   IconButton,
 } from "@mui/material";
-import { ChatTeardropDots } from "phosphor-react";
+import { ChatTeardropDots } from "@phosphor-icons/react";
 
 import StyledBadge from "../../../../../components/StyledBadge";
 

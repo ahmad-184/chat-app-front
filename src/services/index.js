@@ -144,3 +144,21 @@ export const deleteMessageApi = async ({ token, ...data }) => {
     }
   );
 };
+
+// @Route http://localhost:9000/api/message/find_replayed_message/:conversation_id/:message_id
+// @Method GET find message that user try to replay
+export const findReplayedMessageApi = async ({
+  token,
+  conversation_id,
+  message_id,
+}) => {
+  return await axios.get(
+    `/message/find_replayed_message/${conversation_id}/${message_id}`,
+    {
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+};

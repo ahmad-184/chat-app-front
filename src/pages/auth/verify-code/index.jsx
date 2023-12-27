@@ -1,6 +1,6 @@
 import { Stack, Typography, useTheme, Box, Link } from "@mui/material";
 import { Link as RRDLink } from "react-router-dom";
-import { CaretLeft, CaretRight } from "phosphor-react";
+import { CaretLeft, CaretRight } from "@phosphor-icons/react";
 
 import VerifyCode from "../../../sections/auth/verify-code";
 import useLocales from "../../../hooks/useLocales";

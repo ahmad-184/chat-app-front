@@ -6,7 +6,7 @@ import {
   VideoCamera,
   File,
   Microphone,
-} from "phosphor-react";
+} from "@phosphor-icons/react";
 import VideoThumbnail from "react-video-thumbnail";
 
 import { Image } from "../../../image";

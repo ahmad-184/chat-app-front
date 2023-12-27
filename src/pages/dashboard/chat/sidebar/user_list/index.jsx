@@ -6,7 +6,7 @@ import {
   VideoCamera,
   File,
   Microphone,
-} from "phosphor-react";
+} from "@phosphor-icons/react";
 
 import StyledBadge from "../../../../../components/StyledBadge";
 import {

@@ -7,7 +7,7 @@ import {
   Menu,
   useTheme,
 } from "@mui/material";
-import { Smiley } from "phosphor-react";
+import { Smiley } from "@phosphor-icons/react";
 import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
 

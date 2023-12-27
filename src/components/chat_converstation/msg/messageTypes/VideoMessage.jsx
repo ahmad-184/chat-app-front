@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Box, IconButton, Stack, alpha, useTheme } from "@mui/material";
 import VideoThumbnail from "react-video-thumbnail";
-import { Play } from "phosphor-react";
+import { Play } from "@phosphor-icons/react";
 
 import { Image } from "../../../image";
 import useResponsive from "../../../../hooks/useResponsive";

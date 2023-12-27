@@ -7,7 +7,7 @@ import {
   Button,
 } from "@mui/material";
 import { faker } from "@faker-js/faker";
-import { CaretRight } from "phosphor-react";
+import { CaretRight } from "@phosphor-icons/react";
 import { useDispatch } from "react-redux";
 import { updateSidebarType } from "../../../../../app/slices/app";
 

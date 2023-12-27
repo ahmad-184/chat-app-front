@@ -6,7 +6,7 @@ import {
   useTheme,
   Divider,
 } from "@mui/material";
-import { Star, CaretRight } from "phosphor-react";
+import { Star, CaretRight } from "@phosphor-icons/react";
 import { useDispatch } from "react-redux";
 
 import { updateSidebarType } from "../../../../../app/slices/app";

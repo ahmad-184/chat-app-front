@@ -1,5 +1,5 @@
 import { Stack, Typography, IconButton, useTheme } from "@mui/material";
-import { X } from "phosphor-react";
+import { X } from "@phosphor-icons/react";
 import { useDispatch } from "react-redux";
 
 import { toggleSidebar } from "../../../../../app/slices/app";

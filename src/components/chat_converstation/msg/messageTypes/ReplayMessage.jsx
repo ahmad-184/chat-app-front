@@ -1,18 +1,20 @@
 import { useTheme, alpha, Box, Stack, Typography } from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
 import {
-  X,
   Image as ImageIcon,
   VideoCamera,
   File,
   Microphone,
-} from "phosphor-react";
+} from "@phosphor-icons/react";
 import VideoThumbnail from "react-video-thumbnail";
 
 import { Image } from "../../../image";
-import { clearReplay } from "../../../../app/slices/message";
 import getPhotoUrl from "../../../../utils/getPhotoUrl";
 import { useState } from "react";
+import {
+  findReplayedMessageThunk,
+  getAllMessages,
+} from "../../../../app/slices/message";
 
 const fileType = (type) => {
   if (!type) return null;
@@ -68,7 +70,10 @@ const ReplayMessage = ({ message, width }) => {
   const current_conversation = useSelector(
     (state) => state.conversation.current_conversation
   );
-  const { userId, user } = useSelector((state) => state.auth);
+  const { hasNextPage } = useSelector((state) => state.message);
+  const msgs = useSelector(getAllMessages);
+  const dispatch = useDispatch();
+  const { userId, user, token } = useSelector((state) => state.auth);
   const isImage = Boolean(fileType(lastFile?.type) === "image");
   const isFile = Boolean(fileType(lastFile?.type) === "file");
   const isVideo = Boolean(fileType(lastFile?.type) === "video");
@@ -77,20 +82,56 @@ const ReplayMessage = ({ message, width }) => {
 
   const isOutgoing = Boolean(message?.sender === userId);
 
-  const handleScrollToMsg = () => {
+  const markAndScrollToMsg = () => {
     const chatView = document.querySelector("#chat_view");
     const msg = chatView?.querySelector(`[id='${message?.replay?._id}']`);
     if (msg) {
       msg?.scrollIntoView({
         block: "center",
-        behavior: "smooth",
+        // behavior: "smooth",
       });
-      msg.style.outline = `2px solid ${theme.palette.warning.main}`;
-      msg.style.borderRadius = "3px";
-      msg.style.outlineOffset = "5px";
+      msg.style.transition = "background-color 1s ease";
+      msg.style.backgroundColor = alpha(theme.palette.primary.main, 0.3);
+      msg.style.borderRadius = "10px";
       setTimeout(() => {
-        msg.style.outline = "none";
+        msg.style.backgroundColor = "transparent";
       }, 2500);
+      return true;
+    } else return false;
+  };
+
+  const handleScrollToMsg = async () => {
+    const lastScroll = msgs[1];
+    const chatView = document.querySelector("#chat_view");
+    const msg = chatView?.querySelector(`[id='${message?.replay?._id}']`);
+    if (msg) {
+      markAndScrollToMsg();
+    } else {
+      if (hasNextPage) {
+        let isLoopRun = false;
+        await dispatch(
+          findReplayedMessageThunk({
+            token,
+            conversation_id: message?.conversation_id,
+            message_id: message?.replay?._id,
+          })
+        ).then((res) => {
+          if (res.payload.error) {
+            return;
+          }
+          if (res.payload.status === 200) {
+            chatView
+              ?.querySelector(`[id='${lastScroll?._id}']`)
+              .scrollIntoView({
+                block: "center",
+              });
+            while (isLoopRun === false) {
+              const status = markAndScrollToMsg();
+              isLoopRun = status;
+            }
+          }
+        });
+      }
     }
   };
 
@@ -105,8 +146,10 @@ const ReplayMessage = ({ message, width }) => {
         position: "relative",
         backgroundColor:
           mode === "light"
-            ? alpha(theme.palette.grey[900], 0.05)
-            : alpha(theme.palette.grey[900], 0.5),
+            ? isOutgoing
+              ? alpha(theme.palette.grey[700], 0.3)
+              : alpha(theme.palette.primary.dark, 0.1)
+            : alpha(theme.palette.grey[900], 0.66),
         "&::before": {
           content: "''",
           position: "absolute",

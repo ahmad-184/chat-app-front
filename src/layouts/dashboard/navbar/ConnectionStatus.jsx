@@ -6,7 +6,7 @@ import {
   WifiMedium,
   WifiLow,
   WifiNone,
-} from "phosphor-react";
+} from "@phosphor-icons/react";
 
 import useSocket from "../../../hooks/useSocket";
 

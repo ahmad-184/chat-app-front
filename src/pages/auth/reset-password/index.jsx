@@ -1,6 +1,6 @@
 import { Stack, Typography, Link, useTheme, Box } from "@mui/material";
 import { Link as RRDLink } from "react-router-dom";
-import { CaretLeft, CaretRight } from "phosphor-react";
+import { CaretLeft, CaretRight } from "@phosphor-icons/react";
 
 import ResetPassword from "../../../sections/auth/reset-password";
 

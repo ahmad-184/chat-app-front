@@ -1,6 +1,6 @@
 import { Box, Stack, Typography, useTheme, Avatar } from "@mui/material";
 import { faker } from "@faker-js/faker";
-import { ArrowUpRight, Phone, ArrowDownLeft } from "phosphor-react";
+import { ArrowUpRight, Phone, ArrowDownLeft } from "@phosphor-icons/react";
 
 const CallElement = ({ data }) => {
   const theme = useTheme();
