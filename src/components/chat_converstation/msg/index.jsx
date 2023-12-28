@@ -78,6 +78,8 @@ const Msg = ({ showMenu = true, showTime = true }) => {
     if (unseen) return unseen[0];
   }, [room_id]);
 
+  const [isRoomChange, setIsRoomChange] = useState(false);
+
   const fetchMoreMessage = () => {
     if (!hasNextPage) return;
     if (fetchMoreLoading) return;
@@ -105,12 +107,12 @@ const Msg = ({ showMenu = true, showTime = true }) => {
     loading: secondLoading || fetchMoreLoading,
     hasNextPage,
     onLoadMore: fetchMoreMessage,
-    disabled: !!error,
+    disabled: true,
     rootMargin: "0px 0px 0px 0px",
     delayInMs: 100,
   });
 
-  const handleScrollDown = ({
+  const handleScrollDown = async ({
     smooth = null,
     whenLessThan200Return = false,
   }) => {
@@ -159,10 +161,29 @@ const Msg = ({ showMenu = true, showTime = true }) => {
 
   useEffect(() => {
     if (unseen?.length) return;
-    if (Object.keys(msgs)?.length && boxRef?.current) {
+    if (
+      room_id &&
+      Object.entries(msgs)?.length &&
+      boxRef?.current &&
+      isRoomChange === false
+    ) {
+      setIsRoomChange(true);
+    }
+  }, [room_id, msgs]);
+
+  console.log(isRoomChange);
+  useEffect(() => {
+    return () => {
+      setIsRoomChange(false);
+    };
+  }, [room_id]);
+
+  useEffect(() => {
+    if (unseen?.length) return;
+    if (isRoomChange === true && room_id && Object.entries(msgs).length) {
       handleScrollDown({});
     }
-  }, [msgs, room_id]);
+  }, [isRoomChange, room_id]);
 
   if (isLoading) {
     return (
